@@ -1,4 +1,28 @@
 <resources>
     <string name="app_name">Mytrouve Pro</string>
     <string name="logo_content_description">Mytrouve Pro logo</string>
+    <string name="registration_title">Service Provider Registration</string>
+    <string name="full_name_hint">Full name</string>
+    <string name="email_hint">Email</string>
+    <string name="phone_hint">Phone</string>
+    <string name="service_hint">Service category</string>
+    <string name="business_name_hint">Business name</string>
+    <string name="password_hint">Password</string>
+    <string name="confirm_password_hint">Confirm password</string>
+    <string name="terms_label">I agree to the terms and privacy policy</string>
+    <string name="register_button">Register</string>
+    <string name="full_name_required">Full name is required.</string>
+    <string name="email_required">Email is required.</string>
+    <string name="phone_required">Phone is required.</string>
+    <string name="service_required">Service category is required.</string>
+    <string name="business_required">Business name is required.</string>
+    <string name="password_required">Password is required.</string>
+    <string name="confirm_password_required">Confirm your password.</string>
+    <string name="registration_invalid_email">Enter a valid email address.</string>
+    <string name="registration_invalid_phone">Enter a valid phone number.</string>
+    <string name="registration_password_short">Password must be at least 8 characters.</string>
+    <string name="registration_password_mismatch">Passwords do not match.</string>
+    <string name="registration_missing_terms">Please accept the terms to continue.</string>
+    <string name="registration_error_generic">Please fix the highlighted fields.</string>
+    <string name="registration_success">Registration submitted. We will contact you.</string>
 </resources>
