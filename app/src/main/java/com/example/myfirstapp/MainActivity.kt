@@ -1,5 +1,7 @@
 package com.example.myfirstapp
 
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.util.Patterns
 import android.widget.Button
@@ -22,6 +24,26 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
         val confirmPasswordInput = findViewById<EditText>(R.id.confirmPasswordInput)
         val termsCheckbox = findViewById<CheckBox>(R.id.termsCheckbox)
         val registerButton = findViewById<Button>(R.id.registerButton)
+        val privacyButton = findViewById<Button>(R.id.privacyButton)
+        val termsButton = findViewById<Button>(R.id.termsButton)
+        val contactButton = findViewById<Button>(R.id.contactButton)
+        val aboutButton = findViewById<Button>(R.id.aboutButton)
+
+        privacyButton.setOnClickListener {
+            openUrl(getString(R.string.privacy_policy_url))
+        }
+
+        termsButton.setOnClickListener {
+            openUrl(getString(R.string.terms_of_service_url))
+        }
+
+        contactButton.setOnClickListener {
+            openUrl(getString(R.string.contact_url))
+        }
+
+        aboutButton.setOnClickListener {
+            openUrl(getString(R.string.about_url))
+        }
 
         registerButton.setOnClickListener {
             listOf(
@@ -104,6 +126,15 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
             }
 
             Toast.makeText(this, R.string.registration_success, Toast.LENGTH_LONG).show()
+        }
+    }
+
+    private fun openUrl(url: String) {
+        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+        if (intent.resolveActivity(packageManager) != null) {
+            startActivity(intent)
+        } else {
+            Toast.makeText(this, R.string.link_open_error, Toast.LENGTH_SHORT).show()
         }
     }
 }

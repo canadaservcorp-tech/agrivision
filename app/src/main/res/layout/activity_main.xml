@@ -110,5 +110,41 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
             android:text="@string/register_button" />
+
+        <TextView
+            android:id="@+id/legalTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:text="@string/legal_title"
+            android:textSize="14sp" />
+
+        <Button
+            android:id="@+id/privacyButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="@string/privacy_policy_label" />
+
+        <Button
+            android:id="@+id/termsButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="@string/terms_of_service_label" />
+
+        <Button
+            android:id="@+id/contactButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="@string/contact_label" />
+
+        <Button
+            android:id="@+id/aboutButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="@string/about_label" />
     </LinearLayout>
 </ScrollView>
