@@ -42,4 +42,8 @@
     <string name="contact_url">https://mytrouvepro11.netlify.app/contact</string>
     <string name="about_url">https://mytrouvepro11.netlify.app/about</string>
     <string name="link_open_error">Unable to open link.</string>
+    <string name="square_connect_label">Connect Square payments</string>
+    <string name="square_connect_url"></string>
+    <string name="square_connect_missing">Square connect URL is not configured.</string>
+    <string name="square_config_missing">Square configuration is missing.</string>
 </resources>

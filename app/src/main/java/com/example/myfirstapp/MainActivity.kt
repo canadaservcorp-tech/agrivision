@@ -33,6 +33,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
         val termsButton = findViewById<Button>(R.id.termsButton)
         val contactButton = findViewById<Button>(R.id.contactButton)
         val aboutButton = findViewById<Button>(R.id.aboutButton)
+        val squareConnectButton = findViewById<Button>(R.id.squareConnectButton)
 
         privacyButton.setOnClickListener {
             openUrl(getString(R.string.privacy_policy_url))
@@ -49,6 +50,12 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
         aboutButton.setOnClickListener {
             openUrl(getString(R.string.about_url))
         }
+
+        squareConnectButton.setOnClickListener {
+            openSquareConnect()
+        }
+
+        updateSquareConnectButtonState(squareConnectButton)
 
         registerButton.setOnClickListener {
             listOf(
@@ -156,6 +163,37 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
             startActivity(intent)
         } else {
             Toast.makeText(this, R.string.link_open_error, Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private fun openSquareConnect() {
+        val connectUrl = getString(R.string.square_connect_url)
+        if (connectUrl.isBlank()) {
+            Toast.makeText(this, R.string.square_connect_missing, Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        val applicationId = getSquareApplicationId()
+        if (applicationId.isBlank()) {
+            Toast.makeText(this, R.string.square_config_missing, Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        openUrl(connectUrl)
+    }
+
+    private fun updateSquareConnectButtonState(squareConnectButton: Button) {
+        val connectUrl = getString(R.string.square_connect_url)
+        val applicationId = getSquareApplicationId()
+        squareConnectButton.isEnabled = connectUrl.isNotBlank() && applicationId.isNotBlank()
+    }
+
+    private fun getSquareApplicationId(): String {
+        val environment = BuildConfig.SQUARE_ENVIRONMENT.trim().lowercase()
+        return if (environment == "production") {
+            BuildConfig.SQUARE_PRODUCTION_APPLICATION_ID
+        } else {
+            BuildConfig.SQUARE_SANDBOX_APPLICATION_ID
         }
     }
 

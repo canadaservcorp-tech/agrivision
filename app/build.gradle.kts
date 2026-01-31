@@ -1,8 +1,23 @@
 @file:Suppress("UnstableApiUsage")
 
+import java.util.Properties
+
 plugins {
     id("com.android.application")
     kotlin("android")
+}
+
+val localProperties = Properties().apply {
+    val localPropertiesFile = rootProject.file("local.properties")
+    if (localPropertiesFile.exists()) {
+        localPropertiesFile.inputStream().use { load(it) }
+    }
+}
+
+fun Project.configValue(name: String, default: String = ""): String {
+    return localProperties.getProperty(name)
+        ?: System.getenv(name)
+        ?: default
 }
 
 android {
@@ -15,6 +30,21 @@ android {
         versionCode = 1
         versionName = "1.0-${System.getenv("VERSION_SHA")}"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        buildConfigField("String", "SQUARE_ENVIRONMENT", "\"${configValue("SQUARE_ENVIRONMENT", "sandbox")}\"")
+        buildConfigField(
+            "String",
+            "SQUARE_SANDBOX_APPLICATION_ID",
+            "\"${configValue("SQUARE_SANDBOX_APPLICATION_ID")}\"",
+        )
+        buildConfigField(
+            "String",
+            "SQUARE_PRODUCTION_APPLICATION_ID",
+            "\"${configValue("SQUARE_APPLICATION_ID")}\"",
+        )
+        buildConfigField("String", "SQUARE_LOCATION_ID", "\"${configValue("SQUARE_LOCATION_ID")}\"")
+    }
+    buildFeatures {
+        buildConfig = true
     }
     buildTypes {
         release {
