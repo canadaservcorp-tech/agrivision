@@ -112,6 +112,53 @@
             android:text="@string/register_button" />
 
         <TextView
+            android:id="@+id/paymentsTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:text="@string/payments_title"
+            android:textSize="16sp" />
+
+        <EditText
+            android:id="@+id/paymentAmountInput"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:hint="@string/payment_amount_hint"
+            android:inputType="number" />
+
+        <EditText
+            android:id="@+id/paymentDescriptionInput"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:hint="@string/payment_description_hint"
+            android:inputType="textCapSentences" />
+
+        <EditText
+            android:id="@+id/paymentProviderIdInput"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:hint="@string/payment_provider_id_hint"
+            android:inputType="text" />
+
+        <EditText
+            android:id="@+id/paymentBookingIdInput"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:hint="@string/payment_booking_id_hint"
+            android:inputType="text" />
+
+        <Button
+            android:id="@+id/createPaymentLinkButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:text="@string/payment_create_label" />
+
+        <TextView
             android:id="@+id/legalTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -146,13 +193,5 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:text="@string/about_label" />
-
-        <Button
-            android:id="@+id/squareConnectButton"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:enabled="false"
-            android:text="@string/square_connect_label" />
     </LinearLayout>
 </ScrollView>

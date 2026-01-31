@@ -33,7 +33,11 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
         val termsButton = findViewById<Button>(R.id.termsButton)
         val contactButton = findViewById<Button>(R.id.contactButton)
         val aboutButton = findViewById<Button>(R.id.aboutButton)
-        val squareConnectButton = findViewById<Button>(R.id.squareConnectButton)
+        val paymentAmountInput = findViewById<EditText>(R.id.paymentAmountInput)
+        val paymentDescriptionInput = findViewById<EditText>(R.id.paymentDescriptionInput)
+        val paymentProviderIdInput = findViewById<EditText>(R.id.paymentProviderIdInput)
+        val paymentBookingIdInput = findViewById<EditText>(R.id.paymentBookingIdInput)
+        val createPaymentLinkButton = findViewById<Button>(R.id.createPaymentLinkButton)
 
         privacyButton.setOnClickListener {
             openUrl(getString(R.string.privacy_policy_url))
@@ -51,11 +55,54 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
             openUrl(getString(R.string.about_url))
         }
 
-        squareConnectButton.setOnClickListener {
-            openSquareConnect()
-        }
+        createPaymentLinkButton.setOnClickListener {
+            listOf(
+                paymentAmountInput,
+                paymentDescriptionInput,
+                paymentProviderIdInput,
+                paymentBookingIdInput,
+            ).forEach { it.error = null }
 
-        updateSquareConnectButtonState(squareConnectButton)
+            val amountText = paymentAmountInput.text?.toString()?.trim().orEmpty()
+            val description = paymentDescriptionInput.text?.toString()?.trim().orEmpty()
+            val providerId = paymentProviderIdInput.text?.toString()?.trim().orEmpty()
+            val bookingId = paymentBookingIdInput.text?.toString()?.trim().orEmpty()
+            val amount = amountText.toLongOrNull()
+
+            var hasPaymentError = false
+
+            if (amount == null || amount <= 0) {
+                paymentAmountInput.error = getString(R.string.payment_amount_required)
+                hasPaymentError = true
+            }
+
+            if (description.isEmpty()) {
+                paymentDescriptionInput.error = getString(R.string.payment_description_required)
+                hasPaymentError = true
+            }
+
+            if (providerId.isEmpty()) {
+                paymentProviderIdInput.error = getString(R.string.payment_provider_required)
+                hasPaymentError = true
+            }
+
+            if (bookingId.isEmpty()) {
+                paymentBookingIdInput.error = getString(R.string.payment_booking_required)
+                hasPaymentError = true
+            }
+
+            if (hasPaymentError) {
+                return@setOnClickListener
+            }
+
+            submitPaymentLink(
+                amount = amount,
+                description = description,
+                providerId = providerId,
+                bookingId = bookingId,
+                createPaymentLinkButton = createPaymentLinkButton,
+            )
+        }
 
         registerButton.setOnClickListener {
             listOf(
@@ -166,37 +213,6 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
         }
     }
 
-    private fun openSquareConnect() {
-        val connectUrl = getString(R.string.square_connect_url)
-        if (connectUrl.isBlank()) {
-            Toast.makeText(this, R.string.square_connect_missing, Toast.LENGTH_SHORT).show()
-            return
-        }
-
-        val applicationId = getSquareApplicationId()
-        if (applicationId.isBlank()) {
-            Toast.makeText(this, R.string.square_config_missing, Toast.LENGTH_SHORT).show()
-            return
-        }
-
-        openUrl(connectUrl)
-    }
-
-    private fun updateSquareConnectButtonState(squareConnectButton: Button) {
-        val connectUrl = getString(R.string.square_connect_url)
-        val applicationId = getSquareApplicationId()
-        squareConnectButton.isEnabled = connectUrl.isNotBlank() && applicationId.isNotBlank()
-    }
-
-    private fun getSquareApplicationId(): String {
-        val environment = BuildConfig.SQUARE_ENVIRONMENT.trim().lowercase()
-        return if (environment == "production") {
-            BuildConfig.SQUARE_PRODUCTION_APPLICATION_ID
-        } else {
-            BuildConfig.SQUARE_SANDBOX_APPLICATION_ID
-        }
-    }
-
     private fun isPasswordValid(password: String): Boolean {
         val hasUppercase = password.any { it.isUpperCase() }
         val hasLowercase = password.any { it.isLowerCase() }
@@ -277,6 +293,96 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
             } finally {
                 connection.disconnect()
             }
+        }
+    }
+
+    private fun submitPaymentLink(
+        amount: Long,
+        description: String,
+        providerId: String,
+        bookingId: String,
+        createPaymentLinkButton: Button,
+    ) {
+        setPaymentButtonLoading(createPaymentLinkButton, true)
+        val endpoint = getString(R.string.payment_link_endpoint)
+        if (endpoint.isBlank()) {
+            setPaymentButtonLoading(createPaymentLinkButton, false)
+            Toast.makeText(this, R.string.payment_link_error, Toast.LENGTH_LONG).show()
+            return
+        }
+
+        val payload = JSONObject().apply {
+            put("amount", amount)
+            put("currency", getString(R.string.payment_currency))
+            put("description", description)
+            put("providerId", providerId)
+            put("bookingId", bookingId)
+        }
+
+        networkExecutor.execute {
+            val connection = (URL(endpoint).openConnection() as HttpURLConnection).apply {
+                requestMethod = "POST"
+                connectTimeout = 15000
+                readTimeout = 15000
+                doOutput = true
+                setRequestProperty("Content-Type", "application/json")
+            }
+
+            try {
+                connection.outputStream.use { outputStream ->
+                    outputStream.write(payload.toString().toByteArray(Charsets.UTF_8))
+                }
+
+                val responseCode = connection.responseCode
+                val responseBody = if (responseCode in 200..299) {
+                    connection.inputStream
+                } else {
+                    connection.errorStream
+                }
+                val rawBody = responseBody?.bufferedReader()?.use { it.readText() }.orEmpty()
+                val responseJson = if (rawBody.isNotBlank()) JSONObject(rawBody) else JSONObject()
+                val success = responseJson.optBoolean("success", false)
+                val checkoutUrl = responseJson.optString("checkoutUrl")
+                val serverError = when {
+                    responseJson.has("error") -> responseJson.optString("error")
+                    responseJson.has("message") -> responseJson.optString("message")
+                    else -> ""
+                }
+
+                runOnUiThread {
+                    setPaymentButtonLoading(createPaymentLinkButton, false)
+                    if (success) {
+                        if (checkoutUrl.isNotBlank()) {
+                            openUrl(checkoutUrl)
+                        } else {
+                            Toast.makeText(this, R.string.payment_link_missing, Toast.LENGTH_LONG).show()
+                        }
+                    } else {
+                        val message = if (serverError.isNotBlank()) {
+                            serverError
+                        } else {
+                            getString(R.string.payment_link_error)
+                        }
+                        Toast.makeText(this, message, Toast.LENGTH_LONG).show()
+                    }
+                }
+            } catch (error: Exception) {
+                runOnUiThread {
+                    setPaymentButtonLoading(createPaymentLinkButton, false)
+                    Toast.makeText(this, R.string.payment_link_error, Toast.LENGTH_LONG).show()
+                }
+            } finally {
+                connection.disconnect()
+            }
+        }
+    }
+
+    private fun setPaymentButtonLoading(createPaymentLinkButton: Button, isLoading: Boolean) {
+        createPaymentLinkButton.isEnabled = !isLoading
+        createPaymentLinkButton.text = if (isLoading) {
+            getString(R.string.payment_link_in_progress)
+        } else {
+            getString(R.string.payment_create_label)
         }
     }
 
