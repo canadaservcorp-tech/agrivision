@@ -68,7 +68,7 @@
     <string name="payment_checkout_title">Square checkout</string>
     <string name="payment_checkout_instructions">Open Square checkout to complete payment, then return here.</string>
     <string name="payment_checkout_open">Open checkout</string>
-    <string name="payment_checkout_done">I'm done</string>
+    <string name="payment_checkout_done">I am done</string>
     <string name="payment_confirmation_title">Payment submitted</string>
     <string name="payment_confirmation_message">We will confirm once the payment is processed.</string>
     <string name="payment_confirmation_payment_id">Payment ID: %1$s</string>
