@@ -21,6 +21,7 @@
     <string name="registration_invalid_email">Enter a valid email address.</string>
     <string name="registration_invalid_phone">Enter a valid phone number.</string>
     <string name="registration_password_short">Password must be at least 8 characters.</string>
+    <string name="registration_password_requirements">Password must include upper, lower, and number.</string>
     <string name="registration_password_mismatch">Passwords do not match.</string>
     <string name="registration_missing_terms">Please accept the terms to continue.</string>
     <string name="registration_error_generic">Please fix the highlighted fields.</string>

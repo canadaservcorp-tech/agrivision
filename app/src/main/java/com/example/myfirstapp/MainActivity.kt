@@ -103,6 +103,9 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
             } else if (password.length < 8) {
                 passwordInput.error = getString(R.string.registration_password_short)
                 hasError = true
+            } else if (!isPasswordValid(password)) {
+                passwordInput.error = getString(R.string.registration_password_requirements)
+                hasError = true
             }
 
             if (confirmPassword.isEmpty()) {
@@ -136,5 +139,12 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
         } else {
             Toast.makeText(this, R.string.link_open_error, Toast.LENGTH_SHORT).show()
         }
+    }
+
+    private fun isPasswordValid(password: String): Boolean {
+        val hasUppercase = password.any { it.isUpperCase() }
+        val hasLowercase = password.any { it.isLowerCase() }
+        val hasNumber = password.any { it.isDigit() }
+        return hasUppercase && hasLowercase && hasNumber
     }
 }
