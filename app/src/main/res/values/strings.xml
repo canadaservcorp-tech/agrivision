@@ -83,5 +83,5 @@
     <string name="payment_status_no_id">Payment ID is missing.</string>
     <string name="payment_status_spinner">Checking payment status</string>
     <string name="payment_check_status">Check payment status</string>
-    <string name="payment_status_endpoint">https://mytrouvepro-production.up.railway.app/api/payments/%1$s/status</string>
+    <string name="payment_status_endpoint">https://mytrouvepro-production.up.railway.app/api/payment/%1$s</string>
 </resources>
