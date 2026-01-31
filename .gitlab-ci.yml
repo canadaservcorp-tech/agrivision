@@ -52,7 +52,7 @@ ensureContainer:
 
 buildDebug:
   stage: build
-  image: ghcr.io/cirruslabs/android-sdk:33
+  image: ghcr.io/cirruslabs/android-sdk:34
   before_script:
     - chmod +x gradlew
     - "export VERSION_CODE=$(($CI_PIPELINE_IID)) && echo $VERSION_CODE"
