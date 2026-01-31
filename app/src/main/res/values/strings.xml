@@ -26,6 +26,9 @@
     <string name="registration_missing_terms">Please accept the terms to continue.</string>
     <string name="registration_error_generic">Please fix the highlighted fields.</string>
     <string name="registration_success">Registration submitted. We will contact you.</string>
+    <string name="registration_in_progress">Registering...</string>
+    <string name="registration_connection_error">Connection error. Try again.</string>
+    <string name="registration_unexpected_error">Registration failed. Please try again.</string>
     <string name="legal_title">Learn more</string>
     <string name="privacy_policy_label">Privacy Policy</string>
     <string name="terms_of_service_label">Terms of Service</string>
@@ -33,6 +36,7 @@
     <string name="about_label">About</string>
     <string name="frontend_url">https://mytrouvepro11.netlify.app</string>
     <string name="backend_url">https://mytrouvepro-production.up.railway.app</string>
+    <string name="registration_endpoint">https://mytrouvepro-production.up.railway.app/api/auth/register</string>
     <string name="privacy_policy_url">https://mytrouvepro11.netlify.app/privacy</string>
     <string name="terms_of_service_url">https://mytrouvepro11.netlify.app/terms</string>
     <string name="contact_url">https://mytrouvepro11.netlify.app/contact</string>

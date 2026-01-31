@@ -9,8 +9,13 @@ import android.widget.CheckBox
 import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import java.net.HttpURLConnection
+import java.net.URL
+import java.util.concurrent.Executors
+import org.json.JSONObject
 
 class MainActivity : AppCompatActivity(R.layout.activity_main) {
+    private val networkExecutor = Executors.newSingleThreadExecutor()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -128,8 +133,21 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
                 return@setOnClickListener
             }
 
-            Toast.makeText(this, R.string.registration_success, Toast.LENGTH_LONG).show()
+            submitRegistration(
+                fullName = fullName,
+                email = email,
+                phone = phone,
+                service = service,
+                businessName = business,
+                password = password,
+                registerButton = registerButton,
+            )
         }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        networkExecutor.shutdown()
     }
 
     private fun openUrl(url: String) {
@@ -146,5 +164,98 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
         val hasLowercase = password.any { it.isLowerCase() }
         val hasNumber = password.any { it.isDigit() }
         return hasUppercase && hasLowercase && hasNumber
+    }
+
+    private fun submitRegistration(
+        fullName: String,
+        email: String,
+        phone: String,
+        service: String,
+        businessName: String,
+        password: String,
+        registerButton: Button,
+    ) {
+        setRegisterButtonLoading(registerButton, true)
+        val endpoint = getString(R.string.registration_endpoint)
+        val payload = JSONObject().apply {
+            put("fullName", fullName)
+            put("email", email)
+            put("phone", phone)
+            put("service", service)
+            put("businessName", businessName)
+            put("password", password)
+            put("role", "provider")
+        }
+
+        networkExecutor.execute {
+            val connection = (URL(endpoint).openConnection() as HttpURLConnection).apply {
+                requestMethod = "POST"
+                connectTimeout = 15000
+                readTimeout = 15000
+                doOutput = true
+                setRequestProperty("Content-Type", "application/json")
+            }
+
+            try {
+                connection.outputStream.use { outputStream ->
+                    outputStream.write(payload.toString().toByteArray(Charsets.UTF_8))
+                }
+
+                val responseCode = connection.responseCode
+                val responseBody = if (responseCode in 200..299) {
+                    connection.inputStream
+                } else {
+                    connection.errorStream
+                }
+                val rawBody = responseBody?.bufferedReader()?.use { it.readText() }.orEmpty()
+                val responseJson = if (rawBody.isNotBlank()) JSONObject(rawBody) else JSONObject()
+                val success = responseJson.optBoolean("success", false)
+                val token = responseJson.optString("token", "")
+                val serverError = when {
+                    responseJson.has("error") -> responseJson.optString("error")
+                    responseJson.has("message") -> responseJson.optString("message")
+                    else -> ""
+                }
+
+                runOnUiThread {
+                    setRegisterButtonLoading(registerButton, false)
+                    if (success) {
+                        saveAuthToken(token)
+                        Toast.makeText(this, R.string.registration_success, Toast.LENGTH_LONG).show()
+                    } else {
+                        val message = if (serverError.isNotBlank()) {
+                            serverError
+                        } else {
+                            getString(R.string.registration_unexpected_error)
+                        }
+                        Toast.makeText(this, message, Toast.LENGTH_LONG).show()
+                    }
+                }
+            } catch (error: Exception) {
+                runOnUiThread {
+                    setRegisterButtonLoading(registerButton, false)
+                    Toast.makeText(this, R.string.registration_connection_error, Toast.LENGTH_LONG).show()
+                }
+            } finally {
+                connection.disconnect()
+            }
+        }
+    }
+
+    private fun setRegisterButtonLoading(registerButton: Button, isLoading: Boolean) {
+        registerButton.isEnabled = !isLoading
+        registerButton.text = if (isLoading) {
+            getString(R.string.registration_in_progress)
+        } else {
+            getString(R.string.register_button)
+        }
+    }
+
+    private fun saveAuthToken(token: String) {
+        if (token.isBlank()) {
+            return
+        }
+        val prefs = getSharedPreferences("auth", MODE_PRIVATE)
+        prefs.edit().putString("token", token).apply()
     }
 }
