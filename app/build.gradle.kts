@@ -67,7 +67,7 @@ kotlin {
 
 dependencies {
     implementation("androidx.appcompat:appcompat:1.6.1")
-    implementation("androidx.browser:browser:1.7.0")
+    implementation("androidx.browser:browser:1.5.0")
     implementation("androidx.constraintlayout:constraintlayout:2.1.4")
 
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.9.3")
