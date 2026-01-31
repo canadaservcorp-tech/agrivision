@@ -3,9 +3,9 @@
 FROM eclipse-temurin:17
 
 # Just matched `app/build.gradle.kts`
-ENV ANDROID_COMPILE_SDK "34"
+ENV ANDROID_COMPILE_SDK "33"
 # Just matched `app/build.gradle.kts`
-ENV ANDROID_BUILD_TOOLS "34.0.0"
+ENV ANDROID_BUILD_TOOLS "33.0.2"
 
 ENV ANDROID_HOME /android-sdk-linux
 ENV PATH="${PATH}:/android-sdk-linux/platform-tools/"

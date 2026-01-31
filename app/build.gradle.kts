@@ -22,11 +22,11 @@ fun Project.configValue(name: String, default: String = ""): String {
 
 android {
     namespace = "com.example.myfirstapp"
-    compileSdk = 34
+    compileSdk = 33
     defaultConfig {
         applicationId = "com.example.myfirstapp"
         minSdk = 23
-        targetSdk = 34
+        targetSdk = 33
         versionCode = 1
         versionName = "1.0-${System.getenv("VERSION_SHA")}"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
@@ -67,7 +67,7 @@ kotlin {
 
 dependencies {
     implementation("androidx.appcompat:appcompat:1.6.1")
-    implementation("androidx.browser:browser:1.10.0-alpha02")
+    implementation("androidx.browser:browser:1.7.0")
     implementation("androidx.constraintlayout:constraintlayout:2.1.4")
 
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.9.3")
