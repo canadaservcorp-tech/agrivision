@@ -404,6 +404,8 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
             put("amount", amount)
             put("currency", getString(R.string.payment_currency))
             put("description", description)
+            put("serviceName", description)
+            put("service", description)
             put("providerId", providerId)
             put("bookingId", bookingId)
         }
