@@ -43,12 +43,20 @@
     <string name="about_url">https://mytrouvepro11.netlify.app/about</string>
     <string name="link_open_error">Unable to open link.</string>
     <string name="payments_title">Payments</string>
-    <string name="payment_amount_hint">Amount (CAD cents)</string>
+    <string name="payment_amount_hint">Subtotal (CAD)</string>
+    <string name="payment_tps_default">TPS (5%): CAD 0.00</string>
+    <string name="payment_tvq_default">TVQ (9.975%): CAD 0.00</string>
+    <string name="payment_total_default">Total: CAD 0.00</string>
+    <string name="payment_cents_default">Amount to charge: 0 cents</string>
+    <string name="payment_tps_label">TPS (5%%): %1$s</string>
+    <string name="payment_tvq_label">TVQ (9.975%%): %1$s</string>
+    <string name="payment_total_label">Total: %1$s</string>
+    <string name="payment_cents_label">Amount to charge: %1$d cents</string>
     <string name="payment_description_hint">Description</string>
     <string name="payment_provider_id_hint">Provider ID</string>
     <string name="payment_booking_id_hint">Booking ID</string>
     <string name="payment_create_label">Create payment link</string>
-    <string name="payment_amount_required">Enter an amount in cents.</string>
+    <string name="payment_amount_required">Enter a valid subtotal amount.</string>
     <string name="payment_description_required">Description is required.</string>
     <string name="payment_provider_required">Provider ID is required.</string>
     <string name="payment_booking_required">Booking ID is required.</string>
@@ -57,4 +65,12 @@
     <string name="payment_link_missing">Payment link is missing.</string>
     <string name="payment_currency">CAD</string>
     <string name="payment_link_endpoint">https://mytrouvepro-production.up.railway.app/api/create-payment-link</string>
+    <string name="payment_checkout_title">Square checkout</string>
+    <string name="payment_checkout_done">I'm done</string>
+    <string name="payment_confirmation_title">Payment submitted</string>
+    <string name="payment_confirmation_message">We will confirm once the payment is processed.</string>
+    <string name="payment_confirmation_payment_id">Payment ID: %1$s</string>
+    <string name="payment_confirmation_booking_id">Booking ID: %1$s</string>
+    <string name="payment_confirmation_amount">Amount: %1$s</string>
+    <string name="payment_confirmation_done">Back to home</string>
 </resources>

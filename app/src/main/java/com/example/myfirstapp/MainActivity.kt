@@ -3,12 +3,18 @@ package com.example.myfirstapp
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.Patterns
 import android.widget.Button
 import android.widget.CheckBox
 import android.widget.EditText
+import android.widget.TextView
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import java.math.BigDecimal
+import java.math.RoundingMode
 import java.net.HttpURLConnection
 import java.net.URL
 import java.util.concurrent.Executors
@@ -16,6 +22,19 @@ import org.json.JSONObject
 
 class MainActivity : AppCompatActivity(R.layout.activity_main) {
     private val networkExecutor = Executors.newSingleThreadExecutor()
+    private val tpsRate = BigDecimal("0.05")
+    private val tvqRate = BigDecimal("0.09975")
+    private val hundred = BigDecimal("100")
+    private val paymentCheckoutLauncher =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            val data = result.data
+            val paymentId = data?.getStringExtra(PaymentCheckoutActivity.EXTRA_PAYMENT_ID).orEmpty()
+            val bookingId = data?.getStringExtra(PaymentCheckoutActivity.EXTRA_BOOKING_ID).orEmpty()
+            val amountCents = data?.getLongExtra(PaymentCheckoutActivity.EXTRA_AMOUNT_CENTS, 0L) ?: 0L
+            savePaymentId(paymentId, bookingId, amountCents)
+            val intent = PaymentConfirmationActivity.newIntent(this, paymentId, bookingId, amountCents)
+            startActivity(intent)
+        }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -33,6 +52,10 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
         val termsButton = findViewById<Button>(R.id.termsButton)
         val contactButton = findViewById<Button>(R.id.contactButton)
         val aboutButton = findViewById<Button>(R.id.aboutButton)
+        val paymentTpsLabel = findViewById<TextView>(R.id.paymentTpsLabel)
+        val paymentTvqLabel = findViewById<TextView>(R.id.paymentTvqLabel)
+        val paymentTotalLabel = findViewById<TextView>(R.id.paymentTotalLabel)
+        val paymentCentsLabel = findViewById<TextView>(R.id.paymentCentsLabel)
         val paymentAmountInput = findViewById<EditText>(R.id.paymentAmountInput)
         val paymentDescriptionInput = findViewById<EditText>(R.id.paymentDescriptionInput)
         val paymentProviderIdInput = findViewById<EditText>(R.id.paymentProviderIdInput)
@@ -55,6 +78,25 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
             openUrl(getString(R.string.about_url))
         }
 
+        updatePaymentTotalsUI(null, paymentTpsLabel, paymentTvqLabel, paymentTotalLabel, paymentCentsLabel)
+
+        paymentAmountInput.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) = Unit
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) = Unit
+
+            override fun afterTextChanged(s: Editable?) {
+                val totals = calculatePaymentTotals(s?.toString().orEmpty())
+                updatePaymentTotalsUI(
+                    totals,
+                    paymentTpsLabel,
+                    paymentTvqLabel,
+                    paymentTotalLabel,
+                    paymentCentsLabel,
+                )
+            }
+        })
+
         createPaymentLinkButton.setOnClickListener {
             listOf(
                 paymentAmountInput,
@@ -67,11 +109,11 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
             val description = paymentDescriptionInput.text?.toString()?.trim().orEmpty()
             val providerId = paymentProviderIdInput.text?.toString()?.trim().orEmpty()
             val bookingId = paymentBookingIdInput.text?.toString()?.trim().orEmpty()
-            val amount = amountText.toLongOrNull()
+            val totals = calculatePaymentTotals(amountText)
 
             var hasPaymentError = false
 
-            if (amount == null || amount <= 0) {
+            if (totals == null) {
                 paymentAmountInput.error = getString(R.string.payment_amount_required)
                 hasPaymentError = true
             }
@@ -96,7 +138,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
             }
 
             submitPaymentLink(
-                amount = amount,
+                amount = totals.amountCents,
                 description = description,
                 providerId = providerId,
                 bookingId = bookingId,
@@ -218,6 +260,54 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
         val hasLowercase = password.any { it.isLowerCase() }
         val hasNumber = password.any { it.isDigit() }
         return hasUppercase && hasLowercase && hasNumber
+    }
+
+    private fun calculatePaymentTotals(subtotalText: String): PaymentTotals? {
+        val trimmed = subtotalText.trim()
+        if (trimmed.isEmpty()) {
+            return null
+        }
+
+        val subtotal = try {
+            BigDecimal(trimmed)
+        } catch (error: NumberFormatException) {
+            null
+        }
+        if (subtotal == null || subtotal <= BigDecimal.ZERO) {
+            return null
+        }
+
+        val tps = subtotal.multiply(tpsRate)
+        val tvq = subtotal.multiply(tvqRate)
+        val total = subtotal.add(tps).add(tvq)
+        val amountCents = total.multiply(hundred).setScale(0, RoundingMode.HALF_UP).toLong()
+        return PaymentTotals(subtotal, tps, tvq, total, amountCents)
+    }
+
+    private fun updatePaymentTotalsUI(
+        totals: PaymentTotals?,
+        paymentTpsLabel: TextView,
+        paymentTvqLabel: TextView,
+        paymentTotalLabel: TextView,
+        paymentCentsLabel: TextView,
+    ) {
+        if (totals == null) {
+            paymentTpsLabel.text = getString(R.string.payment_tps_default)
+            paymentTvqLabel.text = getString(R.string.payment_tvq_default)
+            paymentTotalLabel.text = getString(R.string.payment_total_default)
+            paymentCentsLabel.text = getString(R.string.payment_cents_default)
+            return
+        }
+
+        paymentTpsLabel.text = getString(R.string.payment_tps_label, formatCurrency(totals.tps))
+        paymentTvqLabel.text = getString(R.string.payment_tvq_label, formatCurrency(totals.tvq))
+        paymentTotalLabel.text = getString(R.string.payment_total_label, formatCurrency(totals.total))
+        paymentCentsLabel.text = getString(R.string.payment_cents_label, totals.amountCents)
+    }
+
+    private fun formatCurrency(value: BigDecimal): String {
+        val rounded = value.setScale(2, RoundingMode.HALF_UP)
+        return "CAD ${rounded.toPlainString()}"
     }
 
     private fun submitRegistration(
@@ -343,6 +433,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
                 val responseJson = if (rawBody.isNotBlank()) JSONObject(rawBody) else JSONObject()
                 val success = responseJson.optBoolean("success", false)
                 val checkoutUrl = responseJson.optString("checkoutUrl")
+                val paymentId = responseJson.optString("paymentId")
                 val serverError = when {
                     responseJson.has("error") -> responseJson.optString("error")
                     responseJson.has("message") -> responseJson.optString("message")
@@ -352,8 +443,16 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
                 runOnUiThread {
                     setPaymentButtonLoading(createPaymentLinkButton, false)
                     if (success) {
+                        savePaymentId(paymentId, bookingId, amount)
                         if (checkoutUrl.isNotBlank()) {
-                            openUrl(checkoutUrl)
+                            val intent = PaymentCheckoutActivity.newIntent(
+                                this,
+                                checkoutUrl,
+                                paymentId,
+                                bookingId,
+                                amount,
+                            )
+                            paymentCheckoutLauncher.launch(intent)
                         } else {
                             Toast.makeText(this, R.string.payment_link_missing, Toast.LENGTH_LONG).show()
                         }
@@ -402,4 +501,24 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
         val prefs = getSharedPreferences("auth", MODE_PRIVATE)
         prefs.edit().putString("token", token).apply()
     }
+
+    private fun savePaymentId(paymentId: String, bookingId: String, amountCents: Long) {
+        if (paymentId.isBlank()) {
+            return
+        }
+        val prefs = getSharedPreferences("payments", MODE_PRIVATE)
+        prefs.edit()
+            .putString("last_payment_id", paymentId)
+            .putString("last_booking_id", bookingId)
+            .putLong("last_amount_cents", amountCents)
+            .apply()
+    }
+
+    private data class PaymentTotals(
+        val subtotal: BigDecimal,
+        val tps: BigDecimal,
+        val tvq: BigDecimal,
+        val total: BigDecimal,
+        val amountCents: Long,
+    )
 }

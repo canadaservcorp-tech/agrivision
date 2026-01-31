@@ -125,7 +125,35 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
             android:hint="@string/payment_amount_hint"
-            android:inputType="number" />
+            android:inputType="numberDecimal" />
+
+        <TextView
+            android:id="@+id/paymentTpsLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="@string/payment_tps_default" />
+
+        <TextView
+            android:id="@+id/paymentTvqLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:text="@string/payment_tvq_default" />
+
+        <TextView
+            android:id="@+id/paymentTotalLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:text="@string/payment_total_default" />
+
+        <TextView
+            android:id="@+id/paymentCentsLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:text="@string/payment_cents_default" />
 
         <EditText
             android:id="@+id/paymentDescriptionInput"
