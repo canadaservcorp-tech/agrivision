@@ -440,6 +440,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
                 val checkoutUrl = responseJson?.optString("checkoutUrl").orEmpty()
                     .ifBlank { paymentLink?.optString("url").orEmpty() }
                 val paymentId = responseJson?.optString("paymentId").orEmpty()
+                    .ifBlank { responseJson?.optString("paymentLinkId").orEmpty() }
                     .ifBlank { paymentLink?.optString("id").orEmpty() }
                 val serverError = when {
                     responseJson?.has("error") == true -> responseJson.optString("error")
