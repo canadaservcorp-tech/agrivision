@@ -1,3 +1,6 @@
+default:
+  image: ghcr.io/cirruslabs/android-sdk:33
+
 stages:
   - environment
   - build
@@ -49,7 +52,6 @@ ensureContainer:
 
 
 .build_job:
-  image: $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG
   stage: build
   before_script:
     - chmod +x gradlew
@@ -80,12 +82,11 @@ buildRelease:
   rules:
     - if: '$CI_COMMIT_BRANCH == "master"'
   script:
-    - bundle exec fastlane buildRelease
+    - ./gradlew assembleRelease
   environment:
     name: production
 
 testDebug:
-  image: $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG
   stage: test
   dependencies:
     - buildDebug
@@ -93,10 +94,9 @@ testDebug:
     - if: '$CI_COMMIT_BRANCH == "master"'
   script:
     - chmod +x gradlew
-    - bundle exec fastlane test
+    - ./gradlew test
 
 .promote_job:
-  image: $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG
   when: manual
   dependencies: [ ]
   before_script:
