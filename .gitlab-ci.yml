@@ -54,6 +54,12 @@ buildDebug:
   extends: .build_job
   script:
     - bundle exec fastlane buildDebug
+  artifacts:
+    name: "mytrouve-pro-debug-$CI_COMMIT_SHORT_SHA"
+    expire_in: 7 days
+    when: always
+    paths:
+      - app/build/outputs/apk/debug/app-debug.apk
 
 buildRelease:
   extends: .build_job
