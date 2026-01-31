@@ -110,13 +110,12 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
             val providerId = paymentProviderIdInput.text?.toString()?.trim().orEmpty()
             val bookingId = paymentBookingIdInput.text?.toString()?.trim().orEmpty()
             val totals = calculatePaymentTotals(amountText)
-
-            var hasPaymentError = false
-
             if (totals == null) {
                 paymentAmountInput.error = getString(R.string.payment_amount_required)
-                hasPaymentError = true
+                return@setOnClickListener
             }
+
+            var hasPaymentError = false
 
             if (description.isEmpty()) {
                 paymentDescriptionInput.error = getString(R.string.payment_description_required)
