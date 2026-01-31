@@ -137,7 +137,8 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
             }
 
             submitPaymentLink(
-                amount = totals.amountCents,
+                subtotal = totals.subtotal,
+                amountCents = totals.amountCents,
                 description = description,
                 providerId = providerId,
                 bookingId = bookingId,
@@ -387,7 +388,8 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
     }
 
     private fun submitPaymentLink(
-        amount: Long,
+        subtotal: BigDecimal,
+        amountCents: Long,
         description: String,
         providerId: String,
         bookingId: String,
@@ -402,7 +404,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
         }
 
         val payload = JSONObject().apply {
-            put("amount", amount)
+            put("amount", subtotal.toDouble())
             put("currency", getString(R.string.payment_currency))
             put("description", description)
             put("serviceName", description)
@@ -449,14 +451,14 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
                 runOnUiThread {
                     setPaymentButtonLoading(createPaymentLinkButton, false)
                     if (success) {
-                        savePaymentId(paymentId, bookingId, amount)
+                        savePaymentId(paymentId, bookingId, amountCents)
                         if (checkoutUrl.isNotBlank()) {
                             val intent = PaymentCheckoutActivity.newIntent(
                                 this,
                                 checkoutUrl,
                                 paymentId,
                                 bookingId,
-                                amount,
+                                amountCents,
                             )
                             paymentCheckoutLauncher.launch(intent)
                         } else {
