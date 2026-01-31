@@ -1,3 +1,4 @@
 <resources>
-    <string name="app_name">My First App</string>
+    <string name="app_name">Mytrouve Pro</string>
+    <string name="logo_content_description">Mytrouve Pro logo</string>
 </resources>
