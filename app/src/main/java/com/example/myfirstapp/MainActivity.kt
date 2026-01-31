@@ -178,7 +178,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
         setRegisterButtonLoading(registerButton, true)
         val endpoint = getString(R.string.registration_endpoint)
         val payload = JSONObject().apply {
-            put("fullName", fullName)
+            put("name", fullName)
             put("email", email)
             put("phone", phone)
             put("service", service)
