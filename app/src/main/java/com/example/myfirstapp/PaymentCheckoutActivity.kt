@@ -1,14 +1,13 @@
 package com.example.myfirstapp
 
-import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
-import android.webkit.WebView
-import android.webkit.WebViewClient
 import android.widget.Button
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.browser.customtabs.CustomTabsIntent
 
 class PaymentCheckoutActivity : AppCompatActivity(R.layout.activity_payment_checkout) {
     companion object {
@@ -33,37 +32,44 @@ class PaymentCheckoutActivity : AppCompatActivity(R.layout.activity_payment_chec
         }
     }
 
-    private lateinit var webView: WebView
+    private var checkoutUrl: String = ""
 
-    @SuppressLint("SetJavaScriptEnabled")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val checkoutUrl = intent.getStringExtra(EXTRA_CHECKOUT_URL).orEmpty()
-        if (checkoutUrl.isBlank()) {
+        val checkoutUrlExtra = intent.getStringExtra(EXTRA_CHECKOUT_URL).orEmpty()
+        if (checkoutUrlExtra.isBlank()) {
             Toast.makeText(this, R.string.payment_link_missing, Toast.LENGTH_LONG).show()
             finish()
             return
         }
 
-        webView = findViewById(R.id.checkoutWebView)
+        checkoutUrl = checkoutUrlExtra
+        val openButton = findViewById<Button>(R.id.checkoutOpenButton)
         val doneButton = findViewById<Button>(R.id.checkoutDoneButton)
 
-        webView.settings.javaScriptEnabled = true
-        webView.settings.domStorageEnabled = true
-        webView.webViewClient = WebViewClient()
-        webView.loadUrl(checkoutUrl)
+        openButton.setOnClickListener {
+            openCheckout()
+        }
 
         doneButton.setOnClickListener {
             finishWithResult()
         }
+
+        openCheckout()
     }
 
     override fun onBackPressed() {
-        if (::webView.isInitialized && webView.canGoBack()) {
-            webView.goBack()
-        } else {
-            finishWithResult()
+        finishWithResult()
+    }
+
+    private fun openCheckout() {
+        val uri = Uri.parse(checkoutUrl)
+        val customTabsIntent = CustomTabsIntent.Builder().build()
+        try {
+            customTabsIntent.launchUrl(this, uri)
+        } catch (error: Exception) {
+            startActivity(Intent(Intent.ACTION_VIEW, uri))
         }
     }
 

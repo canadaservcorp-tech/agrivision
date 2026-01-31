@@ -13,12 +13,19 @@
         android:textSize="18sp"
         android:textStyle="bold" />
 
-    <WebView
-        android:id="@+id/checkoutWebView"
+    <TextView
+        android:id="@+id/checkoutInstructions"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
+        android:layout_height="wrap_content"
         android:layout_marginTop="12dp"
-        android:layout_weight="1" />
+        android:text="@string/payment_checkout_instructions" />
+
+    <Button
+        android:id="@+id/checkoutOpenButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:text="@string/payment_checkout_open" />
 
     <Button
         android:id="@+id/checkoutDoneButton"

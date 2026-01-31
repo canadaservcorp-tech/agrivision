@@ -66,6 +66,8 @@
     <string name="payment_currency">CAD</string>
     <string name="payment_link_endpoint">https://mytrouvepro-production.up.railway.app/api/create-payment-link</string>
     <string name="payment_checkout_title">Square checkout</string>
+    <string name="payment_checkout_instructions">Open Square checkout to complete payment, then return here.</string>
+    <string name="payment_checkout_open">Open checkout</string>
     <string name="payment_checkout_done">I'm done</string>
     <string name="payment_confirmation_title">Payment submitted</string>
     <string name="payment_confirmation_message">We will confirm once the payment is processed.</string>
@@ -73,4 +75,13 @@
     <string name="payment_confirmation_booking_id">Booking ID: %1$s</string>
     <string name="payment_confirmation_amount">Amount: %1$s</string>
     <string name="payment_confirmation_done">Back to home</string>
+    <string name="payment_status_checking">Checking payment status...</string>
+    <string name="payment_status_completed">Payment completed.</string>
+    <string name="payment_status_failed">Payment failed.</string>
+    <string name="payment_status_pending">Payment pending. You can check again.</string>
+    <string name="payment_status_error">Unable to check payment status.</string>
+    <string name="payment_status_no_id">Payment ID is missing.</string>
+    <string name="payment_status_spinner">Checking payment status</string>
+    <string name="payment_check_status">Check payment status</string>
+    <string name="payment_status_endpoint">https://mytrouvepro-production.up.railway.app/api/payments/%1$s/status</string>
 </resources>

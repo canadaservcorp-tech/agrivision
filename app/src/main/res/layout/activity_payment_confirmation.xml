@@ -27,6 +27,28 @@
             android:text="@string/payment_confirmation_message" />
 
         <TextView
+            android:id="@+id/paymentStatusText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:text="@string/payment_status_checking" />
+
+        <ProgressBar
+            android:id="@+id/paymentStatusSpinner"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:contentDescription="@string/payment_status_spinner" />
+
+        <Button
+            android:id="@+id/checkStatusButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:text="@string/payment_check_status"
+            android:visibility="gone" />
+
+        <TextView
             android:id="@+id/paymentConfirmationId"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
