@@ -24,9 +24,11 @@ updateContainer:
   image: docker:24
   services:
     - docker:24-dind
-  only:
-    changes:
-      - Dockerfile
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "master"'
+      changes:
+        - Dockerfile
+    - when: never
 
 ensureContainer:
   extends: .updateContainerJob
@@ -40,9 +42,10 @@ ensureContainer:
     # Skip update container `script` if the container already exists
     # via https://gitlab.com/gitlab-org/gitlab-ce/issues/26866#note_97609397 -> https://stackoverflow.com/a/52077071/796832
     - docker manifest inspect $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG > /dev/null && exit || true
-  except:
-    changes:
-      - Dockerfile
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "master"'
+      when: on_success
+    - when: never
 
 
 .build_job:
