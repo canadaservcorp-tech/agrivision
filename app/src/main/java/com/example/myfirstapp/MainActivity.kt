@@ -351,14 +351,15 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
                     connection.errorStream
                 }
                 val rawBody = responseBody?.bufferedReader()?.use { it.readText() }.orEmpty()
-                val responseJson = if (rawBody.isNotBlank()) JSONObject(rawBody) else JSONObject()
-                val success = responseJson.optBoolean("success", false)
-                val token = responseJson.optString("token", "")
+                val responseJson = parseJsonSafely(rawBody)
+                val success = responseJson?.optBoolean("success", false) ?: false
+                val token = responseJson?.optString("token", "").orEmpty()
                 val serverError = when {
-                    responseJson.has("error") -> responseJson.optString("error")
-                    responseJson.has("message") -> responseJson.optString("message")
+                    responseJson?.has("error") == true -> responseJson.optString("error")
+                    responseJson?.has("message") == true -> responseJson.optString("message")
                     else -> ""
                 }
+                val fallbackError = extractErrorMessage(rawBody)
 
                 runOnUiThread {
                     setRegisterButtonLoading(registerButton, false)
@@ -366,10 +367,10 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
                         saveAuthToken(token)
                         Toast.makeText(this, R.string.registration_success, Toast.LENGTH_LONG).show()
                     } else {
-                        val message = if (serverError.isNotBlank()) {
-                            serverError
-                        } else {
-                            getString(R.string.registration_unexpected_error)
+                        val message = when {
+                            serverError.isNotBlank() -> serverError
+                            fallbackError.isNotBlank() -> fallbackError
+                            else -> getString(R.string.registration_unexpected_error)
                         }
                         Toast.makeText(this, message, Toast.LENGTH_LONG).show()
                     }
@@ -431,15 +432,19 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
                     connection.errorStream
                 }
                 val rawBody = responseBody?.bufferedReader()?.use { it.readText() }.orEmpty()
-                val responseJson = if (rawBody.isNotBlank()) JSONObject(rawBody) else JSONObject()
-                val success = responseJson.optBoolean("success", false)
-                val checkoutUrl = responseJson.optString("checkoutUrl")
-                val paymentId = responseJson.optString("paymentId")
+                val responseJson = parseJsonSafely(rawBody)
+                val success = responseJson?.optBoolean("success", false) ?: false
+                val paymentLink = responseJson?.optJSONObject("paymentLink")
+                val checkoutUrl = responseJson?.optString("checkoutUrl").orEmpty()
+                    .ifBlank { paymentLink?.optString("url").orEmpty() }
+                val paymentId = responseJson?.optString("paymentId").orEmpty()
+                    .ifBlank { paymentLink?.optString("id").orEmpty() }
                 val serverError = when {
-                    responseJson.has("error") -> responseJson.optString("error")
-                    responseJson.has("message") -> responseJson.optString("message")
+                    responseJson?.has("error") == true -> responseJson.optString("error")
+                    responseJson?.has("message") == true -> responseJson.optString("message")
                     else -> ""
                 }
+                val fallbackError = extractErrorMessage(rawBody)
 
                 runOnUiThread {
                     setPaymentButtonLoading(createPaymentLinkButton, false)
@@ -458,10 +463,10 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
                             Toast.makeText(this, R.string.payment_link_missing, Toast.LENGTH_LONG).show()
                         }
                     } else {
-                        val message = if (serverError.isNotBlank()) {
-                            serverError
-                        } else {
-                            getString(R.string.payment_link_error)
+                        val message = when {
+                            serverError.isNotBlank() -> serverError
+                            fallbackError.isNotBlank() -> fallbackError
+                            else -> getString(R.string.payment_link_error)
                         }
                         Toast.makeText(this, message, Toast.LENGTH_LONG).show()
                     }
@@ -501,6 +506,31 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
         }
         val prefs = getSharedPreferences("auth", MODE_PRIVATE)
         prefs.edit().putString("token", token).apply()
+    }
+
+    private fun parseJsonSafely(rawBody: String): JSONObject? {
+        if (rawBody.isBlank()) {
+            return null
+        }
+        return try {
+            JSONObject(rawBody)
+        } catch (error: Exception) {
+            null
+        }
+    }
+
+    private fun extractErrorMessage(rawBody: String): String {
+        if (rawBody.isBlank()) {
+            return ""
+        }
+        val preStart = rawBody.indexOf("<pre>")
+        val preEnd = rawBody.indexOf("</pre>")
+        val candidate = if (preStart >= 0 && preEnd > preStart) {
+            rawBody.substring(preStart + 5, preEnd)
+        } else {
+            rawBody
+        }
+        return candidate.replace(Regex("<[^>]*>"), "").trim()
     }
 
     private fun savePaymentId(paymentId: String, bookingId: String, amountCents: Long) {
