@@ -1,5 +1,7 @@
 [build]
-  publish = "."
+  base = "."
+  command = "echo \"Static site deploy\""
+  publish = "site"
 
 [build.processing]
   skip_processing = false
