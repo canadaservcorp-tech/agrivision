@@ -1,3 +1,6 @@
 <resources>
-    <string name="app_name">My First App</string>
+    <string name="app_name">Agrivision</string>
+    <string name="hero_title">Welcome to Agrivision</string>
+    <string name="hero_subtitle">Monitor fields, track crop health, and make better decisions with real-time insights.</string>
+    <string name="site_status_label">Site status: Online</string>
 </resources>
