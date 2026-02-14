@@ -134,6 +134,25 @@
         flex-wrap: wrap;
       }
 
+      .quick-chips {
+        margin-top: 14px;
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+
+      .chip {
+        display: inline-block;
+        text-decoration: none;
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        padding: 7px 12px;
+        color: var(--primary-dark);
+        font-size: 0.85rem;
+        font-weight: 700;
+      }
+
       .metrics {
         margin: 28px 0 0;
         padding: 0;
@@ -170,6 +189,10 @@
 
       .hero-card h3 {
         margin: 0 0 10px;
+      }
+
+      .hero-card h4 {
+        margin: 14px 0 8px;
       }
 
       .hero-card ul {
@@ -363,6 +386,10 @@
               <a class="btn btn-primary" href="#pricing">View Pricing</a>
               <a class="btn btn-secondary" href="#features">Explore Features</a>
             </div>
+            <div class="quick-chips" aria-label="Quick section access">
+              <a class="chip" href="#features">Features section</a>
+              <a class="chip" href="#languages">Languages section</a>
+            </div>
             <ul class="metrics">
               <li><strong>18%</strong><span>Average yield uplift</span></li>
               <li><strong>25%</strong><span>Lower water usage</span></li>
@@ -370,12 +397,18 @@
             </ul>
           </div>
           <aside class="hero-card" aria-label="Platform overview">
-            <h3>What Agrivision delivers</h3>
+            <h3>Features snapshot</h3>
             <ul>
               <li>Live field health monitoring</li>
               <li>Satellite and weather intelligence</li>
               <li>Task automation for farm teams</li>
               <li>Risk alerts before losses happen</li>
+            </ul>
+            <h4>Languages</h4>
+            <ul>
+              <li>English</li>
+              <li>French</li>
+              <li>Spanish</li>
             </ul>
           </aside>
         </div>
