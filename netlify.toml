@@ -1,7 +1,7 @@
 [build]
-  base = "."
+  base = "site"
   command = "echo \"Static site deploy\""
-  publish = "site"
+  publish = "."
 
 [build.environment]
   NETLIFY_SKIP_INSTALL_DEPS = "true"
