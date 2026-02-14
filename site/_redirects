@@ -1,14 +1,17 @@
 # Canonical host.
 https://www.theagrivision.com/* https://theagrivision.com/:splat 301!
 
+# Canonical homepage URL.
+/             /home            301!
+/index         /home            301!
+/index.html    /home            301!
+/home.html     /home            301!
+
 # Serve homepage content for common entry routes.
-/home       /home/index.html  200
-/home/      /home/index.html  200
-/Home       /home/index.html  200
-/HOME       /home/index.html  200
-/index      /index.html       200
-/index.html /index.html       200
-/            /index.html      200
+/home          /home/index.html 200
+/home/         /home/index.html 200
+/Home          /home/index.html 200
+/HOME          /home/index.html 200
 
 # Fallback for direct deep links.
-/*        /index.html  200
+/*             /home/index.html 200
