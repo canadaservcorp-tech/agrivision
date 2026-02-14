@@ -2,14 +2,14 @@
 https://www.theagrivision.com/* https://theagrivision.com/:splat 301!
 
 # Serve homepage content for every common entry route.
-/             /home/index.html 200
-/index        /home/index.html 200
-/index.html   /home/index.html 200
-/home         /home/index.html 200
-/home/        /home/index.html 200
-/home.html    /home/index.html 200
-/Home         /home/index.html 200
-/HOME         /home/index.html 200
+/             /home/index.html 301!
+/index        /home/index.html 301!
+/index.html   /home/index.html 301!
+/home         /home/index.html 301!
+/home/        /home/index.html 301!
+/home.html    /home/index.html 301!
+/Home         /home/index.html 301!
+/HOME         /home/index.html 301!
 
 # Fallback for any other direct deep link.
 /*            /home/index.html 200
