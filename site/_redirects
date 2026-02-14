@@ -1,0 +1,6 @@
+/home   /            301
+/home/  /            301
+/index  /            301
+
+# Fallback for direct deep links.
+/*      /index.html  200
