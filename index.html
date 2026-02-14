@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Agrivision</title>
+    <style>
+      :root {
+        color-scheme: light;
+        --bg: #f3f7f0;
+        --card: #ffffff;
+        --primary: #2e7d32;
+        --primary-dark: #1b5e20;
+        --text: #182219;
+        --muted: #4f5f50;
+        --shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        font-family: Inter, Arial, Helvetica, sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        display: grid;
+        place-items: center;
+        padding: 24px;
+      }
+
+      .card {
+        width: min(720px, 100%);
+        background: var(--card);
+        border-radius: 16px;
+        padding: 28px;
+        box-shadow: var(--shadow);
+      }
+
+      h1 {
+        margin: 0 0 8px;
+        font-size: clamp(1.8rem, 3.6vw, 2.5rem);
+        color: var(--primary-dark);
+      }
+
+      p {
+        margin: 0;
+        line-height: 1.6;
+        color: var(--muted);
+        font-size: 1rem;
+      }
+
+      .badge {
+        margin-top: 18px;
+        display: inline-block;
+        background: var(--primary);
+        color: #fff;
+        border-radius: 999px;
+        padding: 7px 14px;
+        font-size: 0.9rem;
+        font-weight: 700;
+      }
+    </style>
+  </head>
+  <body>
+    <main class="card">
+      <h1>Welcome to Agrivision</h1>
+      <p>
+        Your site is now live from this repository. Use this page as your
+        homepage and expand it with your full product content.
+      </p>
+      <span class="badge">Site status: online</span>
+    </main>
+  </body>
+</html>
