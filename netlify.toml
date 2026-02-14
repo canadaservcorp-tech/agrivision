@@ -3,5 +3,8 @@
   command = "echo \"Static site deploy\""
   publish = "site"
 
+[build.environment]
+  NETLIFY_SKIP_INSTALL_DEPS = "true"
+
 [build.processing]
   skip_processing = false
