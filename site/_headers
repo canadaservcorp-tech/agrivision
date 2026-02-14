@@ -12,3 +12,6 @@
 
 /home.html
   Cache-Control: no-cache, no-store, must-revalidate
+
+/home/index.html
+  Cache-Control: no-cache, no-store, must-revalidate
