@@ -1,14 +1,501 @@
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Agrivision</title>
-    <meta http-equiv="refresh" content="0; url=/home/index.html" />
-  </head>
-  <body>
-    <script>
-      window.location.replace("/home/index.html");
-    </script>
-  </body>
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Agrivision — AI-Powered Agricultural Monitoring</title>
+  <meta name="description" content="World's largest agricultural disease library with AI-powered crop monitoring. 348+ diseases, IoT sensors, real-time alerts.">
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+  <!-- PayPal -->
+  <script src="https://www.paypal.com/sdk/js?client-id=YOUR_PAYPAL_CLIENT_ID&currency=USD&intent=subscription&vault=true"></script>
+</head>
+<body>
+
+<!-- ═══ NAV ═══ -->
+<nav id="navbar">
+  <div class="nav-inner">
+    <a href="#" class="nav-logo">Agrivision</a>
+    <div class="nav-links" id="navLinks">
+      <a href="#features" data-i18n="nav.features">Features</a>
+      <a href="#diseases" data-i18n="nav.diseases">Disease Library</a>
+      <a href="#languages" data-i18n="nav.languages">Languages</a>
+      <a href="#how" data-i18n="nav.how">How It Works</a>
+      <a href="#pricing" data-i18n="nav.pricing">Pricing</a>
+      <a href="#b2b" data-i18n="nav.b2b">For Companies</a>
+      <a href="#contact" data-i18n="nav.contact">Contact</a>
+      <!-- Language Switcher -->
+      <div class="lang-switcher" id="langSwitcher">
+        <button class="lang-btn active" data-lang="en">EN</button>
+        <button class="lang-btn" data-lang="fr">FR</button>
+        <button class="lang-btn" data-lang="ar">AR</button>
+        <button class="lang-btn" data-lang="tr">TR</button>
+      </div>
+      <!-- Auth Buttons -->
+      <div id="authButtons">
+        <button class="btn-outline-sm" onclick="showModal('login')" data-i18n="nav.login">Sign In</button>
+        <button class="btn-demo-sm" onclick="showModal('signup')" data-i18n="nav.signup">Sign Up Free</button>
+      </div>
+      <div id="userMenu" style="display:none;">
+        <span id="userDisplayName"></span>
+        <button class="btn-outline-sm" onclick="handleLogout()" data-i18n="nav.logout">Logout</button>
+      </div>
+    </div>
+    <button class="mobile-toggle" id="mobileToggle" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+
+<!-- ═══ AD ZONE: TOP BANNER ═══ -->
+<div class="ad-zone" id="adZoneTop" data-slot="top-banner" style="display:none;">
+  <div class="ad-inner" id="adContentTop"></div>
+</div>
+
+<!-- ═══ HERO ═══ -->
+<header class="hero" id="hero">
+  <div class="hero-content">
+    <div class="hero-tag" data-i18n="hero.tag">Precision Agriculture for Modern Farms</div>
+    <h1 data-i18n="hero.title">Grow more with data you can trust</h1>
+    <p data-i18n="hero.desc">AI-powered crop monitoring with the world's largest agricultural disease library. 348+ diseases detected. Real-time IoT sensors. Multilingual support.</p>
+    <div class="hero-buttons">
+      <a href="#pricing" class="btn-demo" data-i18n="hero.pricing">View Pricing</a>
+      <a href="#features" class="btn-outline" data-i18n="hero.features">Explore Features</a>
+      <a href="#diseases" class="btn-outline" data-i18n="hero.library">Disease Library</a>
+    </div>
+    <div class="hero-stats">
+      <div class="stat-card"><div class="num">348+</div><div class="label" data-i18n="hero.stat1">Diseases detected</div></div>
+      <div class="stat-card"><div class="num">18%</div><div class="label" data-i18n="hero.stat2">Average yield uplift</div></div>
+      <div class="stat-card"><div class="num">25%</div><div class="label" data-i18n="hero.stat3">Lower water usage</div></div>
+      <div class="stat-card"><div class="num">6</div><div class="label" data-i18n="hero.stat4">Languages supported</div></div>
+    </div>
+  </div>
+  <div class="hero-visual fade-up">
+    <h3 data-i18n="hero.delivers">What Agrivision delivers</h3>
+    <ul class="deliver-list">
+      <li><span class="dot"></span> <span data-i18n="hero.d1">Live field health monitoring via IoT sensors</span></li>
+      <li><span class="dot"></span> <span data-i18n="hero.d2">AI disease detection — 348+ patterns</span></li>
+      <li><span class="dot"></span> <span data-i18n="hero.d3">Satellite and weather intelligence</span></li>
+      <li><span class="dot"></span> <span data-i18n="hero.d4">Mobile app (iOS & Android)</span></li>
+      <li><span class="dot"></span> <span data-i18n="hero.d5">Real-time soil & environment tracking</span></li>
+      <li><span class="dot"></span> <span data-i18n="hero.d6">Risk alerts before losses happen</span></li>
+    </ul>
+  </div>
+</header>
+
+<!-- ═══ FEATURES ═══ -->
+<section id="features" class="section-white">
+  <div class="section-inner">
+    <div class="section-tag" data-i18n="features.tag">Platform Capabilities</div>
+    <h2 class="section-title" data-i18n="features.title">Everything your farm needs in one system</h2>
+    <p class="section-desc" data-i18n="features.desc">From field sensors to AI diagnostics, Agrivision covers the full crop monitoring lifecycle.</p>
+    <div class="features-grid">
+      <div class="feature-card fade-up">
+        <div class="feature-icon fi-green">🌱</div>
+        <h4 data-i18n="features.f1.title">AI Disease Detection</h4>
+        <p data-i18n="features.f1.desc">Camera modules powered by TensorFlow Lite scan crops for 348+ disease patterns. Identifies issues before they spread.</p>
+      </div>
+      <div class="feature-card fade-up">
+        <div class="feature-icon fi-sand">📡</div>
+        <h4 data-i18n="features.f2.title">IoT Sensor Network</h4>
+        <p data-i18n="features.f2.desc">Raspberry Pi CM4 hardware with DHT22, soil moisture, and ADS1115 sensors. Real-time environmental data from every zone.</p>
+      </div>
+      <div class="feature-card fade-up">
+        <div class="feature-icon fi-accent">🛰️</div>
+        <h4 data-i18n="features.f3.title">Satellite & Weather</h4>
+        <p data-i18n="features.f3.desc">Integrated NDVI satellite imagery and local weather forecasts. Plan irrigation, spraying, and harvesting with precision.</p>
+      </div>
+      <div class="feature-card fade-up">
+        <div class="feature-icon fi-green">📊</div>
+        <h4 data-i18n="features.f4.title">Analytics Dashboard</h4>
+        <p data-i18n="features.f4.desc">Visual charts showing yield trends, sensor history, and crop health scores. Export reports for stakeholders.</p>
+      </div>
+      <div class="feature-card fade-up">
+        <div class="feature-icon fi-sand">🔔</div>
+        <h4 data-i18n="features.f5.title">Smart Alerts</h4>
+        <p data-i18n="features.f5.desc">Push notifications when thresholds are breached — drought stress, pest detection, temperature spikes, equipment issues.</p>
+      </div>
+      <div class="feature-card fade-up">
+        <div class="feature-icon fi-accent">📱</div>
+        <h4 data-i18n="features.f6.title">Mobile App (iOS & Android)</h4>
+        <p data-i18n="features.f6.desc">Full control from your phone. Live sensor data, manual capture trigger, multi-device management across fields.</p>
+      </div>
+      <div class="feature-card fade-up">
+        <div class="feature-icon fi-green">🔄</div>
+        <h4 data-i18n="features.f7.title">OTA Updates</h4>
+        <p data-i18n="features.f7.desc">Remote firmware updates push new AI models to field devices without physical access. Zero downtime.</p>
+      </div>
+      <div class="feature-card fade-up">
+        <div class="feature-icon fi-sand">🌐</div>
+        <h4 data-i18n="features.f8.title">4G LTE Connectivity</h4>
+        <p data-i18n="features.f8.desc">Quectel EC25 modules ensure reliable upload from remote locations. Offline caching, auto-sync when restored.</p>
+      </div>
+      <div class="feature-card fade-up">
+        <div class="feature-icon fi-accent">🗂️</div>
+        <h4 data-i18n="features.f9.title">Multi-Farm Management</h4>
+        <p data-i18n="features.f9.desc">Manage multiple sites from one account. Assign teams, set per-zone alerts, compare performance across regions.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ DISEASE LIBRARY ═══ -->
+<section id="diseases" class="section-sand">
+  <div class="section-inner">
+    <div class="section-tag" data-i18n="diseases.tag">World's Largest Database</div>
+    <h2 class="section-title" data-i18n="diseases.title">Agricultural Disease Library</h2>
+    <p class="section-desc" data-i18n="diseases.desc">348+ scientifically verified diseases across crops, flowers, and leafy greens. Searchable by name, crop, category, or region.</p>
+    <!-- Search & Filters -->
+    <div class="disease-controls">
+      <input type="text" id="diseaseSearch" placeholder="Search diseases..." data-i18n-placeholder="diseases.search" class="disease-search-input">
+      <div class="disease-filters">
+        <select id="filterCategory" class="filter-select">
+          <option value="" data-i18n="diseases.allCat">All Categories</option>
+          <option value="fungal">Fungal</option>
+          <option value="bacterial">Bacterial</option>
+          <option value="viral">Viral</option>
+          <option value="oomycete">Oomycete</option>
+          <option value="nematode">Nematode</option>
+          <option value="deficiency">Deficiency</option>
+        </select>
+        <select id="filterRegion" class="filter-select">
+          <option value="" data-i18n="diseases.allReg">All Regions</option>
+          <option value="global">Global</option>
+          <option value="tropical">Tropical</option>
+          <option value="temperate">Temperate</option>
+          <option value="mediterranean">Mediterranean</option>
+          <option value="arid">Arid / MENA</option>
+        </select>
+        <select id="filterCrop" class="filter-select">
+          <option value="" data-i18n="diseases.allCrop">All Crops</option>
+          <option value="tomato">Tomato</option>
+          <option value="wheat">Wheat</option>
+          <option value="rice">Rice</option>
+          <option value="corn">Corn/Maize</option>
+          <option value="potato">Potato</option>
+          <option value="grape">Grape</option>
+          <option value="citrus">Citrus</option>
+          <option value="banana">Banana</option>
+          <option value="cotton">Cotton</option>
+          <option value="soybean">Soybean</option>
+          <option value="coffee">Coffee</option>
+          <option value="apple">Apple</option>
+          <option value="olive">Olive</option>
+          <option value="date-palm">Date Palm</option>
+        </select>
+      </div>
+    </div>
+    <div class="disease-count"><span id="diseaseCountNum">0</span> <span data-i18n="diseases.found">diseases found</span></div>
+    <div class="disease-grid" id="diseaseGrid"></div>
+    <button class="btn-demo" id="loadMoreDiseases" style="display:none;" data-i18n="diseases.loadMore">Load More</button>
+  </div>
+</section>
+
+<!-- ═══ LANGUAGES ═══ -->
+<section id="languages" class="section-white">
+  <div class="section-inner">
+    <div class="languages-wrap">
+      <div class="lang-info fade-up">
+        <div class="section-tag" data-i18n="lang.tag">Global Reach</div>
+        <h3 class="section-title" data-i18n="lang.title">Built for farmers worldwide</h3>
+        <p data-i18n="lang.desc">Our platform, mobile app, alerts, and reports are fully localized — not just translated, but culturally adapted for each market.</p>
+        <ul class="check-list">
+          <li data-i18n="lang.l1">Full UI translation across app, dashboard, alerts</li>
+          <li data-i18n="lang.l2">Localized disease libraries per region</li>
+          <li data-i18n="lang.l3">Regional weather data integration</li>
+          <li data-i18n="lang.l4">Local currency pricing and invoicing</li>
+          <li data-i18n="lang.l5">RTL support for Arabic interface</li>
+          <li data-i18n="lang.l6">Regional sales representatives</li>
+        </ul>
+      </div>
+      <div class="lang-visual fade-up">
+        <div class="lang-flags">
+          <div class="lang-item"><span class="flag">🇬🇧</span><div><div class="lang-name">English</div><div class="lang-label">Global default</div></div></div>
+          <div class="lang-item"><span class="flag">🇫🇷</span><div><div class="lang-name">Français</div><div class="lang-label">Canada, West Africa</div></div></div>
+          <div class="lang-item"><span class="flag">🇸🇦</span><div><div class="lang-name">العربية</div><div class="lang-label">Middle East & North Africa</div></div></div>
+          <div class="lang-item"><span class="flag">🇹🇷</span><div><div class="lang-name">Türkçe</div><div class="lang-label">Turkey, Central Asia</div></div></div>
+          <div class="lang-item"><span class="flag">🇪🇸</span><div><div class="lang-name">Español</div><div class="lang-label">Latin America</div></div></div>
+          <div class="lang-item"><span class="flag">🇮🇳</span><div><div class="lang-name">हिन्दी</div><div class="lang-label">India</div></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ HOW IT WORKS ═══ -->
+<section id="how" class="section-dark">
+  <div class="section-inner">
+    <div class="section-tag" data-i18n="how.tag">How It Works</div>
+    <h2 class="section-title" data-i18n="how.title">From field to phone in 3 steps</h2>
+    <p class="section-desc" data-i18n="how.desc">Set up once, monitor forever. No IT team required.</p>
+    <div class="steps-grid">
+      <div class="step-card fade-up">
+        <div class="step-num">01</div>
+        <h4 data-i18n="how.s1.title">Install the module</h4>
+        <p data-i18n="how.s1.desc">Mount the Agrivision unit in your field. Flash SD card, connect sensors, power on. Under 30 minutes.</p>
+      </div>
+      <div class="step-card fade-up">
+        <div class="step-num">02</div>
+        <h4 data-i18n="how.s2.title">Connect & configure</h4>
+        <p data-i18n="how.s2.desc">Auto-connects via 4G. Download mobile app, scan QR code, set crop type and alert thresholds.</p>
+      </div>
+      <div class="step-card fade-up">
+        <div class="step-num">03</div>
+        <h4 data-i18n="how.s3.title">Monitor & act</h4>
+        <p data-i18n="how.s3.desc">Real-time data, disease alerts, recommendations. Dashboards, reports, data-driven decisions daily.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ PRICING ═══ -->
+<section id="pricing" class="section-white">
+  <div class="section-inner">
+    <div class="section-tag" data-i18n="pricing.tag">Pricing Plans</div>
+    <h2 class="section-title" data-i18n="pricing.title">Choose the plan that fits your farm</h2>
+    <p class="section-desc" data-i18n="pricing.desc">All plans include hardware, software, and support. No hidden fees.</p>
+    <div class="pricing-grid">
+      <div class="price-card fade-up" data-plan="starter">
+        <h4 data-i18n="pricing.starter.name">Starter</h4>
+        <div class="desc" data-i18n="pricing.starter.desc">For small farms — 1-2 fields</div>
+        <div class="price-amount">$29<span>/mo</span></div>
+        <ul class="price-features">
+          <li data-i18n="pricing.starter.f1">1 monitoring module</li>
+          <li data-i18n="pricing.starter.f2">Mobile app access</li>
+          <li data-i18n="pricing.starter.f3">Basic disease detection</li>
+          <li data-i18n="pricing.starter.f4">Email alerts</li>
+          <li data-i18n="pricing.starter.f5">Monthly reports</li>
+        </ul>
+        <div class="paypal-btn-container" id="paypal-starter"></div>
+        <a href="#contact" class="btn-outline" data-i18n="pricing.getStarted">Get Started</a>
+      </div>
+      <div class="price-card popular fade-up" data-plan="professional">
+        <div class="price-badge" data-i18n="pricing.popular">Most Popular</div>
+        <h4 data-i18n="pricing.pro.name">Professional</h4>
+        <div class="desc" data-i18n="pricing.pro.desc">For medium farms scaling operations</div>
+        <div class="price-amount">$79<span>/mo</span></div>
+        <ul class="price-features">
+          <li data-i18n="pricing.pro.f1">Up to 5 modules</li>
+          <li data-i18n="pricing.pro.f2">Full AI library (348+ diseases)</li>
+          <li data-i18n="pricing.pro.f3">Push & SMS alerts</li>
+          <li data-i18n="pricing.pro.f4">Analytics dashboard</li>
+          <li data-i18n="pricing.pro.f5">Satellite imagery</li>
+          <li data-i18n="pricing.pro.f6">Priority support</li>
+        </ul>
+        <div class="paypal-btn-container" id="paypal-professional"></div>
+        <a href="#contact" class="btn-demo" data-i18n="pricing.getStarted">Get Started</a>
+      </div>
+      <div class="price-card fade-up" data-plan="enterprise">
+        <h4 data-i18n="pricing.ent.name">Enterprise</h4>
+        <div class="desc" data-i18n="pricing.ent.desc">For large operations & franchises</div>
+        <div class="price-amount" data-i18n="pricing.ent.price">Custom</div>
+        <ul class="price-features">
+          <li data-i18n="pricing.ent.f1">Unlimited modules</li>
+          <li data-i18n="pricing.ent.f2">White-label option</li>
+          <li data-i18n="pricing.ent.f3">API access</li>
+          <li data-i18n="pricing.ent.f4">Dedicated account manager</li>
+          <li data-i18n="pricing.ent.f5">Custom integrations</li>
+          <li data-i18n="pricing.ent.f6">SLA guarantee</li>
+        </ul>
+        <a href="#contact" class="btn-outline" data-i18n="pricing.contactSales">Contact Sales</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ B2B SECTION ═══ -->
+<section id="b2b" class="section-sand">
+  <div class="section-inner">
+    <div class="section-tag" data-i18n="b2b.tag">For Agri-Companies</div>
+    <h2 class="section-title" data-i18n="b2b.title">Partner with Agrivision</h2>
+    <p class="section-desc" data-i18n="b2b.desc">Agri-pharma companies, seed producers, and agricultural input providers — reach farmers directly through our platform.</p>
+    <div class="b2b-grid">
+      <div class="b2b-card fade-up">
+        <div class="b2b-icon">🏢</div>
+        <h4 data-i18n="b2b.c1.title">Company Dashboard</h4>
+        <p data-i18n="b2b.c1.desc">Dedicated portal to manage your farmer directory, products, campaigns, and analytics.</p>
+      </div>
+      <div class="b2b-card fade-up">
+        <div class="b2b-icon">📢</div>
+        <h4 data-i18n="b2b.c2.title">Targeted Advertising</h4>
+        <p data-i18n="b2b.c2.desc">Place ads on farmer dashboards, disease alerts, and the mobile app. Pay per impression or click.</p>
+      </div>
+      <div class="b2b-card fade-up">
+        <div class="b2b-icon">🤝</div>
+        <h4 data-i18n="b2b.c3.title">Direct Farmer Access</h4>
+        <p data-i18n="b2b.c3.desc">Chat directly with farmers, send product recommendations based on detected diseases.</p>
+      </div>
+      <div class="b2b-card fade-up">
+        <div class="b2b-icon">📊</div>
+        <h4 data-i18n="b2b.c4.title">Market Intelligence</h4>
+        <p data-i18n="b2b.c4.desc">Aggregated disease trends, regional data, and crop health analytics for your R&D team.</p>
+      </div>
+    </div>
+    <div class="b2b-pricing">
+      <h3 data-i18n="b2b.plans">Company Plans</h3>
+      <div class="b2b-plans-grid">
+        <div class="b2b-plan">
+          <h4>Basic</h4>
+          <div class="price-amount">$299<span>/mo</span></div>
+          <p data-i18n="b2b.plan1">Up to 100 farmer contacts, 5 ad slots, basic analytics</p>
+        </div>
+        <div class="b2b-plan featured">
+          <h4>Growth</h4>
+          <div class="price-amount">$799<span>/mo</span></div>
+          <p data-i18n="b2b.plan2">500 farmer contacts, 20 ad slots, full analytics, direct messaging</p>
+        </div>
+        <div class="b2b-plan">
+          <h4>Enterprise</h4>
+          <div class="price-amount" data-i18n="b2b.plan3price">Custom</div>
+          <p data-i18n="b2b.plan3">Unlimited contacts, white-label, API, dedicated manager</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ AD ZONE: MID-PAGE ═══ -->
+<div class="ad-zone" id="adZoneMid" data-slot="mid-page" style="display:none;">
+  <div class="ad-inner" id="adContentMid"></div>
+</div>
+
+<!-- ═══ CONTACT ═══ -->
+<section id="contact" class="section-white">
+  <div class="section-inner">
+    <div class="section-tag" data-i18n="contact.tag">Get In Touch</div>
+    <h2 class="section-title" data-i18n="contact.title">Ready to transform your farm?</h2>
+    <div class="contact-wrap">
+      <div class="contact-info fade-up">
+        <h3 data-i18n="contact.subtitle">Let's talk agriculture</h3>
+        <p data-i18n="contact.desc">Whether 10 acres or 10,000 — Agrivision scales with you.</p>
+        <div class="contact-detail"><span class="ci">📧</span> info@theagrivision.com</div>
+        <div class="contact-detail"><span class="ci">📞</span> +1 (438) 831-3611</div>
+        <div class="contact-detail"><span class="ci">🌐</span> theagrivision.com</div>
+        <div class="contact-detail"><span class="ci">📍</span> Montreal, Quebec, Canada</div>
+        <div class="team-section">
+          <h4 data-i18n="contact.team">Our Team</h4>
+          <div class="team-member">
+            <strong>Hicham</strong> — <span data-i18n="contact.role1">Founder & CEO</span>
+          </div>
+          <div class="team-member">
+            <strong>Dr. Yousif Shihab</strong> — <span data-i18n="contact.role2">Regional Representative, Middle East</span>
+          </div>
+          <div class="team-member">
+            <strong>Cynthia Zein Eddine</strong> — <span data-i18n="contact.role3">Business Development</span>
+          </div>
+        </div>
+      </div>
+      <div class="contact-form fade-up">
+        <form id="contactForm" name="contact" method="POST" data-netlify="true" netlify-honeypot="bot-field">
+          <input type="hidden" name="form-name" value="contact">
+          <p style="display:none"><input name="bot-field"></p>
+          <div class="form-group">
+            <label data-i18n="contact.name">Full Name</label>
+            <input type="text" name="name" required>
+          </div>
+          <div class="form-group">
+            <label data-i18n="contact.email">Email</label>
+            <input type="email" name="email" required>
+          </div>
+          <div class="form-group">
+            <label data-i18n="contact.type">I am a</label>
+            <select name="type">
+              <option value="farmer" data-i18n="contact.farmer">Farmer</option>
+              <option value="company" data-i18n="contact.company">Agri-Company</option>
+              <option value="student" data-i18n="contact.student">Student / Researcher</option>
+              <option value="investor" data-i18n="contact.investor">Investor</option>
+              <option value="other" data-i18n="contact.other">Other</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label data-i18n="contact.message">Message</label>
+            <textarea name="message" rows="4"></textarea>
+          </div>
+          <button type="submit" class="btn-demo" data-i18n="contact.send">Send Message</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ FOOTER ═══ -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <a href="#" class="nav-logo">Agrivision</a>
+      <p data-i18n="footer.desc">AI-powered precision agriculture. Helping farmers grow smarter, waste less, earn more.</p>
+    </div>
+    <div class="footer-col">
+      <h5 data-i18n="footer.product">Product</h5>
+      <a href="#features" data-i18n="nav.features">Features</a>
+      <a href="#diseases" data-i18n="nav.diseases">Disease Library</a>
+      <a href="#pricing" data-i18n="nav.pricing">Pricing</a>
+      <a href="#how" data-i18n="nav.how">How It Works</a>
+    </div>
+    <div class="footer-col">
+      <h5 data-i18n="footer.company">Company</h5>
+      <a href="#b2b" data-i18n="nav.b2b">For Companies</a>
+      <a href="#contact" data-i18n="nav.contact">Contact</a>
+      <a href="news.html" data-i18n="footer.news">News</a>
+    </div>
+    <div class="footer-col">
+      <h5 data-i18n="footer.connect">Connect</h5>
+      <a href="https://instagram.com/agrivision__" target="_blank">Instagram</a>
+      <a href="mailto:info@theagrivision.com">Email</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>&copy; 2026 Agrivision — Performance Cristal Technologies Avancées S.A.</span>
+    <span>Made in Canada 🇨🇦</span>
+  </div>
+</footer>
+
+<!-- ═══ AUTH MODAL ═══ -->
+<div class="modal-overlay" id="authModal" style="display:none;">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeModal()">&times;</button>
+    <!-- LOGIN -->
+    <div id="loginForm">
+      <h3 data-i18n="auth.loginTitle">Sign In</h3>
+      <div class="form-group"><label>Email</label><input type="email" id="loginEmail"></div>
+      <div class="form-group"><label data-i18n="auth.password">Password</label><input type="password" id="loginPassword"></div>
+      <button class="btn-demo" style="width:100%" onclick="handleLogin()" data-i18n="nav.login">Sign In</button>
+      <p class="modal-switch" data-i18n="auth.noAccount">Don't have an account? <a onclick="showModal('signup')">Sign Up</a></p>
+      <div id="loginError" class="form-error"></div>
+    </div>
+    <!-- SIGNUP -->
+    <div id="signupForm" style="display:none;">
+      <h3 data-i18n="auth.signupTitle">Create Account</h3>
+      <div class="form-group"><label data-i18n="auth.fullName">Full Name</label><input type="text" id="signupName"></div>
+      <div class="form-group"><label>Email</label><input type="email" id="signupEmail"></div>
+      <div class="form-group"><label data-i18n="auth.password">Password</label><input type="password" id="signupPassword"></div>
+      <div class="form-group">
+        <label data-i18n="auth.role">I am a</label>
+        <select id="signupRole">
+          <option value="farmer" data-i18n="contact.farmer">Farmer</option>
+          <option value="student" data-i18n="contact.student">Student / Researcher</option>
+          <option value="company" data-i18n="contact.company">Company</option>
+        </select>
+      </div>
+      <button class="btn-demo" style="width:100%" onclick="handleSignup()" data-i18n="nav.signup">Sign Up Free</button>
+      <p class="modal-switch" data-i18n="auth.hasAccount">Already have an account? <a onclick="showModal('login')">Sign In</a></p>
+      <div id="signupError" class="form-error"></div>
+    </div>
+  </div>
+</div>
+
+<!-- Scripts -->
+<script src="js/i18n.js"></script>
+<script src="js/diseases.js"></script>
+<script src="js/firebase-config.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/paypal.js"></script>
+<script src="js/ad-loader.js"></script>
+<script src="js/main.js"></script>
+</body>
 </html>
