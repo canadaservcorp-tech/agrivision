@@ -179,6 +179,12 @@ section { padding:100px 24px; }
 .b2b-plan-duration { font-size:0.82rem; color:var(--green-700); font-weight:600; margin-top:4px; }
 .b2b-cta { display:flex; justify-content:center; gap:16px; margin-top:32px; }
 
+/* ── CONTACT GRID ── */
+.contact-grid { display:grid; grid-template-columns:1fr; gap:16px; margin:16px 0 24px; }
+.contact-card { background:var(--white); border:1px solid rgba(0,0,0,0.06); border-radius:var(--radius); padding:16px; }
+.contact-card h5 { font-size:0.85rem; color:var(--muted); text-transform:uppercase; letter-spacing:.5px; margin-bottom:8px; }
+@media (min-width: 900px) { .contact-grid { grid-template-columns:1fr 1fr; } }
+
 /* ── AD ZONES ── */
 .ad-zone { max-width:1200px; margin:0 auto; padding:8px 24px; }
 .ad-inner { background:var(--white); border-radius:var(--radius); padding:16px; text-align:center; border:1px solid var(--sand-200); min-height:90px; }
