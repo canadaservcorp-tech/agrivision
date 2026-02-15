@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Agrivision — Modules</title>
+  <meta name="description" content="Agrivision hardware and software modules: Camera SD Installer and Farmer Mobile App. Extend your farm monitoring capabilities.">
+  <link rel="stylesheet" href="css/main.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+  <nav id="navbar">
+    <div class="nav-inner">
+      <a href="index.html" class="nav-logo">Agrivision</a>
+      <div class="nav-links" id="navLinks">
+        <a href="index.html#features" data-i18n="nav.features">Features</a>
+        <a href="index.html#diseases" data-i18n="nav.diseases">Disease Library</a>
+        <a href="index.html#pricing" data-i18n="nav.pricing">Pricing</a>
+        <a href="modules.html" data-i18n="nav.modules" style="color:var(--green-700)">Modules</a>
+        <a href="index.html#b2b" data-i18n="nav.b2b">For Companies</a>
+        <a href="index.html#contact" data-i18n="nav.contact">Contact</a>
+        <div class="lang-switcher" id="langSwitcher">
+          <button class="lang-btn active" data-lang="en">EN</button>
+          <button class="lang-btn" data-lang="fr">FR</button>
+          <button class="lang-btn" data-lang="ar">AR</button>
+          <button class="lang-btn" data-lang="tr">TR</button>
+        </div>
+      </div>
+      <button class="mobile-toggle" id="mobileToggle" aria-label="Menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+
+  <section class="section-white" style="padding-top:120px">
+    <div class="section-inner">
+      <div class="section-tag" data-i18n="modules.tag">Expansion Modules</div>
+      <h1 class="section-title" data-i18n="modules.title">Extend Your Farm Intelligence</h1>
+      <p class="section-desc" data-i18n="modules.desc">Two powerful add-on modules that connect your field hardware to Agrivision's AI platform and put real-time farm data in every farmer's pocket.</p>
+
+      <div class="modules-grid">
+        <div class="module-card">
+          <div class="module-icon">📷</div>
+          <div class="module-badge" data-i18n="modules.coming">Coming Soon</div>
+          <h3 data-i18n="camera.title">Camera SD Card Installer</h3>
+          <p data-i18n="camera.short">Install Agrivision AI software directly onto your field camera via SD card. Links to the disease library and your web dashboard automatically.</p>
+          <ul class="module-features">
+            <li data-i18n="camera.f1">Flash SD card with Agrivision firmware</li>
+            <li data-i18n="camera.f2">Auto-pairs camera to your account via QR code</li>
+            <li data-i18n="camera.f3">AI disease detection runs on-device (TensorFlow Lite)</li>
+            <li data-i18n="camera.f4">Syncs detections to web dashboard and disease library</li>
+            <li data-i18n="camera.f5">OTA updates push new AI models remotely</li>
+          </ul>
+          <a href="camera.html" class="btn-demo" data-i18n="modules.learnMore">Learn More</a>
+        </div>
+
+        <div class="module-card">
+          <div class="module-icon">📱</div>
+          <div class="module-badge" data-i18n="modules.coming">Coming Soon</div>
+          <h3 data-i18n="app.title">Farmer Mobile App</h3>
+          <p data-i18n="app.short">Full farm monitoring from your phone. Receive push notifications, view live camera feeds, check sensor data, and manage your subscription.</p>
+          <ul class="module-features">
+            <li data-i18n="app.f1">Live camera feed and sensor data on mobile</li>
+            <li data-i18n="app.f2">Push notifications for disease alerts and thresholds</li>
+            <li data-i18n="app.f3">Multi-farm and multi-device management</li>
+            <li data-i18n="app.f4">Offline mode with auto-sync when connected</li>
+            <li data-i18n="app.f5">Available on iOS and Android</li>
+          </ul>
+          <a href="app.html" class="btn-demo" data-i18n="modules.learnMore">Learn More</a>
+        </div>
+      </div>
+
+      <div class="modules-integration">
+        <h3 data-i18n="modules.howTitle">How the Modules Connect</h3>
+        <div class="integration-flow">
+          <div class="flow-step">
+            <div class="flow-icon">📷</div>
+            <div class="flow-label" data-i18n="modules.flow1">Camera captures crop images</div>
+          </div>
+          <div class="flow-arrow">&rarr;</div>
+          <div class="flow-step">
+            <div class="flow-icon">🧠</div>
+            <div class="flow-label" data-i18n="modules.flow2">AI analyzes on-device</div>
+          </div>
+          <div class="flow-arrow">&rarr;</div>
+          <div class="flow-step">
+            <div class="flow-icon">☁️</div>
+            <div class="flow-label" data-i18n="modules.flow3">Results sync to cloud</div>
+          </div>
+          <div class="flow-arrow">&rarr;</div>
+          <div class="flow-step">
+            <div class="flow-icon">📱</div>
+            <div class="flow-label" data-i18n="modules.flow4">Farmer gets notified on app</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section-sand">
+    <div class="section-inner" style="text-align:center">
+      <h2 class="section-title" data-i18n="modules.ctaTitle">Ready to Upgrade Your Farm?</h2>
+      <p class="section-desc" style="margin:0 auto 32px" data-i18n="modules.ctaDesc">Both modules are currently in final development. Register your interest and be first to receive access when they launch.</p>
+      <div style="display:flex;gap:16px;justify-content:center;flex-wrap:wrap">
+        <a href="index.html#contact" class="btn-demo" data-i18n="modules.notify">Notify Me at Launch</a>
+        <a href="index.html#pricing" class="btn-outline" data-i18n="hero.pricing">View Pricing</a>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <a href="index.html" class="nav-logo">Agrivision</a>
+        <p data-i18n="footer.desc">AI-powered precision agriculture. Helping farmers grow smarter, waste less, earn more.</p>
+      </div>
+      <div class="footer-col">
+        <h5 data-i18n="footer.product">Product</h5>
+        <a href="index.html#features" data-i18n="nav.features">Features</a>
+        <a href="index.html#diseases" data-i18n="nav.diseases">Disease Library</a>
+        <a href="index.html#pricing" data-i18n="nav.pricing">Pricing</a>
+        <a href="modules.html" data-i18n="nav.modules">Modules</a>
+      </div>
+      <div class="footer-col">
+        <h5 data-i18n="footer.company">Company</h5>
+        <a href="company.html" data-i18n="footer.portal">Company Portal</a>
+        <a href="index.html#contact" data-i18n="nav.contact">Contact</a>
+        <a href="news.html" data-i18n="footer.news">News</a>
+      </div>
+      <div class="footer-col">
+        <h5 data-i18n="footer.connect">Connect</h5>
+        <a href="https://instagram.com/agrivision__" target="_blank">Instagram</a>
+        <a href="mailto:info@theagrivision.com">Email</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>&copy; 2026 Agrivision — Performance Cristal Technologies Avanc&eacute;es S.A.</span>
+      <span>Made in Canada</span>
+    </div>
+  </footer>
+
+  <script src="js/i18n.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>

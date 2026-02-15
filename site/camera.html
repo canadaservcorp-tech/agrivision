@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Agrivision — Camera SD Card Installer</title>
+  <meta name="description" content="Install Agrivision AI software on your field camera via SD card. Disease detection, cloud sync, and OTA updates.">
+  <link rel="stylesheet" href="css/main.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+  <nav id="navbar">
+    <div class="nav-inner">
+      <a href="index.html" class="nav-logo">Agrivision</a>
+      <div class="nav-links" id="navLinks">
+        <a href="index.html#features" data-i18n="nav.features">Features</a>
+        <a href="modules.html" data-i18n="nav.modules" style="color:var(--green-700)">Modules</a>
+        <a href="index.html#pricing" data-i18n="nav.pricing">Pricing</a>
+        <a href="index.html#contact" data-i18n="nav.contact">Contact</a>
+        <div class="lang-switcher" id="langSwitcher">
+          <button class="lang-btn active" data-lang="en">EN</button>
+          <button class="lang-btn" data-lang="fr">FR</button>
+          <button class="lang-btn" data-lang="ar">AR</button>
+          <button class="lang-btn" data-lang="tr">TR</button>
+        </div>
+      </div>
+      <button class="mobile-toggle" id="mobileToggle" aria-label="Menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+
+  <section class="section-white" style="padding-top:120px">
+    <div class="section-inner">
+      <a href="modules.html" class="back-link">&larr; <span data-i18n="camera.back">Back to Modules</span></a>
+      <div class="module-badge" style="margin-top:16px" data-i18n="modules.coming">Coming Soon</div>
+      <h1 class="section-title" style="margin-top:12px" data-i18n="camera.title">Camera SD Card Installer</h1>
+      <p class="section-desc" data-i18n="camera.desc">Transform any compatible field camera into an AI-powered crop monitoring device. Simply flash the SD card, insert it, and your camera becomes part of the Agrivision ecosystem.</p>
+
+      <div class="camera-hero-grid">
+        <div class="camera-hero-info">
+          <h3 data-i18n="camera.whatTitle">What It Does</h3>
+          <p data-i18n="camera.whatDesc">The Camera SD Card Installer writes Agrivision's proprietary firmware onto a standard micro-SD card. Once inserted into a supported camera module, the firmware enables on-device AI disease detection, automatic image capture scheduling, and cloud synchronization via 4G LTE.</p>
+
+          <h3 data-i18n="camera.howTitle">How It Works</h3>
+          <div class="camera-steps">
+            <div class="camera-step">
+              <div class="camera-step-num">1</div>
+              <div>
+                <h4 data-i18n="camera.step1Title">Download &amp; Flash</h4>
+                <p data-i18n="camera.step1Desc">Download the Agrivision SD Card Image from your dashboard. Flash it to a micro-SD card using the installer tool.</p>
+              </div>
+            </div>
+            <div class="camera-step">
+              <div class="camera-step-num">2</div>
+              <div>
+                <h4 data-i18n="camera.step2Title">Insert &amp; Power On</h4>
+                <p data-i18n="camera.step2Desc">Insert the SD card into your camera module. Power on the device — the firmware boots automatically.</p>
+              </div>
+            </div>
+            <div class="camera-step">
+              <div class="camera-step-num">3</div>
+              <div>
+                <h4 data-i18n="camera.step3Title">Pair via QR Code</h4>
+                <p data-i18n="camera.step3Desc">Scan the QR code shown on the camera LED screen (or printed label) with the Agrivision mobile app to link the device to your account.</p>
+              </div>
+            </div>
+            <div class="camera-step">
+              <div class="camera-step-num">4</div>
+              <div>
+                <h4 data-i18n="camera.step4Title">Monitor &amp; Detect</h4>
+                <p data-i18n="camera.step4Desc">The camera captures images on a schedule, runs AI analysis locally, and syncs results to your dashboard and disease library.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="camera-hero-visual">
+          <div class="camera-spec-card">
+            <h4 data-i18n="camera.specTitle">Technical Specifications</h4>
+            <div class="spec-row"><span class="spec-label" data-i18n="camera.specAI">AI Engine</span><span class="spec-value">TensorFlow Lite</span></div>
+            <div class="spec-row"><span class="spec-label" data-i18n="camera.specDiseases">Diseases Detected</span><span class="spec-value">348+</span></div>
+            <div class="spec-row"><span class="spec-label" data-i18n="camera.specConnect">Connectivity</span><span class="spec-value">4G LTE (Quectel EC25)</span></div>
+            <div class="spec-row"><span class="spec-label" data-i18n="camera.specPower">Power</span><span class="spec-value">5V DC / Solar compatible</span></div>
+            <div class="spec-row"><span class="spec-label" data-i18n="camera.specStorage">Local Storage</span><span class="spec-value">SQLite + image cache</span></div>
+            <div class="spec-row"><span class="spec-label" data-i18n="camera.specUpdate">Updates</span><span class="spec-value">OTA (over-the-air)</span></div>
+            <div class="spec-row"><span class="spec-label" data-i18n="camera.specPlatform">Platform</span><span class="spec-value">Raspberry Pi CM4</span></div>
+          </div>
+
+          <div class="camera-download-card">
+            <h4 data-i18n="camera.downloadTitle">Download Installer</h4>
+            <p data-i18n="camera.downloadDesc">The SD card image will be available for download once the module launches. Subscribers will receive access automatically.</p>
+            <button class="btn-demo" disabled style="opacity:0.6;cursor:not-allowed;width:100%" data-i18n="camera.downloadBtn">Download SD Image (Coming Soon)</button>
+            <p class="camera-download-note" data-i18n="camera.downloadNote">Requires active Starter ($49/mo) or Professional ($129/mo) subscription.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section-sand">
+    <div class="section-inner">
+      <h2 class="section-title" data-i18n="camera.libraryTitle">Connected to the Disease Library</h2>
+      <p class="section-desc" data-i18n="camera.libraryDesc">Every detection made by the camera is cross-referenced against Agrivision's database of 2,147 diseases across 156 crop species. Results include treatment recommendations, severity ratings, and historical data.</p>
+      <div class="features-grid" style="max-width:900px">
+        <div class="feature-card">
+          <div class="feature-icon fi-green">🔬</div>
+          <h4 data-i18n="camera.lib1Title">Real-Time Matching</h4>
+          <p data-i18n="camera.lib1Desc">On-device AI identifies disease patterns and matches them to the library in seconds.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon fi-sand">💊</div>
+          <h4 data-i18n="camera.lib2Title">Treatment Plans</h4>
+          <p data-i18n="camera.lib2Desc">Automatic treatment recommendations based on disease type, crop stage, and severity.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon fi-accent">📊</div>
+          <h4 data-i18n="camera.lib3Title">Historical Tracking</h4>
+          <p data-i18n="camera.lib3Desc">All detections logged with timestamps, GPS, and images for trend analysis and insurance reports.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section-white">
+    <div class="section-inner" style="text-align:center">
+      <h2 class="section-title" data-i18n="camera.ctaTitle">Get Notified When It Launches</h2>
+      <p class="section-desc" style="margin:0 auto 32px" data-i18n="camera.ctaDesc">The Camera SD Card Installer is in final hardware testing. Register your interest and be among the first to deploy AI-powered crop monitoring.</p>
+      <div style="display:flex;gap:16px;justify-content:center;flex-wrap:wrap">
+        <a href="index.html#contact" class="btn-demo" data-i18n="modules.notify">Notify Me at Launch</a>
+        <a href="modules.html" class="btn-outline" data-i18n="nav.modules">All Modules</a>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <a href="index.html" class="nav-logo">Agrivision</a>
+        <p data-i18n="footer.desc">AI-powered precision agriculture. Helping farmers grow smarter, waste less, earn more.</p>
+      </div>
+      <div class="footer-col">
+        <h5 data-i18n="footer.product">Product</h5>
+        <a href="index.html#features" data-i18n="nav.features">Features</a>
+        <a href="index.html#diseases" data-i18n="nav.diseases">Disease Library</a>
+        <a href="index.html#pricing" data-i18n="nav.pricing">Pricing</a>
+        <a href="modules.html" data-i18n="nav.modules">Modules</a>
+      </div>
+      <div class="footer-col">
+        <h5 data-i18n="footer.company">Company</h5>
+        <a href="company.html" data-i18n="footer.portal">Company Portal</a>
+        <a href="index.html#contact" data-i18n="nav.contact">Contact</a>
+        <a href="news.html" data-i18n="footer.news">News</a>
+      </div>
+      <div class="footer-col">
+        <h5 data-i18n="footer.connect">Connect</h5>
+        <a href="https://instagram.com/agrivision__" target="_blank">Instagram</a>
+        <a href="mailto:info@theagrivision.com">Email</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>&copy; 2026 Agrivision — Performance Cristal Technologies Avanc&eacute;es S.A.</span>
+      <span>Made in Canada</span>
+    </div>
+  </footer>
+
+  <script src="js/i18n.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>
