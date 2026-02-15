@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Agrivision — News</title>
+  <link rel="stylesheet" href="css/main.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
+  <style>
+    .news-hero{padding:140px 24px 40px;max-width:1200px;margin:0 auto}
+    .news-grid{max-width:1200px;margin:0 auto;display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:20px;padding:0 24px 80px}
+    .news-card{background:var(--white);border:1px solid rgba(0,0,0,0.06);border-radius:var(--radius);padding:20px}
+    .news-tags{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0}
+    .tag{padding:2px 8px;border-radius:12px;font-size:.75rem;background:var(--sand-200)}
+    .filters{max-width:1200px;margin:0 auto 20px;display:flex;gap:10px;padding:0 24px}
+    .filters select{padding:10px 12px;border-radius:8px;border:1.5px solid var(--sand-200);background:#fff}
+  </style>
+</head>
+<body>
+  <nav id="navbar">
+    <div class="nav-inner">
+      <a href="index.html" class="nav-logo">Agrivision</a>
+      <div class="nav-links" id="navLinks">
+        <a href="index.html#features" data-i18n="nav.features">Features</a>
+        <a href="index.html#diseases" data-i18n="nav.diseases">Disease Library</a>
+        <a href="index.html#pricing" data-i18n="nav.pricing">Pricing</a>
+        <a href="company.html" data-i18n="footer.portal">Company Portal</a>
+      </div>
+    </div>
+  </nav>
+
+  <div class="news-hero">
+    <div class="section-tag">News & Updates</div>
+    <h1 class="section-title">Agricultural News, Innovation, Research</h1>
+    <p class="section-desc">Filter by category and country. Admin-published articles will appear here once the backend is deployed.</p>
+  </div>
+
+  <div class="filters">
+    <select><option>All Categories</option><option>Diseases</option><option>Innovation</option><option>Technology</option><option>Climate</option><option>Market</option><option>Policy</option><option>Research</option><option>Organic</option><option>Sustainability</option><option>Livestock</option><option>Aquaculture</option><option>Events</option></select>
+    <select><option>All Countries</option><option>Canada</option><option>USA</option><option>France</option><option>Saudi Arabia</option><option>Turkey</option></select>
+  </div>
+
+  <div class="news-grid">
+    <div class="news-card">
+      <div class="news-tags"><span class="tag">Innovation</span><span class="tag">AI</span></div>
+      <h3>Welcome to Agrivision News</h3>
+      <p>Our admin will publish disease alerts and agricultural innovations here. Subscribers can opt-in for country/category notifications.</p>
+    </div>
+    <div class="news-card">
+      <div class="news-tags"><span class="tag">Diseases</span><span class="tag">Tomato</span></div>
+      <h3>Sample: Late blight rising in early spring</h3>
+      <p>Example placeholder content. Backend API (Railway) will serve live articles in Phase 2.</p>
+    </div>
+  </div>
+
+  <footer>
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <a href="index.html" class="nav-logo">Agrivision</a>
+        <p data-i18n="footer.desc">AI-powered precision agriculture. Helping farmers grow smarter, waste less, earn more.</p>
+      </div>
+      <div class="footer-col">
+        <h5 data-i18n="footer.product">Product</h5>
+        <a href="index.html#features" data-i18n="nav.features">Features</a>
+        <a href="index.html#diseases" data-i18n="nav.diseases">Disease Library</a>
+        <a href="index.html#pricing" data-i18n="nav.pricing">Pricing</a>
+      </div>
+      <div class="footer-col">
+        <h5 data-i18n="footer.company">Company</h5>
+        <a href="company.html" data-i18n="footer.portal">Company Portal</a>
+        <a href="index.html#contact" data-i18n="nav.contact">Contact</a>
+        <a href="news.html" data-i18n="footer.news">News</a>
+      </div>
+      <div class="footer-col">
+        <h5 data-i18n="footer.connect">Connect</h5>
+        <a href="https://instagram.com/agrivision__" target="_blank">Instagram</a>
+        <a href="mailto:info@theagrivision.com">Email</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>&copy; 2026 Agrivision — Performance Cristal Technologies Avancées S.A.</span>
+      <span>Made in Canada 🇨🇦</span>
+    </div>
+  </footer>
+
+  <script src="js/i18n.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => setLanguage(localStorage.getItem('agrivision-lang')||'en'));
+  </script>
+</body>
+</html>
