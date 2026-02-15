@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Agrivision — Company Portal</title>
+  <link rel="stylesheet" href="css/main.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+  <nav id="navbar">
+    <div class="nav-inner">
+      <a href="index.html" class="nav-logo">Agrivision</a>
+      <div class="nav-links" id="navLinks">
+        <a href="index.html#b2b" data-i18n="nav.b2b">For Companies</a>
+        <a href="index.html#features" data-i18n="nav.features">Features</a>
+        <a href="index.html#pricing" data-i18n="nav.pricing">Pricing</a>
+        <a href="news.html" data-i18n="footer.news">News</a>
+      </div>
+    </div>
+  </nav>
+
+  <section class="section-white" style="padding-top:120px">
+    <div class="section-inner">
+      <div class="section-tag" data-i18n="b2b.tag">For Agri-Companies</div>
+      <h1 class="section-title" data-i18n="b2b.title">Partner with Agrivision</h1>
+      <p class="section-desc" data-i18n="b2b.pitch">Traditional agri-marketing reaches 1-2% of farmers. With Agrivision's targeted platform, companies achieve 15-25% conversion rates by reaching the right farmers at the right time with the right products.</p>
+
+      <div class="b2b-grid">
+        <div class="b2b-card"><div class="b2b-icon">🏢</div><h4 data-i18n="b2b.c1.title">Company Dashboard</h4><p data-i18n="b2b.c1.desc">Dedicated portal to manage your farmer directory, products, campaigns, and analytics.</p></div>
+        <div class="b2b-card"><div class="b2b-icon">📢</div><h4 data-i18n="b2b.c2.title">Targeted Advertising</h4><p data-i18n="b2b.c2.desc">Place ads on farmer dashboards, disease alerts, and the mobile app. Pay per impression or click.</p></div>
+        <div class="b2b-card"><div class="b2b-icon">🔍</div><h4 data-i18n="b2b.c5.title">Farmer Directory &amp; Search</h4><p data-i18n="b2b.c5.desc">Search and filter farmers by crop, disease, region, and season. Higher tiers unlock full profiles.</p></div>
+        <div class="b2b-card"><div class="b2b-icon">🗄️</div><h4 data-i18n="b2b.c6.title">Product Catalog</h4><p data-i18n="b2b.c6.desc">Publish product catalogs with disease and crop targeting. Visible to all farmers on the platform.</p></div>
+        <div class="b2b-card"><div class="b2b-icon">🎓</div><h4 data-i18n="b2b.c7.title">Webinars &amp; Training</h4><p data-i18n="b2b.c7.desc">Create webinars and training for farmers. Featured placement for paid tiers. Registration tracking.</p></div>
+        <div class="b2b-card"><div class="b2b-icon">💬</div><h4 data-i18n="b2b.c8.title">Company-Farmer Chat</h4><p data-i18n="b2b.c8.desc">Real-time chat with read receipts and WebSocket notifications. Message limits per tier.</p></div>
+      </div>
+
+      <div class="b2b-pricing">
+        <h3 data-i18n="b2b.plans">Company Plans</h3>
+        <div class="b2b-plans-grid-4">
+          <div class="b2b-plan">
+            <h4 data-i18n="b2b.free.name">Free Trial</h4>
+            <div class="price-amount" data-i18n="b2b.free.price">Free</div>
+            <p class="b2b-plan-duration" data-i18n="b2b.free.duration">1 month trial</p>
+            <ul class="price-features">
+              <li data-i18n="b2b.free.f1">Read-only disease database access</li>
+              <li data-i18n="b2b.free.f2">News &amp; notifications</li>
+              <li data-i18n="b2b.free.f3">Site registration</li>
+              <li data-i18n="b2b.free.f4">No credit card required</li>
+            </ul>
+          </div>
+          <div class="b2b-plan">
+            <h4 data-i18n="b2b.decouverte.name">Découverte</h4>
+            <div class="price-amount">$299<span>/mo</span></div>
+            <ul class="price-features">
+              <li data-i18n="b2b.decouverte.f1">35 direct messages/month</li>
+              <li data-i18n="b2b.decouverte.f2">Farmer directory with filters</li>
+              <li data-i18n="b2b.decouverte.f3">Basic messaging</li>
+              <li data-i18n="b2b.decouverte.f4">Regional farmer access</li>
+            </ul>
+          </div>
+          <div class="b2b-plan featured">
+            <h4 data-i18n="b2b.professionnel.name">Professionnel</h4>
+            <div class="price-amount">$799<span>/mo</span></div>
+            <ul class="price-features">
+              <li data-i18n="b2b.professionnel.f1">100 direct messages/month</li>
+              <li data-i18n="b2b.professionnel.f2">Full farmer profiles</li>
+              <li data-i18n="b2b.professionnel.f3">Real-time sensor data access</li>
+              <li data-i18n="b2b.professionnel.f4">Featured webinars</li>
+              <li data-i18n="b2b.professionnel.f5">Advanced analytics</li>
+            </ul>
+          </div>
+          <div class="b2b-plan">
+            <h4 data-i18n="b2b.entreprise.name">Entreprise</h4>
+            <div class="price-amount">$1,999<span>/mo</span></div>
+            <ul class="price-features">
+              <li data-i18n="b2b.entreprise.f1">Unlimited direct messages</li>
+              <li data-i18n="b2b.entreprise.f2">Dedicated API &amp; CRM integration</li>
+              <li data-i18n="b2b.entreprise.f3">Dedicated account manager</li>
+              <li data-i18n="b2b.entreprise.f4">Crop &amp; disease targeting</li>
+              <li data-i18n="b2b.entreprise.f5">White-label options</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="b2b-cta">
+        <a href="#contact" class="btn-outline" data-i18n="pricing.contactSales">Contact Sales</a>
+        <a href="mailto:info@theagrivision.com" class="btn-demo">Email Us</a>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <a href="index.html" class="nav-logo">Agrivision</a>
+        <p data-i18n="footer.desc">AI-powered precision agriculture. Helping farmers grow smarter, waste less, earn more.</p>
+      </div>
+      <div class="footer-col">
+        <h5 data-i18n="footer.product">Product</h5>
+        <a href="index.html#features" data-i18n="nav.features">Features</a>
+        <a href="index.html#diseases" data-i18n="nav.diseases">Disease Library</a>
+        <a href="index.html#pricing" data-i18n="nav.pricing">Pricing</a>
+      </div>
+      <div class="footer-col">
+        <h5 data-i18n="footer.company">Company</h5>
+        <a href="company.html" data-i18n="footer.portal">Company Portal</a>
+        <a href="index.html#contact" data-i18n="nav.contact">Contact</a>
+        <a href="news.html" data-i18n="footer.news">News</a>
+      </div>
+      <div class="footer-col">
+        <h5 data-i18n="footer.connect">Connect</h5>
+        <a href="https://instagram.com/agrivision__" target="_blank">Instagram</a>
+        <a href="mailto:info@theagrivision.com">Email</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>&copy; 2026 Agrivision — Performance Cristal Technologies Avancées S.A.</span>
+      <span>Made in Canada 🇨🇦</span>
+    </div>
+  </footer>
+
+  <script src="js/i18n.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => setLanguage(localStorage.getItem('agrivision-lang')||'en'));
+  </script>
+</body>
+</html>
