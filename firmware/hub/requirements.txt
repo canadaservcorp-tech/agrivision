@@ -1,0 +1,28 @@
+# AgriVision Central Hub Dependencies
+# Install: pip install -r requirements.txt
+
+# Web server (camera receiver)
+aiohttp==3.9.5
+
+# MQTT communication
+aiomqtt==2.3.0
+
+# HTTP client (cloud sync)
+httpx==0.28.1
+
+# AI inference
+tflite-runtime==2.14.0
+
+# Image processing
+Pillow==11.0.0
+numpy==1.26.4
+
+# Sensors (Raspberry Pi)
+adafruit-circuitpython-dht==4.0.4
+adafruit-circuitpython-mcp3xxx==1.4.17
+
+# GPIO
+RPi.GPIO==0.7.1
+
+# Utils
+python-dotenv==1.0.1

@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Agrivision Custom Motherboard — Board Design</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700;800&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --board: #1a6b3c;
+  --trace: rgba(200,170,80,0.18);
+  --copper: #c8a850;
+  --chip: #16162a;
+  --bg: #0a0a12;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:#e0e0e0;font-family:'Space Grotesk',sans-serif;min-height:100vh;overflow-x:hidden}
+
+.page-bg{position:fixed;inset:0;z-index:0;
+  background:radial-gradient(ellipse at 30% 40%,rgba(26,107,60,0.06)0%,transparent 55%),
+  radial-gradient(ellipse at 70% 60%,rgba(79,195,247,0.04)0%,transparent 50%),var(--bg)}
+
+header{position:relative;z-index:2;text-align:center;padding:36px 20px 16px}
+header h1{font-family:'JetBrains Mono',monospace;font-size:24px;font-weight:800;
+  background:linear-gradient(135deg,#81c784,#4fc3f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;letter-spacing:2px}
+header .sub{color:#666;font-size:11px;font-family:'JetBrains Mono',monospace;margin-top:4px}
+header .dims{display:inline-block;margin-top:8px;padding:4px 14px;border:1px solid #2a2a3e;border-radius:20px;
+  font-family:'JetBrains Mono',monospace;font-size:10px;color:#81c784;letter-spacing:1px}
+
+.main{position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;padding:20px;gap:24px}
+
+/* ====== BOARD ====== */
+.board-area{position:relative;width:720px;max-width:95vw}
+
+.board{
+  position:relative;width:100%;aspect-ratio:1.333;
+  background:
+    repeating-linear-gradient(0deg,transparent,transparent 14px,var(--trace) 14px,var(--trace) 15px),
+    repeating-linear-gradient(90deg,transparent,transparent 14px,var(--trace) 14px,var(--trace) 15px),
+    linear-gradient(145deg,#1f7a45 0%,#166b38 40%,#12582e 100%);
+  border:3px solid #145a30;border-radius:10px;
+  box-shadow:0 0 0 1px rgba(200,170,80,0.15),0 16px 50px rgba(0,0,0,0.6),inset 0 1px 0 rgba(255,255,255,0.04);
+  overflow:visible
+}
+
+/* Mounting holes */
+.mh{position:absolute;width:14px;height:14px;border-radius:50%;
+  background:radial-gradient(circle,#333 38%,var(--copper) 40%,var(--copper) 54%,var(--board) 56%);
+  box-shadow:inset 0 1px 2px rgba(0,0,0,0.5)}
+.mh.a{top:10px;left:10px}.mh.b{top:10px;right:10px}.mh.c{bottom:10px;left:10px}.mh.d{bottom:10px;right:10px}
+
+/* Silk */
+.silk{position:absolute;font-family:'JetBrains Mono',monospace;font-size:5.5px;color:rgba(255,255,255,0.3);letter-spacing:0.8px;pointer-events:none;text-transform:uppercase}
+
+/* ====== COMPONENT BASE ====== */
+.comp{position:absolute;border-radius:3px;cursor:pointer;transition:transform .12s,filter .12s,box-shadow .12s}
+.comp:hover{transform:scale(1.04);filter:brightness(1.2);z-index:10;box-shadow:0 0 16px rgba(255,255,255,0.08)}
+
+/* ====== CM4 SOC ====== */
+.cm4{top:22%;left:30%;width:40%;height:36%;
+  background:linear-gradient(145deg,#1a1a2e,#14142a,#1c1c32);
+  border:1px solid #2a2a40;border-radius:5px;
+  box-shadow:0 3px 16px rgba(0,0,0,0.5),inset 0 1px 0 rgba(255,255,255,0.04);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px}
+.cm4 .t{font-family:'JetBrains Mono',monospace;font-size:10px;color:#81c784;font-weight:700;letter-spacing:2px}
+.cm4 .chip{width:44%;aspect-ratio:1;background:linear-gradient(135deg,#0e0e1a,#16162a);border-radius:3px;
+  border:1px solid #222;margin:4px 0;display:flex;align-items:center;justify-content:center}
+.cm4 .chip span{font-family:'JetBrains Mono',monospace;font-size:6px;color:#444;text-align:center;line-height:1.3}
+.cm4 .s{font-family:'JetBrains Mono',monospace;font-size:7px;color:#555}
+
+/* Mezzanine connector pins */
+.mez{position:absolute;display:flex;gap:1.5px;flex-wrap:wrap}
+.mez.top{top:calc(22% - 5px);left:34%;width:32%}
+.mez.bot{bottom:calc(42% - 5px);left:34%;width:32%}
+.mez .p{width:3px;height:3px;background:var(--copper);border-radius:.5px;box-shadow:0 0 1px rgba(212,168,67,0.3)}
+
+/* ====== PORTS ====== */
+
+/* Camera CSI */
+.p-cam{top:5%;left:5%;width:13%;height:7%;background:linear-gradient(90deg,#2a2a3e,#22223a);border:1px solid #3a3a50}
+.p-cam::after{content:'';position:absolute;top:50%;left:3px;transform:translateY(-50%);width:2px;height:60%;background:#555;border-radius:1px}
+
+/* SIM Card Slot */
+.p-sim{top:5%;left:21%;width:11%;height:5.5%;background:linear-gradient(90deg,#333,#2a2a3e);border:1px solid #444;border-radius:2px}
+.p-sim::before{content:'';position:absolute;top:2px;right:3px;width:40%;height:60%;border:1px solid #555;border-radius:1px}
+
+/* MicroSD 1 — OS Boot */
+.p-sd1{top:14%;left:5%;width:10%;height:5.5%;background:linear-gradient(90deg,#333,#2a2a3e);border:1px solid #444;border-radius:2px 2px 2px 6px}
+
+/* MicroSD 2 — Software Update */
+.p-sd2{top:14%;left:17%;width:10%;height:5.5%;background:linear-gradient(90deg,#333,#2a2a3e);border:1px solid #444;border-radius:2px 2px 2px 6px}
+
+/* USB 2.0 Port */
+.p-usb{top:5%;right:5%;width:8%;height:10%;background:linear-gradient(180deg,#2a2a3e,#1e1e30);border:1px solid #444}
+
+/* I2C Sensor Header */
+.p-i2c{top:22%;left:5%;width:5.5%;height:14%;background:transparent;
+  display:grid;grid-template-columns:repeat(2,1fr);gap:2px;padding:2px}
+.p-i2c .pin{width:100%;aspect-ratio:1;background:var(--copper);border-radius:1px;box-shadow:0 0 1px rgba(212,168,67,0.3)}
+.p-i2c .pin.sda{background:#4fc3f7}
+.p-i2c .pin.scl{background:#4fc3f7}
+.p-i2c .pin.vcc{background:#ef5350}
+.p-i2c .pin.gnd{background:#333}
+
+/* GPIO Sensor Header (rain gauge, DHT, LED) */
+.p-gpio{top:40%;left:5%;width:5.5%;height:18%;background:transparent;
+  display:grid;grid-template-columns:repeat(2,1fr);gap:2px;padding:2px}
+.p-gpio .pin{width:100%;aspect-ratio:1;background:var(--copper);border-radius:1px}
+.p-gpio .pin.gnd{background:#333}
+.p-gpio .pin.pwr{background:#ef5350}
+.p-gpio .pin.sig{background:#ffb74d}
+
+/* SPI — LoRaWAN Header */
+.p-spi{top:62%;left:5%;width:5.5%;height:12%;background:transparent;
+  display:grid;grid-template-columns:repeat(2,1fr);gap:2px;padding:2px}
+.p-spi .pin{width:100%;aspect-ratio:1;background:#b39ddb;border-radius:1px}
+.p-spi .pin.gnd{background:#333}
+
+/* External Solar Panel Connector — XT60/barrel jack */
+.p-solar{bottom:5%;left:5%;width:8%;height:7%;background:linear-gradient(180deg,#3a3520,#2a2818);
+  border:2px solid #c8a850;border-radius:50%;display:flex;align-items:center;justify-content:center}
+.p-solar::after{content:'';width:35%;height:35%;background:#555;border-radius:50%;border:1px solid #777}
+
+/* External Battery Connector — XT30 */
+.p-extbat{bottom:5%;left:16%;width:8%;height:7%;background:linear-gradient(180deg,#3a2020,#2a1818);
+  border:2px solid #ef5350;border-radius:50%;display:flex;align-items:center;justify-content:center}
+.p-extbat::after{content:'';width:35%;height:35%;background:#555;border-radius:50%;border:1px solid #777}
+
+/* Internal Battery Area */
+.p-intbat{bottom:6%;left:28%;width:28%;height:22%;
+  border:2px dashed rgba(255,183,77,0.4);border-radius:6px;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px}
+.p-intbat .bat-icon{font-size:22px;opacity:0.5}
+.p-intbat .bat-txt{font-family:'JetBrains Mono',monospace;font-size:6.5px;color:rgba(255,183,77,0.6);text-align:center;line-height:1.4}
+
+/* DC-DC Converter */
+.p-dcdc{bottom:6%;right:24%;width:10%;height:8%;
+  background:linear-gradient(135deg,#1a1a2e,#222);border:1px solid #333;border-radius:3px;
+  display:flex;align-items:center;justify-content:center}
+.p-dcdc span{font-family:'JetBrains Mono',monospace;font-size:6px;color:#888}
+
+/* MPPT Controller Chip */
+.p-mppt{bottom:16%;right:24%;width:10%;height:6%;
+  background:linear-gradient(135deg,#1a1a2e,#222);border:1px solid #333;border-radius:3px;
+  display:flex;align-items:center;justify-content:center}
+.p-mppt span{font-family:'JetBrains Mono',monospace;font-size:5.5px;color:#888}
+
+/* Status LEDs */
+.leds{position:absolute;top:8%;right:16%;display:flex;gap:5px}
+.led{width:6px;height:6px;border-radius:50%;box-shadow:0 0 4px}
+.led.pwr{background:#4CAF50;box-shadow:0 0 6px #4CAF50}
+.led.net{background:#4fc3f7;box-shadow:0 0 6px #4fc3f7}
+.led.err{background:#ef5350;box-shadow:0 0 4px #ef5350,0 0 0 1px #333}
+.led.act{background:#ffb74d;box-shadow:0 0 6px #ffb74d}
+
+/* Antenna Connector (for 4G) */
+.p-ant{top:18%;right:5%;width:5%;aspect-ratio:1;
+  background:radial-gradient(circle,#555 30%,var(--copper) 32%,var(--copper) 48%,#333 50%);border-radius:50%}
+
+/* Reset Button */
+.p-rst{top:64%;right:6%;width:4%;aspect-ratio:1;
+  background:radial-gradient(circle,#444 50%,#333 52%);border-radius:50%;border:1px solid #555}
+
+/* Power traces (decorative) */
+.trace{position:absolute;background:rgba(239,83,80,0.15);pointer-events:none}
+.trace.h{height:2px;border-radius:1px}
+.trace.v{width:2px;border-radius:1px}
+
+/* ====== CALLOUT LABELS ====== */
+.cl{position:absolute;background:rgba(15,15,25,0.94);border-radius:5px;padding:5px 9px;
+  font-family:'JetBrains Mono',monospace;font-size:8px;white-space:nowrap;
+  box-shadow:0 2px 8px rgba(0,0,0,0.4);border-left:3px solid;cursor:pointer;transition:transform .12s}
+.cl:hover{transform:translateY(-2px)}
+.cl .n{font-weight:700;display:block}
+.cl .d{color:#777;font-size:6.5px;margin-top:1px;display:block}
+
+/* ====== ENCLOSURE OUTLINE ====== */
+.enclosure{position:absolute;inset:-28px;border:2px dashed rgba(129,199,132,0.2);border-radius:16px;pointer-events:none}
+.enc-label{position:absolute;top:-20px;left:50%;transform:translateX(-50%);
+  font-family:'JetBrains Mono',monospace;font-size:9px;color:rgba(129,199,132,0.4);letter-spacing:1px}
+
+/* ====== BOTTOM SECTION ====== */
+.section-title{width:720px;max-width:95vw;font-family:'JetBrains Mono',monospace;font-size:13px;color:#81c784;letter-spacing:2px;margin-top:6px}
+
+.grid{width:720px;max-width:95vw;display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:10px}
+.card{background:rgba(255,255,255,0.025);border:1px solid rgba(255,255,255,0.05);border-radius:8px;padding:12px;transition:border-color .2s}
+.card:hover{border-color:rgba(255,255,255,0.1)}
+.card .ch{display:flex;align-items:center;gap:6px;margin-bottom:5px}
+.card .dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.card .ct{font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:700}
+.card .cb{font-size:10px;color:#888;line-height:1.5}
+.card .cb strong{color:#bbb}
+
+/* Dimension annotations */
+.dim{position:absolute;font-family:'JetBrains Mono',monospace;font-size:8px;color:rgba(129,199,132,0.5);pointer-events:none;display:flex;align-items:center;gap:4px}
+.dim .line{background:rgba(129,199,132,0.2);flex-shrink:0}
+.dim .line.h{height:1px;width:30px}
+.dim .line.v{width:1px;height:30px}
+
+/* Top-view label */
+.view-badge{position:absolute;top:-44px;right:0;font-family:'JetBrains Mono',monospace;
+  font-size:9px;color:#444;border:1px solid #222;padding:3px 10px;border-radius:4px}
+
+footer{position:relative;z-index:2;text-align:center;padding:24px;font-family:'JetBrains Mono',monospace;font-size:8px;color:#333}
+</style>
+</head>
+<body>
+<div class="page-bg"></div>
+
+<header>
+  <h1>AGRIVISION MOTHERBOARD v2.1</h1>
+  <div class="sub">Custom CM4 IO Board — Prototype Design</div>
+  <div class="dims">PCB: 180 × 130mm &nbsp;|&nbsp; Enclosure: 200 × 150 × 75mm IP66</div>
+</header>
+
+<div class="main">
+  <div class="board-area">
+    <!-- Enclosure outline -->
+    <div class="enclosure"></div>
+    <div class="enc-label">IP66 ABS ENCLOSURE — 200 × 150 × 75mm</div>
+    <div class="view-badge">TOP VIEW</div>
+
+    <!-- Dimension annotations -->
+    <div class="dim" style="bottom:-24px;left:0;width:100%">
+      <div class="line h" style="flex:1"></div><span>180mm</span><div class="line h" style="flex:1"></div>
+    </div>
+    <div class="dim" style="right:-50px;top:0;height:100%;flex-direction:column">
+      <div class="line v" style="flex:1"></div><span>130mm</span><div class="line v" style="flex:1"></div>
+    </div>
+
+    <div class="board">
+      <!-- Mounting holes -->
+      <div class="mh a"></div><div class="mh b"></div><div class="mh c"></div><div class="mh d"></div>
+
+      <!-- Silk screen -->
+      <div class="silk" style="top:17%;left:32%">AGRIVISION v2.1</div>
+      <div class="silk" style="top:20%;left:32%">PCTech S.A. 2026</div>
+      <div class="silk" style="top:4.5%;left:6%">CAM CSI</div>
+      <div class="silk" style="top:3.5%;left:22%">SIM</div>
+      <div class="silk" style="top:12.5%;left:5.5%">SD1-OS</div>
+      <div class="silk" style="top:12.5%;left:17.5%">SD2-UPD</div>
+      <div class="silk" style="top:3%;right:5.5%">USB</div>
+      <div class="silk" style="top:21%;left:4%">I2C</div>
+      <div class="silk" style="top:39%;left:3.5%">GPIO</div>
+      <div class="silk" style="top:61%;left:4%">SPI</div>
+      <div class="silk" style="bottom:13%;left:5%">SOLAR IN</div>
+      <div class="silk" style="bottom:13%;left:16%">EXT BATT</div>
+      <div class="silk" style="top:16.5%;right:5%">ANT</div>
+      <div class="silk" style="top:6%;right:17%">PWR NET ERR ACT</div>
+      <div class="silk" style="top:63%;right:5%">RST</div>
+      <div class="silk" style="bottom:14%;right:24%">MPPT</div>
+      <div class="silk" style="bottom:5%;right:25%">5V REG</div>
+
+      <!-- Power traces -->
+      <div class="trace h" style="bottom:10%;left:14%;width:14%"></div>
+      <div class="trace h" style="bottom:8.5%;left:56%;width:15%"></div>
+      <div class="trace v" style="bottom:8%;right:29%;height:22%"></div>
+
+      <!-- ====== COMPONENTS ====== -->
+
+      <!-- CSI Camera Port -->
+      <div class="comp p-cam" title="CSI-2 Camera Port">
+        <span style="font-family:'JetBrains Mono',monospace;font-size:6.5px;color:rgba(255,255,255,0.6);position:absolute;right:6px;top:50%;transform:translateY(-50%)">CSI</span>
+      </div>
+
+      <!-- SIM Card Slot -->
+      <div class="comp p-sim" title="Nano SIM Card">
+        <span style="font-family:'JetBrains Mono',monospace;font-size:6px;color:rgba(255,255,255,0.5);position:absolute;left:4px;top:50%;transform:translateY(-50%)">nSIM</span>
+      </div>
+
+      <!-- MicroSD 1 — OS -->
+      <div class="comp p-sd1" title="MicroSD 1 — OS Boot">
+        <span style="font-family:'JetBrains Mono',monospace;font-size:5.5px;color:rgba(255,255,255,0.5);position:absolute;right:3px;top:50%;transform:translateY(-50%)">μSD</span>
+      </div>
+
+      <!-- MicroSD 2 — Update -->
+      <div class="comp p-sd2" title="MicroSD 2 — Software Update">
+        <span style="font-family:'JetBrains Mono',monospace;font-size:5.5px;color:rgba(255,255,255,0.5);position:absolute;right:3px;top:50%;transform:translateY(-50%)">μSD</span>
+      </div>
+
+      <!-- USB 2.0 -->
+      <div class="comp p-usb" title="USB 2.0 Port">
+        <span style="font-family:'JetBrains Mono',monospace;font-size:6px;color:rgba(255,255,255,0.6);position:absolute;bottom:4px;left:50%;transform:translateX(-50%)">USB</span>
+      </div>
+
+      <!-- I2C Sensor Header -->
+      <div class="comp p-i2c" title="I²C Sensor Bus">
+        <div class="pin vcc"></div><div class="pin sda"></div>
+        <div class="pin gnd"></div><div class="pin scl"></div>
+        <div class="pin vcc"></div><div class="pin sda"></div>
+        <div class="pin gnd"></div><div class="pin scl"></div>
+        <div class="pin vcc"></div><div class="pin sda"></div>
+        <div class="pin gnd"></div><div class="pin scl"></div>
+      </div>
+
+      <!-- GPIO Header -->
+      <div class="comp p-gpio" title="GPIO Sensor Pins">
+        <div class="pin pwr"></div><div class="pin sig"></div>
+        <div class="pin gnd"></div><div class="pin sig"></div>
+        <div class="pin pwr"></div><div class="pin sig"></div>
+        <div class="pin gnd"></div><div class="pin sig"></div>
+        <div class="pin pwr"></div><div class="pin sig"></div>
+        <div class="pin gnd"></div><div class="pin sig"></div>
+      </div>
+
+      <!-- SPI LoRaWAN Header -->
+      <div class="comp p-spi" title="SPI — LoRaWAN Module">
+        <div class="pin"></div><div class="pin"></div>
+        <div class="pin"></div><div class="pin"></div>
+        <div class="pin gnd"></div><div class="pin"></div>
+        <div class="pin"></div><div class="pin gnd"></div>
+      </div>
+
+      <!-- LEDs -->
+      <div class="leds">
+        <div class="led pwr" title="Power"></div>
+        <div class="led net" title="Network"></div>
+        <div class="led err" title="Error"></div>
+        <div class="led act" title="Activity"></div>
+      </div>
+
+      <!-- Antenna Connector -->
+      <div class="comp p-ant" title="4G LTE Antenna U.FL"></div>
+
+      <!-- Reset Button -->
+      <div class="comp p-rst" title="Reset Button"></div>
+
+      <!-- CM4 Module -->
+      <div class="comp cm4" title="Raspberry Pi CM4">
+        <span class="t">CM4</span>
+        <div class="chip"><span>BCM2711<br>4×A72<br>1.5GHz</span></div>
+        <span class="s">4GB · 32GB eMMC · WiFi</span>
+      </div>
+
+      <!-- Mezzanine Pins -->
+      <div class="mez top">
+        <div class="p"></div><div class="p"></div><div class="p"></div><div class="p"></div><div class="p"></div>
+        <div class="p"></div><div class="p"></div><div class="p"></div><div class="p"></div><div class="p"></div>
+        <div class="p"></div><div class="p"></div><div class="p"></div><div class="p"></div><div class="p"></div>
+        <div class="p"></div><div class="p"></div><div class="p"></div><div class="p"></div><div class="p"></div>
+      </div>
+      <div class="mez bot">
+        <div class="p"></div><div class="p"></div><div class="p"></div><div class="p"></div><div class="p"></div>
+        <div class="p"></div><div class="p"></div><div class="p"></div><div class="p"></div><div class="p"></div>
+        <div class="p"></div><div class="p"></div><div class="p"></div><div class="p"></div><div class="p"></div>
+        <div class="p"></div><div class="p"></div><div class="p"></div><div class="p"></div><div class="p"></div>
+      </div>
+
+      <!-- Solar Panel Connector -->
+      <div class="comp p-solar" title="Solar Panel Input (12V)"></div>
+
+      <!-- External Battery Connector -->
+      <div class="comp p-extbat" title="External Battery Port"></div>
+
+      <!-- Internal Battery Area -->
+      <div class="comp p-intbat" title="Internal LiFePO4 Battery">
+        <div class="bat-icon">🔋</div>
+        <div class="bat-txt">LiFePO4 12V 6Ah<br>100×70×50mm<br>INTERNAL BATTERY</div>
+      </div>
+
+      <!-- DC-DC 5V Regulator -->
+      <div class="comp p-dcdc" title="5V DC-DC Step-Down"><span>5V REG</span></div>
+
+      <!-- MPPT Controller -->
+      <div class="comp p-mppt" title="MPPT Solar Charger"><span>MPPT</span></div>
+    </div>
+
+    <!-- ====== CALLOUT LABELS ====== -->
+    <div class="cl" style="top:-16px;left:-110px;border-color:#f48fb1" title="Camera">
+      <span class="n" style="color:#f48fb1">📸 CSI Camera</span>
+      <span class="d">Pi Camera 3 · 12MP + NoIR</span>
+    </div>
+
+    <div class="cl" style="top:16px;left:-100px;border-color:#4dd0e1" title="SIM">
+      <span class="n" style="color:#4dd0e1">📶 Nano SIM</span>
+      <span class="d">4G LTE Internet (Quectel EC25)</span>
+    </div>
+
+    <div class="cl" style="top:60px;left:-110px;border-color:#fff176" title="SD cards">
+      <span class="n" style="color:#fff176">💾 SD Card ×2</span>
+      <span class="d">SD1: OS Boot · SD2: SW Update</span>
+    </div>
+
+    <div class="cl" style="top:-16px;right:-130px;border-color:#ffb74d" title="USB">
+      <span class="n" style="color:#ffb74d">🔌 USB 2.0</span>
+      <span class="d">Debug · Expansion · Dongle</span>
+    </div>
+
+    <div class="cl" style="top:60px;right:-145px;border-color:#4fc3f7" title="I2C">
+      <span class="n" style="color:#4fc3f7">🌡️ I²C Sensors (×4)</span>
+      <span class="d">BME280 · ADS1115 · VEML6075 · BH1750</span>
+    </div>
+
+    <div class="cl" style="top:150px;right:-140px;border-color:#ffb74d" title="GPIO">
+      <span class="n" style="color:#ffb74d">⚡ GPIO Digital</span>
+      <span class="d">Rain gauge · DHT22 · LED · Spare</span>
+    </div>
+
+    <div class="cl" style="top:230px;right:-130px;border-color:#b39ddb" title="SPI">
+      <span class="n" style="color:#b39ddb">📡 SPI LoRaWAN</span>
+      <span class="d">SX1276 · 868/915MHz · TTN</span>
+    </div>
+
+    <div class="cl" style="bottom:60px;left:-120px;border-color:#c8a850" title="Solar">
+      <span class="n" style="color:#c8a850">☀️ Solar Panel IN</span>
+      <span class="d">12-18V · XT60 · Customer choice</span>
+    </div>
+
+    <div class="cl" style="bottom:20px;left:-115px;border-color:#ef5350" title="ExtBatt">
+      <span class="n" style="color:#ef5350">🔋 Ext Battery Port</span>
+      <span class="d">12V · XT30 · Customer choice</span>
+    </div>
+
+    <div class="cl" style="bottom:-14px;left:30%;border-color:#ffb74d" title="IntBatt">
+      <span class="n" style="color:#ffb74d">🔋 Internal Battery</span>
+      <span class="d">LiFePO4 12V 6Ah · 2-3 days backup</span>
+    </div>
+
+    <div class="cl" style="bottom:20px;right:-100px;border-color:#81c784" title="Power">
+      <span class="n" style="color:#81c784">⚡ Power Mgmt</span>
+      <span class="d">MPPT → Battery → 5V Regulator</span>
+    </div>
+
+    <div class="cl" style="top:100px;right:-120px;border-color:#4dd0e1" title="Antenna">
+      <span class="n" style="color:#4dd0e1">📡 4G Antenna</span>
+      <span class="d">U.FL → SMA · External mount</span>
+    </div>
+  </div>
+
+  <!-- ====== SPECS GRID ====== -->
+  <div class="section-title">PORT & CONNECTOR SPECIFICATIONS</div>
+
+  <div class="grid">
+    <div class="card">
+      <div class="ch"><div class="dot" style="background:#f48fb1"></div><span class="ct" style="color:#f48fb1">CSI Camera Slot</span></div>
+      <div class="cb"><strong>15-pin FFC</strong> MIPI CSI-2<br>Pi Camera 3 (12MP Sony IMX708)<br>NoIR + blue filter for NDVI<br>Ribbon cable through enclosure gland</div>
+    </div>
+    <div class="card">
+      <div class="ch"><div class="dot" style="background:#4dd0e1"></div><span class="ct" style="color:#4dd0e1">Nano SIM Slot</span></div>
+      <div class="cb"><strong>Push-push nano SIM</strong> card holder<br>Connected to Quectel EC25 4G LTE<br>Data only — no voice<br>Any carrier SIM (Bell, Rogers, etc.)</div>
+    </div>
+    <div class="card">
+      <div class="ch"><div class="dot" style="background:#fff176"></div><span class="ct" style="color:#fff176">MicroSD ×2</span></div>
+      <div class="cb"><strong>SD1:</strong> OS boot (32GB Class 10)<br><strong>SD2:</strong> Software update slot<br>Insert new SD2 → auto-detects update<br>Also stores offline sensor cache</div>
+    </div>
+    <div class="card">
+      <div class="ch"><div class="dot" style="background:#ffb74d"></div><span class="ct" style="color:#ffb74d">USB 2.0 Port</span></div>
+      <div class="cb"><strong>USB-A</strong> 480Mbps<br>Debug, firmware flash, GPS dongle<br>Accessible through enclosure gland<br>5V 500mA output</div>
+    </div>
+    <div class="card">
+      <div class="ch"><div class="dot" style="background:#4fc3f7"></div><span class="ct" style="color:#4fc3f7">I²C Sensor Header</span></div>
+      <div class="cb"><strong>12-pin (3×4)</strong> — VCC/SDA/SCL/GND<br>BME280 (0x76) temp/hum/pres<br>ADS1115 (0x48) soil moisture ADC<br>VEML6075 (0x10) UV · BH1750 (0x23) light</div>
+    </div>
+    <div class="card">
+      <div class="ch"><div class="dot" style="background:#ffb74d"></div><span class="ct" style="color:#ffb74d">GPIO Digital Header</span></div>
+      <div class="cb"><strong>12-pin (3×4)</strong> — PWR/SIG/GND<br>GPIO17 → rain gauge tipping bucket<br>GPIO4 → DHT22 backup sensor<br>GPIO27 → status LED · GPIO22 → spare</div>
+    </div>
+    <div class="card">
+      <div class="ch"><div class="dot" style="background:#b39ddb"></div><span class="ct" style="color:#b39ddb">SPI LoRaWAN Header</span></div>
+      <div class="cb"><strong>8-pin</strong> SPI0 bus<br>SX1276/RFM95W module<br>NSS→GP25 DIO0→GP4 RST→GP22<br>868MHz (EU) / 915MHz (NA)</div>
+    </div>
+    <div class="card">
+      <div class="ch"><div class="dot" style="background:#c8a850"></div><span class="ct" style="color:#c8a850">Solar Panel Input</span></div>
+      <div class="cb"><strong>XT60 connector</strong> (waterproof cap)<br>Input: 12-18V DC from solar panel<br>Customer chooses panel size (10-50W)<br>Routes through MPPT charge controller</div>
+    </div>
+    <div class="card">
+      <div class="ch"><div class="dot" style="background:#ef5350"></div><span class="ct" style="color:#ef5350">External Battery Port</span></div>
+      <div class="cb"><strong>XT30 connector</strong> (waterproof cap)<br>12V nominal LiFePO4 input<br>Customer chooses capacity (6-100Ah)<br>For large off-grid deployments</div>
+    </div>
+    <div class="card">
+      <div class="ch"><div class="dot" style="background:#ffb74d"></div><span class="ct" style="color:#ffb74d">Internal Battery</span></div>
+      <div class="cb"><strong>LiFePO4 12V 6Ah</strong> (prototype)<br>Size: 100×70×50mm — fits in enclosure<br>Runtime: 2-3 days without sun<br>Self-heating for Quebec winters</div>
+    </div>
+    <div class="card">
+      <div class="ch"><div class="dot" style="background:#81c784"></div><span class="ct" style="color:#81c784">Power Management</span></div>
+      <div class="cb"><strong>MPPT controller</strong> → charges battery<br><strong>DC-DC 5V regulator</strong> → feeds CM4<br>Priority: Solar → Ext Batt → Int Batt<br>Low-battery auto-shutdown at 10.5V</div>
+    </div>
+    <div class="card">
+      <div class="ch"><div class="dot" style="background:#4dd0e1"></div><span class="ct" style="color:#4dd0e1">4G Antenna</span></div>
+      <div class="cb"><strong>U.FL onboard</strong> → SMA bulkhead<br>External antenna through enclosure<br>Omni-directional, weatherproof<br>Fallback: WiFi → LoRaWAN → 4G</div>
+    </div>
+  </div>
+
+  <!-- ENCLOSURE CROSS SECTION -->
+  <div class="section-title" style="margin-top:10px">ENCLOSURE CROSS-SECTION (75mm height)</div>
+
+  <div style="width:720px;max-width:95vw;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.05);border-radius:10px;padding:20px;position:relative">
+    <svg viewBox="0 0 700 200" style="width:100%;font-family:'JetBrains Mono',monospace">
+      <!-- Enclosure outline -->
+      <rect x="50" y="10" width="600" height="180" rx="6" fill="none" stroke="rgba(129,199,132,0.3)" stroke-width="2" stroke-dasharray="6 3"/>
+      <text x="350" y="7" fill="rgba(129,199,132,0.4)" font-size="9" text-anchor="middle">200mm (enclosure width)</text>
+
+      <!-- Height annotation -->
+      <line x1="670" y1="10" x2="670" y2="190" stroke="rgba(129,199,132,0.3)" stroke-width="1"/>
+      <text x="685" y="105" fill="rgba(129,199,132,0.4)" font-size="8" text-anchor="middle" transform="rotate(90 685 105)">75mm</text>
+
+      <!-- Bottom: Internal Battery -->
+      <rect x="70" y="130" width="250" height="55" rx="4" fill="rgba(255,183,77,0.1)" stroke="rgba(255,183,77,0.3)" stroke-width="1"/>
+      <text x="195" y="155" fill="#ffb74d" font-size="9" text-anchor="middle" opacity="0.7">Internal Battery</text>
+      <text x="195" y="170" fill="#ffb74d" font-size="7" text-anchor="middle" opacity="0.5">LiFePO4 12V 6Ah — 100×70×50mm</text>
+
+      <!-- PCB Board -->
+      <rect x="70" y="95" width="560" height="8" rx="1" fill="#1a6b3c" stroke="#145a30" stroke-width="1"/>
+      <text x="350" y="92" fill="rgba(129,199,132,0.5)" font-size="7" text-anchor="middle">PCB — 180×130mm</text>
+
+      <!-- CM4 on top of PCB -->
+      <rect x="210" y="55" width="180" height="38" rx="3" fill="#16162a" stroke="#2a2a40" stroke-width="1"/>
+      <text x="300" y="78" fill="#81c784" font-size="9" text-anchor="middle">CM4 Module</text>
+
+      <!-- DC-DC next to battery -->
+      <rect x="340" y="130" width="80" height="40" rx="2" fill="rgba(129,199,132,0.08)" stroke="rgba(129,199,132,0.2)" stroke-width="1"/>
+      <text x="380" y="153" fill="#888" font-size="7" text-anchor="middle">DC-DC</text>
+      <text x="380" y="163" fill="#888" font-size="7" text-anchor="middle">MPPT</text>
+
+      <!-- Camera ribbon going up -->
+      <rect x="80" y="20" width="8" height="75" rx="1" fill="rgba(244,143,177,0.2)" stroke="rgba(244,143,177,0.3)" stroke-width="1"/>
+      <text x="100" y="50" fill="#f48fb1" font-size="7" opacity="0.7">Camera cable</text>
+
+      <!-- Antenna going up -->
+      <line x1="580" y1="95" x2="580" y2="15" stroke="rgba(77,208,225,0.3)" stroke-width="2"/>
+      <circle cx="580" cy="15" r="4" fill="none" stroke="#4dd0e1" stroke-width="1"/>
+      <text x="555" y="50" fill="#4dd0e1" font-size="7" opacity="0.7">Antenna</text>
+
+      <!-- USB port side -->
+      <rect x="630" y="80" width="20" height="18" rx="1" fill="rgba(255,183,77,0.15)" stroke="rgba(255,183,77,0.3)" stroke-width="1"/>
+      <text x="637" y="74" fill="#ffb74d" font-size="6" opacity="0.7">USB</text>
+
+      <!-- Solar connector bottom left -->
+      <circle cx="460" cy="165" r="10" fill="none" stroke="rgba(200,168,80,0.4)" stroke-width="1.5"/>
+      <text x="460" y="168" fill="#c8a850" font-size="5" text-anchor="middle">XT60</text>
+      <text x="485" y="165" fill="#c8a850" font-size="6" opacity="0.6">Solar</text>
+
+      <!-- Ext battery connector -->
+      <circle cx="540" cy="165" r="10" fill="none" stroke="rgba(239,83,80,0.4)" stroke-width="1.5"/>
+      <text x="540" y="168" fill="#ef5350" font-size="5" text-anchor="middle">XT30</text>
+      <text x="565" y="165" fill="#ef5350" font-size="6" opacity="0.6">Ext Batt</text>
+
+      <!-- Cable glands notation -->
+      <text x="350" y="198" fill="#555" font-size="7" text-anchor="middle">Cables exit through IP68 cable glands (PG7) on enclosure bottom</text>
+    </svg>
+  </div>
+</div>
+
+<footer>
+  AGRIVISION — Performance Cristal Technologies Avancées S.A. — NEQ: 2280629637<br>
+  Custom CM4 IO Board v2.1 — Prototype Design · PCB: 180×130mm · Enclosure: 200×150×75mm IP66
+</footer>
+</body>
+</html>

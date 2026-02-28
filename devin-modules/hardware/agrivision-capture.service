@@ -1,0 +1,23 @@
+# /etc/systemd/system/agrivision-capture.service
+# Runs the capture cycle immediately on boot, then shuts down
+# The RTC alarm wakes the system every 20 minutes
+
+[Unit]
+Description=Agrivision Wake-Capture-Sleep Cycle
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+User=root
+ExecStart=/usr/bin/python3 /opt/agrivision/hardware/src/capture_cycle.py
+TimeoutStartSec=120
+StandardOutput=journal
+StandardError=journal
+
+# Restart on failure (fallback if shutdown fails)
+Restart=on-failure
+RestartSec=60
+
+[Install]
+WantedBy=multi-user.target

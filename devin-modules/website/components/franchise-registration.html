@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Become an Agrivision Partner</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: system-ui, -apple-system, sans-serif; background: #f5f5f5; color: #333; }
+
+    .hero {
+      background: linear-gradient(135deg, #1B5E20 0%, #2E7D32 50%, #388E3C 100%);
+      color: white; padding: 60px 20px; text-align: center;
+    }
+    .hero h1 { font-size: 36px; margin-bottom: 12px; }
+    .hero p { font-size: 18px; opacity: 0.9; max-width: 650px; margin: 0 auto; }
+
+    .benefits {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 20px; max-width: 1000px; margin: -40px auto 40px; padding: 0 20px; position: relative; z-index: 2;
+    }
+    .benefit-card {
+      background: white; padding: 24px; border-radius: 12px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.08); text-align: center;
+    }
+    .benefit-card .icon { font-size: 36px; margin-bottom: 10px; }
+    .benefit-card h3 { color: #1B5E20; margin-bottom: 6px; font-size: 15px; }
+    .benefit-card p { font-size: 13px; color: #666; }
+
+    .form-section {
+      max-width: 780px; margin: 0 auto 60px; padding: 0 20px;
+    }
+    .form-card {
+      background: white; border-radius: 16px; padding: 40px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+    }
+    .form-card h2 { color: #1B5E20; margin-bottom: 24px; font-size: 22px; }
+
+    .form-group { margin-bottom: 18px; }
+    .form-group label { display: block; font-size: 13px; font-weight: 600; color: #555; margin-bottom: 5px; }
+    .form-group .required { color: #e53935; }
+    .form-group input, .form-group select, .form-group textarea {
+      width: 100%; padding: 10px 14px; border: 1px solid #ddd; border-radius: 8px;
+      font-size: 14px; font-family: inherit; transition: border-color 0.2s;
+    }
+    .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+      border-color: #2E7D32; outline: none; box-shadow: 0 0 0 3px rgba(46,125,50,0.1);
+    }
+    .form-group textarea { min-height: 100px; resize: vertical; }
+
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    @media (max-width: 600px) { .form-row { grid-template-columns: 1fr; } }
+
+    .section-title {
+      font-size: 16px; font-weight: 700; color: #1B5E20;
+      padding-bottom: 8px; border-bottom: 2px solid #E8F5E9;
+      margin: 28px 0 16px;
+    }
+
+    .submit-btn {
+      width: 100%; padding: 14px; background: #1B5E20; color: white; border: none;
+      border-radius: 10px; font-size: 16px; font-weight: 700; cursor: pointer;
+      margin-top: 24px; transition: background 0.2s;
+    }
+    .submit-btn:hover { background: #2E7D32; }
+    .submit-btn:disabled { background: #9E9E9E; cursor: not-allowed; }
+
+    .success-msg {
+      display: none; text-align: center; padding: 40px;
+      background: #E8F5E9; border-radius: 12px; margin: 20px 0;
+    }
+    .success-msg h3 { color: #1B5E20; margin: 12px 0; }
+    .success-msg p { color: #666; }
+
+    .error-msg { color: #e53935; font-size: 12px; margin-top: 4px; display: none; }
+
+    .lang-switch {
+      position: absolute; top: 16px; right: 20px;
+      display: flex; gap: 6px;
+    }
+    .lang-switch button {
+      padding: 5px 10px; border: 1px solid rgba(255,255,255,0.4); background: transparent;
+      color: white; border-radius: 4px; cursor: pointer; font-size: 12px;
+    }
+    .lang-switch button.active { background: rgba(255,255,255,0.2); border-color: white; }
+
+    footer {
+      text-align: center; padding: 30px; color: #999; font-size: 12px;
+      border-top: 1px solid #eee;
+    }
+  </style>
+</head>
+<body>
+
+<div class="hero" style="position: relative;">
+  <div class="lang-switch">
+    <button class="active" onclick="setLang('en')">EN</button>
+    <button onclick="setLang('fr')">FR</button>
+    <button onclick="setLang('ar')">AR</button>
+    <button onclick="setLang('tr')">TR</button>
+  </div>
+  <h1 id="hero-title">Become an Agrivision Partner</h1>
+  <p id="hero-sub">Join our global network of agricultural technology partners. Bring AI-powered crop monitoring to your region and grow with us.</p>
+</div>
+
+<div class="benefits">
+  <div class="benefit-card">
+    <div class="icon">🌍</div>
+    <h3>Regional Exclusivity</h3>
+    <p>Become the exclusive Agrivision partner in your territory</p>
+  </div>
+  <div class="benefit-card">
+    <div class="icon">🤖</div>
+    <h3>AI Technology</h3>
+    <p>Access our disease detection, climate risk, and advisory AI tools</p>
+  </div>
+  <div class="benefit-card">
+    <div class="icon">📱</div>
+    <h3>Full Platform</h3>
+    <p>Hardware modules, mobile app, dashboard, and certification system</p>
+  </div>
+  <div class="benefit-card">
+    <div class="icon">💰</div>
+    <h3>Revenue Share</h3>
+    <p>Attractive commission structure on subscriptions and hardware sales</p>
+  </div>
+</div>
+
+<div class="form-section">
+  <div class="form-card">
+    <h2 id="form-title">Partner Application</h2>
+
+    <form id="franchise-form" onsubmit="return submitForm(event)">
+      <!-- Personal Info -->
+      <div class="section-title">Personal Information</div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>First Name <span class="required">*</span></label>
+          <input type="text" name="first_name" required placeholder="Your first name">
+        </div>
+        <div class="form-group">
+          <label>Last Name <span class="required">*</span></label>
+          <input type="text" name="last_name" required placeholder="Your last name">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Email <span class="required">*</span></label>
+          <input type="email" name="email" required placeholder="your@email.com">
+        </div>
+        <div class="form-group">
+          <label>Phone</label>
+          <input type="tel" name="phone" placeholder="+1 438 000 0000">
+        </div>
+      </div>
+
+      <!-- Business Info -->
+      <div class="section-title">Business Information</div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Company Name</label>
+          <input type="text" name="company_name" placeholder="Your company or farm name">
+        </div>
+        <div class="form-group">
+          <label>Business Type <span class="required">*</span></label>
+          <select name="business_type" required>
+            <option value="">Select type...</option>
+            <option value="farm">Farm / Agricultural Producer</option>
+            <option value="cooperative">Farmers' Cooperative</option>
+            <option value="distributor">Distributor / Reseller</option>
+            <option value="agtech_company">AgTech Company</option>
+            <option value="investor">Investor</option>
+            <option value="government">Government / Public Agency</option>
+            <option value="ngo">NGO / Non-Profit</option>
+            <option value="research">Research Institution / University</option>
+            <option value="other">Other</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Describe Your Business <span class="required">*</span></label>
+        <textarea name="business_description" required 
+          placeholder="Tell us about your business, what you do, your experience in agriculture or technology, and your team..."></textarea>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label>Years in Business</label>
+          <input type="number" name="years_in_business" min="0" placeholder="e.g. 5">
+        </div>
+        <div class="form-group">
+          <label>Number of Employees</label>
+          <input type="number" name="number_of_employees" min="0" placeholder="e.g. 10">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Annual Revenue Range</label>
+        <select name="annual_revenue_range">
+          <option value="">Prefer not to say</option>
+          <option value="under_50k">Under $50,000</option>
+          <option value="50k_250k">$50,000 - $250,000</option>
+          <option value="250k_1m">$250,000 - $1,000,000</option>
+          <option value="1m_5m">$1M - $5M</option>
+          <option value="over_5m">Over $5M</option>
+        </select>
+      </div>
+
+      <!-- Location -->
+      <div class="section-title">Location</div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Country <span class="required">*</span></label>
+          <input type="text" name="country" required placeholder="e.g. Canada, Morocco, Turkey">
+        </div>
+        <div class="form-group">
+          <label>Region / Province</label>
+          <input type="text" name="region" placeholder="e.g. Quebec, Rabat-Salé">
+        </div>
+      </div>
+      <div class="form-group">
+        <label>City</label>
+        <input type="text" name="city" placeholder="Your city">
+      </div>
+
+      <!-- Farm Details (Optional) -->
+      <div class="section-title">Farm Details (if applicable)</div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Farm Size (hectares)</label>
+          <input type="number" name="farm_size_ha" min="0" step="0.1" placeholder="e.g. 25">
+        </div>
+        <div class="form-group">
+          <label>Primary Crops</label>
+          <input type="text" name="primary_crops" placeholder="e.g. Wheat, Tomatoes, Olives">
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Current Technology / Tools Used</label>
+        <input type="text" name="current_technology" placeholder="e.g. Manual monitoring, drones, soil sensors...">
+      </div>
+
+      <!-- Partnership Interest -->
+      <div class="section-title">Partnership Interest</div>
+      <div class="form-group">
+        <label>Type of Partnership <span class="required">*</span></label>
+        <select name="interest_type" required>
+          <option value="">Select interest...</option>
+          <option value="regional_partner">Regional Partner (exclusive territory)</option>
+          <option value="reseller">Reseller / Distributor</option>
+          <option value="white_label">White-Label Partner</option>
+          <option value="pilot_farm">Pilot Farm (testing & demos)</option>
+          <option value="investor">Investment / Funding Partner</option>
+          <option value="research_partner">Research Collaboration</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Target Market / Coverage Area</label>
+        <input type="text" name="target_market" placeholder="e.g. North Africa, Ontario small farms, organic sector">
+      </div>
+
+      <div class="form-group">
+        <label>Why are you interested in Agrivision?</label>
+        <textarea name="why_interested" 
+          placeholder="Tell us what attracted you to Agrivision and what you hope to achieve through this partnership..."></textarea>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label>Website</label>
+          <input type="url" name="website_url" placeholder="https://yourcompany.com">
+        </div>
+        <div class="form-group">
+          <label>LinkedIn</label>
+          <input type="url" name="linkedin_url" placeholder="https://linkedin.com/in/yourprofile">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>How did you hear about us?</label>
+        <select name="how_heard_about_us">
+          <option value="">Select...</option>
+          <option value="social_media">Social Media</option>
+          <option value="website">Agrivision Website</option>
+          <option value="referral">Referral / Word of Mouth</option>
+          <option value="event">Conference / Event</option>
+          <option value="search">Google / Search Engine</option>
+          <option value="other">Other</option>
+        </select>
+      </div>
+
+      <input type="hidden" name="preferred_language" id="pref-lang" value="en">
+
+      <div id="form-error" class="error-msg" style="text-align:center;font-size:14px;margin-top:12px"></div>
+
+      <button type="submit" class="submit-btn" id="submit-btn">Submit Application</button>
+    </form>
+
+    <div class="success-msg" id="success-msg">
+      <div style="font-size:48px">✅</div>
+      <h3>Application Received!</h3>
+      <p>Thank you for your interest in partnering with Agrivision.</p>
+      <p>Our team will review your application and contact you within <strong>5-7 business days</strong>.</p>
+      <p style="margin-top:16px; font-size:13px">Reference: <strong id="app-ref"></strong></p>
+      <p style="margin-top:20px">
+        <a href="/" style="color:#1B5E20; text-decoration:none; font-weight:600;">← Back to Agrivision</a>
+      </p>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <p>Performance Cristal Technologies Avancées S.A. — NEQ: 2280629637</p>
+  <p style="margin-top:4px">Contact: partnerships@agrivision.ca | +1 438-831-3611</p>
+</footer>
+
+<script>
+const API_URL = '/api/v1/franchise';
+
+async function submitForm(e) {
+  e.preventDefault();
+  const btn = document.getElementById('submit-btn');
+  const errDiv = document.getElementById('form-error');
+  errDiv.style.display = 'none';
+  btn.disabled = true;
+  btn.textContent = 'Submitting...';
+
+  const form = document.getElementById('franchise-form');
+  const data = Object.fromEntries(new FormData(form).entries());
+
+  // Convert primary_crops to array
+  if (data.primary_crops) {
+    data.primary_crops = data.primary_crops.split(',').map(s => s.trim()).filter(Boolean);
+  }
+
+  // Convert numbers
+  ['years_in_business', 'number_of_employees', 'farm_size_ha'].forEach(f => {
+    if (data[f]) data[f] = parseFloat(data[f]);
+  });
+
+  try {
+    const res = await fetch(`${API_URL}/apply`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data)
+    });
+
+    const result = await res.json();
+
+    if (result.success) {
+      form.style.display = 'none';
+      const success = document.getElementById('success-msg');
+      success.style.display = 'block';
+      document.getElementById('app-ref').textContent = result.data.id.substring(0, 8).toUpperCase();
+    } else {
+      errDiv.textContent = result.error || 'Submission failed. Please try again.';
+      errDiv.style.display = 'block';
+      btn.disabled = false;
+      btn.textContent = 'Submit Application';
+    }
+  } catch (err) {
+    errDiv.textContent = 'Network error. Please check your connection and try again.';
+    errDiv.style.display = 'block';
+    btn.disabled = false;
+    btn.textContent = 'Submit Application';
+  }
+
+  return false;
+}
+
+function setLang(lang) {
+  document.getElementById('pref-lang').value = lang;
+  document.querySelectorAll('.lang-switch button').forEach(b => b.classList.remove('active'));
+  event.target.classList.add('active');
+
+  const translations = {
+    en: { title: 'Become an Agrivision Partner', sub: 'Join our global network of agricultural technology partners.', formTitle: 'Partner Application', submit: 'Submit Application' },
+    fr: { title: 'Devenez Partenaire Agrivision', sub: 'Rejoignez notre réseau mondial de partenaires en technologie agricole.', formTitle: 'Demande de Partenariat', submit: 'Soumettre la Demande' },
+    ar: { title: 'كن شريكاً في أجريفيجن', sub: 'انضم إلى شبكتنا العالمية لشركاء التكنولوجيا الزراعية', formTitle: 'طلب الشراكة', submit: 'إرسال الطلب' },
+    tr: { title: 'Agrivision Ortağı Olun', sub: 'Küresel tarım teknolojisi ortaklık ağımıza katılın.', formTitle: 'Ortaklık Başvurusu', submit: 'Başvuruyu Gönder' },
+  };
+
+  const t = translations[lang];
+  document.getElementById('hero-title').textContent = t.title;
+  document.getElementById('hero-sub').textContent = t.sub;
+  document.getElementById('form-title').textContent = t.formTitle;
+  document.getElementById('submit-btn').textContent = t.submit;
+  document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
+}
+</script>
+</body>
+</html>
