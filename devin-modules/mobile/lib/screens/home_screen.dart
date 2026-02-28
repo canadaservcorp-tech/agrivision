@@ -58,6 +58,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           const ModeQuickToggle(),
           const SizedBox(height: 14),
 
+          // Production Progress
+          _ProductionQuickCard(),
+          const SizedBox(height: 14),
+
           // Stats grid
           _buildStatsGrid(d),
           const SizedBox(height: 18),
@@ -215,6 +219,42 @@ class _ModeQuickToggleState extends State<ModeQuickToggle> {
             const SizedBox(height: 4),
             Icon(Icons.tune_rounded, size: 14, color: color.withOpacity(0.5)),
           ]),
+        ]),
+      ),
+    );
+  }
+}
+
+class _ProductionQuickCard extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: () => context.push('/production'),
+      child: Container(
+        padding: const EdgeInsets.all(14),
+        decoration: BoxDecoration(
+          color: const Color(0xFF3B82F6).withOpacity(0.08),
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(color: const Color(0xFF3B82F6).withOpacity(0.25)),
+        ),
+        child: Row(children: [
+          Container(
+            width: 44, height: 44,
+            decoration: BoxDecoration(
+              color: const Color(0xFF3B82F6).withOpacity(0.12),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: const Icon(Icons.trending_up_rounded, color: Color(0xFF3B82F6), size: 24),
+          ),
+          const SizedBox(width: 12),
+          Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+            const Text('PRODUCTION PROGRESS',
+                style: TextStyle(fontSize: 13, fontWeight: FontWeight.w800, color: Color(0xFF3B82F6), letterSpacing: 0.3)),
+            const SizedBox(height: 2),
+            Text('Diameter: 4.2cm / 5.0cm target  -  34 days to harvest',
+                style: TextStyle(fontSize: 11, color: const Color(0xFF3B82F6).withOpacity(0.7))),
+          ])),
+          Icon(Icons.chevron_right_rounded, color: const Color(0xFF3B82F6).withOpacity(0.5)),
         ]),
       ),
     );

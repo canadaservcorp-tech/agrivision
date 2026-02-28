@@ -1,6 +1,82 @@
 "use client";
 
-import { useState } from "react";
+import { useState, createContext, useContext } from "react";
+
+// ═══ MULTI-LANGUAGE SUPPORT (Arabic, English, Turkish) ═══
+const TRANSLATIONS = {
+  en: {
+    overview:"Overview", users:"Users", dealers:"Dealers", payments:"Payments", subscriptions:"Subscriptions",
+    invoices:"Invoices", detections:"Detections", library:"Library", diseases:"Diseases",
+    search:"Search", reports:"Reports", settings:"Settings", disease_analysis:"Disease Analysis",
+    farmer_mgmt:"Farmer Management", admin_dashboard:"Admin Dashboard", language:"Language",
+    total_users:"Total Users", active_farms:"Active Farms", total_detections:"Total Detections",
+    revenue:"Revenue", critical_alerts:"Critical Alerts", active_subscriptions:"Active Subscriptions",
+    farms_by_country:"Farms by Country", monthly_revenue:"Monthly Revenue",
+    // Disease Analysis
+    disease_overview:"Disease Overview", total_detected:"Total Detected", critical_cases:"Critical Cases",
+    high_severity:"High Severity", detection_rate:"Detection Rate", disease_map:"Disease Map by Location",
+    top_diseases:"Top Diseases", severity_dist:"Severity Distribution", recent_detections:"Recent Detections",
+    location:"Location", severity:"Severity", crop:"Crop", date:"Date", confidence:"Confidence",
+    send_alert:"Send Alert", view_details:"View Details",
+    // Farmer Management
+    mode_a_cctv:"Mode A (CCTV)", mode_b_monitor:"Mode B (Monitoring)", farmer_mode_dist:"Farmer Mode Distribution",
+    total_farmers:"Total Farmers", send_notification:"Send Notification", send_link:"Send Link",
+    farmer_name:"Farmer Name", farm_location:"Farm Location", current_mode:"Current Mode",
+    last_active:"Last Active", actions:"Actions", notification_type:"Notification Type",
+    update:"Update", repair:"Repair", maintenance:"Maintenance", message:"Message",
+    send:"Send", cancel:"Cancel", select_farmer:"Select Farmer", select_all:"Select All",
+    link_url:"Link URL", send_to_selected:"Send to Selected", farmers_selected:"farmers selected",
+    // Settings
+    save:"Save", language_preference:"Language Preference", select_language:"Select Language",
+  },
+  ar: {
+    overview:"نظرة عامة", users:"المستخدمين", dealers:"الوكلاء", payments:"المدفوعات", subscriptions:"الاشتراكات",
+    invoices:"الفواتير", detections:"الكشوفات", library:"المكتبة", diseases:"الأمراض",
+    search:"بحث", reports:"التقارير", settings:"الإعدادات", disease_analysis:"تحليل الأمراض",
+    farmer_mgmt:"إدارة المزارعين", admin_dashboard:"لوحة الإدارة", language:"اللغة",
+    total_users:"إجمالي المستخدمين", active_farms:"المزارع النشطة", total_detections:"إجمالي الكشوفات",
+    revenue:"الإيرادات", critical_alerts:"تنبيهات حرجة", active_subscriptions:"الاشتراكات النشطة",
+    farms_by_country:"المزارع حسب الدولة", monthly_revenue:"الإيرادات الشهرية",
+    disease_overview:"نظرة عامة على الأمراض", total_detected:"إجمالي المكتشف", critical_cases:"حالات حرجة",
+    high_severity:"شدة عالية", detection_rate:"معدل الكشف", disease_map:"خريطة الأمراض حسب الموقع",
+    top_diseases:"أهم الأمراض", severity_dist:"توزيع الشدة", recent_detections:"الكشوفات الأخيرة",
+    location:"الموقع", severity:"الشدة", crop:"المحصول", date:"التاريخ", confidence:"الثقة",
+    send_alert:"إرسال تنبيه", view_details:"عرض التفاصيل",
+    mode_a_cctv:"الوضع أ (كاميرات)", mode_b_monitor:"الوضع ب (مراقبة)", farmer_mode_dist:"توزيع أوضاع المزارعين",
+    total_farmers:"إجمالي المزارعين", send_notification:"إرسال إشعار", send_link:"إرسال رابط",
+    farmer_name:"اسم المزارع", farm_location:"موقع المزرعة", current_mode:"الوضع الحالي",
+    last_active:"آخر نشاط", actions:"إجراءات", notification_type:"نوع الإشعار",
+    update:"تحديث", repair:"إصلاح", maintenance:"صيانة", message:"رسالة",
+    send:"إرسال", cancel:"إلغاء", select_farmer:"اختر مزارع", select_all:"تحديد الكل",
+    link_url:"رابط", send_to_selected:"إرسال للمحددين", farmers_selected:"مزارعين محددين",
+    save:"حفظ", language_preference:"تفضيل اللغة", select_language:"اختر اللغة",
+  },
+  tr: {
+    overview:"Genel Bakis", users:"Kullanicilar", dealers:"Bayiler", payments:"Odemeler", subscriptions:"Abonelikler",
+    invoices:"Faturalar", detections:"Tespitler", library:"Kutuphane", diseases:"Hastaliklar",
+    search:"Arama", reports:"Raporlar", settings:"Ayarlar", disease_analysis:"Hastalik Analizi",
+    farmer_mgmt:"Ciftci Yonetimi", admin_dashboard:"Yonetim Paneli", language:"Dil",
+    total_users:"Toplam Kullanici", active_farms:"Aktif Ciftlikler", total_detections:"Toplam Tespit",
+    revenue:"Gelir", critical_alerts:"Kritik Uyarilar", active_subscriptions:"Aktif Abonelikler",
+    farms_by_country:"Ulkeye Gore Ciftlikler", monthly_revenue:"Aylik Gelir",
+    disease_overview:"Hastalik Ozeti", total_detected:"Toplam Tespit", critical_cases:"Kritik Vakalar",
+    high_severity:"Yuksek Siddet", detection_rate:"Tespit Orani", disease_map:"Konuma Gore Hastalik Haritasi",
+    top_diseases:"En Cok Gorulen", severity_dist:"Siddet Dagilimi", recent_detections:"Son Tespitler",
+    location:"Konum", severity:"Siddet", crop:"Urun", date:"Tarih", confidence:"Guven",
+    send_alert:"Uyari Gonder", view_details:"Detaylari Gor",
+    mode_a_cctv:"Mod A (CCTV)", mode_b_monitor:"Mod B (Izleme)", farmer_mode_dist:"Ciftci Mod Dagilimi",
+    total_farmers:"Toplam Ciftci", send_notification:"Bildirim Gonder", send_link:"Link Gonder",
+    farmer_name:"Ciftci Adi", farm_location:"Ciftlik Konumu", current_mode:"Mevcut Mod",
+    last_active:"Son Aktif", actions:"Islemler", notification_type:"Bildirim Turu",
+    update:"Guncelleme", repair:"Onarim", maintenance:"Bakim", message:"Mesaj",
+    send:"Gonder", cancel:"Iptal", select_farmer:"Ciftci Sec", select_all:"Tumunu Sec",
+    link_url:"Link URL", send_to_selected:"Secilenlere Gonder", farmers_selected:"ciftci secildi",
+    save:"Kaydet", language_preference:"Dil Tercihi", select_language:"Dil Secin",
+  },
+};
+
+const LangContext = createContext({ lang:"en", setLang:()=>{}, t:(k)=>k });
+const useLang = () => useContext(LangContext);
 
 const API = "/api";
 
@@ -85,7 +161,43 @@ const MOCK = {
   revenueChart: Array.from({length: 30}, (_, i) => ({
     date: new Date(Date.now()-(29-i)*86400000).toISOString().split('T')[0],
     revenue: Math.floor(800+Math.random()*1200), transactions: Math.floor(5+Math.random()*20)
-  }))
+  })),
+  // Disease Analysis mock data with locations
+  diseaseAnalysis: {
+    summary: { total: 23847, critical: 127, high: 892, medium: 4521, low: 18307, detectionRate: 94.2 },
+    byLocation: [
+      { id:1, region:"Abu Dhabi", country:"UAE", lat:24.45, lng:54.65, totalDetections:3421, critical:18, diseases:["Powdery Mildew","Leaf Rust"], topCrop:"date palm", farmCount:52 },
+      { id:2, region:"Riyadh", country:"Saudi Arabia", lat:24.71, lng:46.67, totalDetections:2987, critical:24, diseases:["Tomato Blight","Aphid Infestation"], topCrop:"tomato", farmCount:41 },
+      { id:3, region:"Doha", country:"Qatar", lat:25.28, lng:51.52, totalDetections:1842, critical:11, diseases:["Bacterial Spot","Root Rot"], topCrop:"cucumber", farmCount:28 },
+      { id:4, region:"Antalya", country:"Turkey", lat:36.89, lng:30.71, totalDetections:2156, critical:15, diseases:["Downy Mildew","Whitefly"], topCrop:"olive", farmCount:34 },
+      { id:5, region:"Cairo", country:"Egypt", lat:30.04, lng:31.24, totalDetections:1654, critical:9, diseases:["Mosaic Virus","Leaf Rust"], topCrop:"wheat", farmCount:22 },
+      { id:6, region:"Casablanca", country:"Morocco", lat:33.57, lng:-7.59, totalDetections:1243, critical:7, diseases:["Powdery Mildew","Aphid Infestation"], topCrop:"citrus", farmCount:18 },
+      { id:7, region:"Amman", country:"Jordan", lat:31.95, lng:35.93, totalDetections:987, critical:5, diseases:["Bacterial Spot","Root Rot"], topCrop:"tomato", farmCount:14 },
+      { id:8, region:"Muscat", country:"Oman", lat:23.61, lng:58.59, totalDetections:756, critical:4, diseases:["Whitefly","Downy Mildew"], topCrop:"date palm", farmCount:11 },
+    ],
+    topDiseases: [
+      { name:"Powdery Mildew", count:5847, pct:24.5, trend:"+3.2%", color:"#f59e0b" },
+      { name:"Leaf Rust", count:4231, pct:17.7, trend:"+1.8%", color:"#ef4444" },
+      { name:"Tomato Blight", count:3654, pct:15.3, trend:"-2.1%", color:"#8b5cf6" },
+      { name:"Aphid Infestation", count:2987, pct:12.5, trend:"+5.4%", color:"#3b82f6" },
+      { name:"Bacterial Spot", count:2156, pct:9.0, trend:"-0.8%", color:"#ec4899" },
+      { name:"Other", count:4972, pct:20.8, trend:"+0.5%", color:"#64748b" },
+    ],
+    severityDist: [ { label:"Critical", count:127, pct:0.5, color:"#dc2626" }, { label:"High", count:892, pct:3.7, color:"#ef4444" }, { label:"Medium", count:4521, pct:19.0, color:"#f59e0b" }, { label:"Low", count:18307, pct:76.8, color:"#10b981" } ],
+  },
+  // Farmer management data with modes
+  farmers: Array.from({length:30}, (_,i) => ({
+    id:i+1, name:["Mohammed Al-Rashid","Ali Hassan","Fatima Noor","Youssef Ibrahim","Aisha Khalid","Hassan Salem","Nour Ahmed","Ibrahim Farid","Khalid Omar","Layla Zaid"][i%10],
+    email:`farmer${i+1}@farm.com`, phone:`+971${5000000+i}`,
+    farm:["Al Rashid Date Farm","Green Valley Tomatoes","Desert Rose Citrus","Nile Valley Wheat","Mediterranean Olives","Gulf Date Plantation","Anatolian Vineyards","Sahara Greenhouse","Emirates Hydroponics","Atlas Mountain Herbs"][i%10],
+    country:["UAE","Saudi Arabia","Qatar","Turkey","Egypt","Morocco","Jordan","Oman","Kuwait","Tunisia"][i%10],
+    region:["Abu Dhabi","Riyadh","Doha","Antalya","Cairo","Casablanca","Amman","Muscat","Kuwait City","Tunis"][i%10],
+    mode: i%3===0?"cctv":"monitoring",
+    cameras: Math.floor(2+Math.random()*8),
+    lastActive: new Date(Date.now()-i*3600000*2).toISOString(),
+    status: i%7===0?"offline":"online",
+    detections: Math.floor(Math.random()*200),
+  })),
 };
 
 // ═══ STYLES ═══
@@ -720,6 +832,304 @@ const SearchSection = () => {
   );
 };
 
+// ═══ DISEASE ANALYSIS SECTION ═══
+const DiseaseAnalysisSection = () => {
+  const { t } = useLang();
+  const da = MOCK.diseaseAnalysis;
+  const [selectedLoc, setSelectedLoc] = useState(null);
+  const [showAlert, setShowAlert] = useState(false);
+  const [alertContext, setAlertContext] = useState("");
+
+  return (
+    <div>
+      <div style={{ display:"flex", gap:12, marginBottom:20, flexWrap:"wrap" }}>
+        <MetricCard icon="🔬" label={t('total_detected')} value={da.summary.total.toLocaleString()} sub="All time" color={C.accent} />
+        <MetricCard icon="🚨" label={t('critical_cases')} value={da.summary.critical} sub="Immediate action" color={C.danger} />
+        <MetricCard icon="⚠️" label={t('high_severity')} value={da.summary.high} sub="This month" color={C.warning} />
+        <MetricCard icon="📈" label={t('detection_rate')} value={`${da.summary.detectionRate}%`} sub="AI accuracy" color={C.info} />
+      </div>
+
+      <div style={{ background:C.card, border:`1px solid ${C.border}`, borderRadius:12, padding:20, marginBottom:16 }}>
+        <div style={{ color:C.text, fontWeight:700, fontSize:16, marginBottom:16 }}>🗺️ {t('disease_map')}</div>
+        <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill, minmax(220px, 1fr))", gap:10 }}>
+          {da.byLocation.map(loc => (
+            <div key={loc.id} onClick={()=>setSelectedLoc(selectedLoc?.id===loc.id?null:loc)}
+              style={{ padding:14, borderRadius:10, cursor:"pointer", transition:"all 0.15s",
+                background:selectedLoc?.id===loc.id?`${C.accent}15`:"#0f172a",
+                border:`1px solid ${selectedLoc?.id===loc.id?C.accent:C.border}` }}>
+              <div style={{ display:"flex", justifyContent:"space-between", marginBottom:6 }}>
+                <span style={{ fontWeight:700, fontSize:13, color:C.text }}>{loc.region}</span>
+                {loc.critical>0 && <span style={{ background:`${C.red}22`, color:C.red, padding:"1px 6px", borderRadius:8, fontSize:9, fontWeight:700 }}>{loc.critical} critical</span>}
+              </div>
+              <div style={{ fontSize:11, color:C.textDim, marginBottom:4 }}>{loc.country} — {loc.farmCount} farms</div>
+              <div style={{ fontSize:18, fontWeight:800, color:C.accent }}>{loc.totalDetections.toLocaleString()}</div>
+              <div style={{ fontSize:10, color:C.textMuted }}>detections — {loc.topCrop}</div>
+              <div style={{ display:"flex", gap:3, marginTop:6, flexWrap:"wrap" }}>
+                {loc.diseases.map((d,i) => <span key={i} style={{ background:`${C.orange}15`, color:C.orange, padding:"1px 6px", borderRadius:6, fontSize:9 }}>{d}</span>)}
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {selectedLoc && (
+        <div style={{ background:C.card, border:`1px solid ${C.accent}44`, borderRadius:12, padding:20, marginBottom:16 }}>
+          <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:12 }}>
+            <div>
+              <div style={{ fontSize:18, fontWeight:800, color:C.accent }}>{selectedLoc.region}, {selectedLoc.country}</div>
+              <div style={{ fontSize:12, color:C.textDim }}>{selectedLoc.farmCount} farms — {selectedLoc.totalDetections} detections — Top crop: {selectedLoc.topCrop}</div>
+            </div>
+            <Btn size="sm" onClick={()=>{ setAlertContext(`${selectedLoc.region} farmers`); setShowAlert(true); }}>{t('send_alert')} 📤</Btn>
+          </div>
+          <div style={{ display:"flex", gap:12, flexWrap:"wrap" }}>
+            {selectedLoc.diseases.map((d,i) => (
+              <div key={i} style={{ padding:"10px 16px", background:"#0f172a", borderRadius:10, border:`1px solid ${C.border}` }}>
+                <div style={{ fontWeight:700, fontSize:13, color:C.text }}>{d}</div>
+                <div style={{ fontSize:11, color:C.textMuted }}>{Math.floor(selectedLoc.totalDetections * (0.3+Math.random()*0.4))} cases</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:16, marginBottom:16 }}>
+        <div style={{ background:C.card, border:`1px solid ${C.border}`, borderRadius:12, padding:20 }}>
+          <div style={{ color:C.text, fontWeight:700, fontSize:15, marginBottom:14 }}>🏆 {t('top_diseases')}</div>
+          {da.topDiseases.map((d,i) => (
+            <div key={i} style={{ display:"flex", alignItems:"center", gap:10, marginBottom:10 }}>
+              <div style={{ width:8, height:8, borderRadius:"50%", background:d.color }} />
+              <div style={{ flex:1 }}>
+                <div style={{ display:"flex", justifyContent:"space-between" }}>
+                  <span style={{ fontSize:12, fontWeight:600, color:C.text }}>{d.name}</span>
+                  <span style={{ fontSize:11, color:C.textDim }}>{d.count.toLocaleString()} ({d.pct}%)</span>
+                </div>
+                <div style={{ height:4, background:C.border, borderRadius:2, marginTop:4 }}>
+                  <div style={{ height:4, borderRadius:2, background:d.color, width:`${d.pct}%` }} />
+                </div>
+              </div>
+              <span style={{ fontSize:10, color:d.trend.startsWith('+')?C.red:C.accent, fontWeight:600 }}>{d.trend}</span>
+            </div>
+          ))}
+        </div>
+
+        <div style={{ background:C.card, border:`1px solid ${C.border}`, borderRadius:12, padding:20 }}>
+          <div style={{ color:C.text, fontWeight:700, fontSize:15, marginBottom:14 }}>📊 {t('severity_dist')}</div>
+          {da.severityDist.map((s,i) => (
+            <div key={i} style={{ marginBottom:14 }}>
+              <div style={{ display:"flex", justifyContent:"space-between", marginBottom:4 }}>
+                <span style={{ fontSize:12, fontWeight:600, color:s.color }}>{s.label}</span>
+                <span style={{ fontSize:12, color:C.textDim }}>{s.count.toLocaleString()} ({s.pct}%)</span>
+              </div>
+              <div style={{ height:8, background:C.border, borderRadius:4 }}>
+                <div style={{ height:8, borderRadius:4, background:s.color, width:`${Math.min(s.pct, 100)}%`, transition:"width 0.5s" }} />
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div style={{ background:C.card, border:`1px solid ${C.border}`, borderRadius:12, padding:20 }}>
+        <div style={{ color:C.text, fontWeight:700, fontSize:15, marginBottom:14 }}>🕒 {t('recent_detections')}</div>
+        <Table columns={[
+          { key:"disease_name", label:"Disease", render:v => <span style={{fontWeight:600}}>{v}</span> },
+          { key:"crop_type", label:t('crop') },
+          { key:"zone", label:t('location'), render:v => <span style={{textTransform:"capitalize"}}>{v} zone</span> },
+          { key:"severity", label:t('severity'), render:v => <StatusBadge status={v} /> },
+          { key:"confidence", label:t('confidence'), render:v => <span style={{fontWeight:600}}>{(v*100).toFixed(0)}%</span> },
+          { key:"detected_at", label:t('date'), render:v => v?.split('T')[0] },
+          { key:"id", label:"", render:(_,row) => (
+            <Btn size="sm" variant="ghost" onClick={()=>{ setAlertContext(`${row.disease_name} alert`); setShowAlert(true); }}>📤</Btn>
+          ) },
+        ]} data={MOCK.detections.slice(0,10)} />
+      </div>
+
+      <Modal open={showAlert} onClose={()=>setShowAlert(false)} title={`${t('send_alert')} — ${alertContext}`}>
+        <div style={{ display:"grid", gap:12 }}>
+          <div>
+            <label style={{color:C.textDim,fontSize:11,display:"block",marginBottom:4}}>{t('notification_type')}</label>
+            <Select value="update" onChange={()=>{}} options={[
+              {value:"update",label:"Firmware / App Update"},
+              {value:"repair",label:"Repair Required"},
+              {value:"maintenance",label:"Scheduled Maintenance"},
+              {value:"disease_alert",label:"Disease Alert"},
+            ]} />
+          </div>
+          <div>
+            <label style={{color:C.textDim,fontSize:11,display:"block",marginBottom:4}}>{t('message')}</label>
+            <textarea style={{ background:"#0f172a", border:`1px solid ${C.border}`, borderRadius:8, padding:10, color:C.text, fontSize:13, width:"100%", minHeight:80, resize:"vertical", outline:"none" }} placeholder="Alert message for farmers..." />
+          </div>
+          <div>
+            <label style={{color:C.textDim,fontSize:11,display:"block",marginBottom:4}}>{t('link_url')}</label>
+            <Input value="" onChange={()=>{}} placeholder="https://agrivision.com/update/..." />
+          </div>
+        </div>
+        <div style={{ marginTop:16, display:"flex", gap:8, justifyContent:"flex-end" }}>
+          <Btn variant="secondary" onClick={()=>setShowAlert(false)}>{t('cancel')}</Btn>
+          <Btn onClick={()=>{setShowAlert(false);alert("Alert sent!")}}>{t('send')} 📤</Btn>
+        </div>
+      </Modal>
+    </div>
+  );
+};
+
+// ═══ FARMER MANAGEMENT SECTION ═══
+const FarmerManagementSection = () => {
+  const { t } = useLang();
+  const farmers = MOCK.farmers;
+  const [selected, setSelected] = useState([]);
+  const [showNotify, setShowNotify] = useState(false);
+  const [showLink, setShowLink] = useState(false);
+  const [filterMode, setFilterMode] = useState("all");
+  const [search, setSearch] = useState("");
+
+  const modeACt = farmers.filter(f => f.mode === "cctv").length;
+  const modeBCt = farmers.filter(f => f.mode === "monitoring").length;
+
+  const filtered = farmers.filter(f =>
+    (filterMode === "all" || f.mode === (filterMode === "a" ? "cctv" : "monitoring")) &&
+    (!search || f.name.toLowerCase().includes(search.toLowerCase()) || f.farm.toLowerCase().includes(search.toLowerCase()))
+  );
+
+  const toggleSelect = (id) => setSelected(s => s.includes(id) ? s.filter(x => x !== id) : [...s, id]);
+  const toggleAll = () => setSelected(selected.length === filtered.length ? [] : filtered.map(f => f.id));
+
+  return (
+    <div>
+      <div style={{ display:"flex", gap:12, marginBottom:20, flexWrap:"wrap" }}>
+        <MetricCard icon="👨‍🌾" label={t('total_farmers')} value={farmers.length} color={C.accent} />
+        <div style={{ background:C.card, border:`1px solid ${C.border}`, borderRadius:12, padding:"18px 20px", flex:2, minWidth:320 }}>
+          <div style={{ color:C.textDim, fontSize:12, fontWeight:500, marginBottom:10 }}>📊 {t('farmer_mode_dist')}</div>
+          <div style={{ display:"flex", gap:20, alignItems:"center" }}>
+            <div style={{ display:"flex", gap:4, flex:1, height:24, borderRadius:6, overflow:"hidden" }}>
+              <div style={{ width:`${(modeACt / farmers.length) * 100}%`, background:C.red, transition:"width 0.5s" }} />
+              <div style={{ width:`${(modeBCt / farmers.length) * 100}%`, background:C.accent, transition:"width 0.5s" }} />
+            </div>
+            <div style={{ display:"flex", gap:16, flexWrap:"wrap" }}>
+              <div style={{ display:"flex", alignItems:"center", gap:6 }}>
+                <div style={{ width:10, height:10, borderRadius:"50%", background:C.red }} />
+                <span style={{ fontSize:12, color:C.text }}><b>{modeACt}</b> {t('mode_a_cctv')}</span>
+              </div>
+              <div style={{ display:"flex", alignItems:"center", gap:6 }}>
+                <div style={{ width:10, height:10, borderRadius:"50%", background:C.accent }} />
+                <span style={{ fontSize:12, color:C.text }}><b>{modeBCt}</b> {t('mode_b_monitor')}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div style={{ display:"flex", gap:8, marginBottom:16, alignItems:"center", flexWrap:"wrap" }}>
+        <Input value={search} onChange={setSearch} placeholder="🔍 Search farmers..." style={{ maxWidth:260 }} />
+        <Select value={filterMode} onChange={setFilterMode} options={[
+          { value:"all", label:"All Modes" },
+          { value:"a", label:"Mode A (CCTV)" },
+          { value:"b", label:"Mode B (Monitoring)" },
+        ]} />
+        <div style={{ flex:1 }} />
+        {selected.length > 0 && (
+          <span style={{ fontSize:12, color:C.accent, fontWeight:600 }}>{selected.length} {t('farmers_selected')}</span>
+        )}
+        <Btn variant="secondary" onClick={()=>setShowLink(true)} disabled={selected.length === 0}>🔗 {t('send_link')}</Btn>
+        <Btn onClick={()=>setShowNotify(true)} disabled={selected.length === 0}>📤 {t('send_notification')}</Btn>
+      </div>
+
+      <div style={{ background:C.card, border:`1px solid ${C.border}`, borderRadius:12, padding:16 }}>
+        <table style={{ width:"100%", borderCollapse:"collapse", fontSize:13 }}>
+          <thead>
+            <tr>
+              <th style={{ textAlign:"left", padding:"10px 12px", borderBottom:`1px solid ${C.border}` }}>
+                <input type="checkbox" checked={selected.length === filtered.length && filtered.length > 0} onChange={toggleAll} />
+              </th>
+              <th style={{ textAlign:"left", padding:"10px 12px", color:C.textMuted, fontSize:11, fontWeight:600, textTransform:"uppercase", borderBottom:`1px solid ${C.border}` }}>{t('farmer_name')}</th>
+              <th style={{ textAlign:"left", padding:"10px 12px", color:C.textMuted, fontSize:11, fontWeight:600, textTransform:"uppercase", borderBottom:`1px solid ${C.border}` }}>{t('farm_location')}</th>
+              <th style={{ textAlign:"left", padding:"10px 12px", color:C.textMuted, fontSize:11, fontWeight:600, textTransform:"uppercase", borderBottom:`1px solid ${C.border}` }}>{t('current_mode')}</th>
+              <th style={{ textAlign:"left", padding:"10px 12px", color:C.textMuted, fontSize:11, fontWeight:600, textTransform:"uppercase", borderBottom:`1px solid ${C.border}` }}>{t('last_active')}</th>
+              <th style={{ textAlign:"left", padding:"10px 12px", color:C.textMuted, fontSize:11, fontWeight:600, textTransform:"uppercase", borderBottom:`1px solid ${C.border}` }}>{t('actions')}</th>
+            </tr>
+          </thead>
+          <tbody>
+            {filtered.map(f => (
+              <tr key={f.id} style={{ borderBottom:`1px solid ${C.border}15` }}
+                onMouseEnter={e=>e.currentTarget.style.background="#ffffff06"} onMouseLeave={e=>e.currentTarget.style.background="transparent"}>
+                <td style={{ padding:"10px 12px" }}><input type="checkbox" checked={selected.includes(f.id)} onChange={()=>toggleSelect(f.id)} /></td>
+                <td style={{ padding:"10px 12px" }}>
+                  <div style={{ fontWeight:600, color:C.text }}>{f.name}</div>
+                  <div style={{ fontSize:11, color:C.textMuted }}>{f.email}</div>
+                </td>
+                <td style={{ padding:"10px 12px" }}>
+                  <div style={{ color:C.text }}>{f.farm}</div>
+                  <div style={{ fontSize:11, color:C.textMuted }}>{f.region}, {f.country}</div>
+                </td>
+                <td style={{ padding:"10px 12px" }}>
+                  <span style={{ background:f.mode === "cctv" ? `${C.red}22` : `${C.accent}22`, color:f.mode === "cctv" ? C.red : C.accent,
+                    padding:"3px 10px", borderRadius:8, fontSize:11, fontWeight:700 }}>
+                    {f.mode === "cctv" ? "A — CCTV" : "B — Monitor"}
+                  </span>
+                </td>
+                <td style={{ padding:"10px 12px", color:C.textDim, fontSize:12 }}>
+                  {new Date(f.lastActive).toLocaleString()}
+                </td>
+                <td style={{ padding:"10px 12px" }}>
+                  <div style={{ display:"flex", gap:4 }}>
+                    <Btn size="sm" variant="ghost" onClick={()=>{ setSelected([f.id]); setShowNotify(true); }}>📤</Btn>
+                    <Btn size="sm" variant="ghost" onClick={()=>{ setSelected([f.id]); setShowLink(true); }}>🔗</Btn>
+                  </div>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      <Modal open={showNotify} onClose={()=>setShowNotify(false)} title={`${t('send_notification')} (${selected.length} ${t('farmers_selected')})`}>
+        <div style={{ display:"grid", gap:12 }}>
+          <div>
+            <label style={{color:C.textDim,fontSize:11,display:"block",marginBottom:4}}>{t('notification_type')}</label>
+            <Select value="update" onChange={()=>{}} options={[
+              {value:"update",label:`🔄 ${t('update')} — Firmware / App Update`},
+              {value:"repair",label:`🔧 ${t('repair')} — Hardware Repair Needed`},
+              {value:"maintenance",label:`🛠️ ${t('maintenance')} — Scheduled Maintenance`},
+            ]} />
+          </div>
+          <div>
+            <label style={{color:C.textDim,fontSize:11,display:"block",marginBottom:4}}>{t('message')}</label>
+            <textarea style={{ background:"#0f172a", border:`1px solid ${C.border}`, borderRadius:8, padding:10, color:C.text, fontSize:13, width:"100%", minHeight:80, resize:"vertical", outline:"none" }} placeholder="Notification message..." />
+          </div>
+        </div>
+        <div style={{ marginTop:16, display:"flex", gap:8, justifyContent:"flex-end" }}>
+          <Btn variant="secondary" onClick={()=>setShowNotify(false)}>{t('cancel')}</Btn>
+          <Btn onClick={()=>{ setShowNotify(false); alert(`Notification sent to ${selected.length} farmer(s)!`); setSelected([]); }}>{t('send')} 📤</Btn>
+        </div>
+      </Modal>
+
+      <Modal open={showLink} onClose={()=>setShowLink(false)} title={`${t('send_link')} (${selected.length} ${t('farmers_selected')})`}>
+        <div style={{ display:"grid", gap:12 }}>
+          <div>
+            <label style={{color:C.textDim,fontSize:11,display:"block",marginBottom:4}}>{t('notification_type')}</label>
+            <Select value="update" onChange={()=>{}} options={[
+              {value:"update",label:`🔄 ${t('update')}`},
+              {value:"repair",label:`🔧 ${t('repair')}`},
+              {value:"maintenance",label:`🛠️ ${t('maintenance')}`},
+            ]} />
+          </div>
+          <div>
+            <label style={{color:C.textDim,fontSize:11,display:"block",marginBottom:4}}>{t('link_url')}</label>
+            <Input value="" onChange={()=>{}} placeholder="https://agrivision.com/update/v3.1" />
+          </div>
+          <div>
+            <label style={{color:C.textDim,fontSize:11,display:"block",marginBottom:4}}>{t('message')}</label>
+            <textarea style={{ background:"#0f172a", border:`1px solid ${C.border}`, borderRadius:8, padding:10, color:C.text, fontSize:13, width:"100%", minHeight:60, resize:"vertical", outline:"none" }} placeholder="Optional message with the link..." />
+          </div>
+        </div>
+        <div style={{ marginTop:16, display:"flex", gap:8, justifyContent:"flex-end" }}>
+          <Btn variant="secondary" onClick={()=>setShowLink(false)}>{t('cancel')}</Btn>
+          <Btn onClick={()=>{ setShowLink(false); alert(`Link sent to ${selected.length} farmer(s)!`); setSelected([]); }}>{t('send')} 🔗</Btn>
+        </div>
+      </Modal>
+    </div>
+  );
+};
+
 const ReportsSection = () => {
   const reports = [
     { name: "Users Export", desc: "All users with role, status, country", icon: "👥", endpoint: "users", formats: ["CSV","JSON"] },
@@ -758,49 +1168,69 @@ const ReportsSection = () => {
   );
 };
 
-const SettingsSection = () => (
-  <div>
-    <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill, minmax(400px, 1fr))", gap:16 }}>
-      {[
-        { title:"PayPal Configuration", icon:"🅿️", fields:["Client ID","Secret Key","Mode (sandbox/live)","Webhook URL"] },
-        { title:"Email Settings", icon:"📧", fields:["SMTP Host","SMTP Port","From Email","From Name"] },
-        { title:"WhatsApp Alerts", icon:"💬", fields:["Twilio SID","Auth Token","From Number","Alert Template"] },
-        { title:"System Settings", icon:"⚙️", fields:["Company Name","Support Email","Default Currency","Tax Rate (%)"] },
-      ].map((section,i) => (
-        <div key={i} style={{ background:C.card, border:`1px solid ${C.border}`, borderRadius:12, padding:20 }}>
-          <div style={{ color:C.text, fontWeight:700, fontSize:15, marginBottom:16 }}>{section.icon} {section.title}</div>
-          {section.fields.map((f,j) => (
-            <div key={j} style={{ marginBottom:12 }}>
-              <label style={{ color:C.textDim, fontSize:11, display:"block", marginBottom:4 }}>{f}</label>
-              <Input value="" onChange={()=>{}} placeholder={f} type={f.toLowerCase().includes("secret")||f.toLowerCase().includes("token")?"password":"text"} />
-            </div>
+const SettingsSection = () => {
+  const { lang, setLang, t } = useLang();
+  return (
+    <div>
+      <div style={{ background:C.card, border:`1px solid ${C.accent}44`, borderRadius:12, padding:20, marginBottom:16 }}>
+        <div style={{ color:C.accent, fontWeight:700, fontSize:16, marginBottom:12 }}>🌐 {t('language_preference')}</div>
+        <div style={{ display:"flex", gap:8, flexWrap:"wrap" }}>
+          {[{code:"en",label:"English",flag:"🇬🇧"},{code:"ar",label:"العربية",flag:"🇸🇦"},{code:"tr",label:"Türkçe",flag:"🇹🇷"}].map(l => (
+            <button key={l.code} onClick={()=>setLang(l.code)} style={{
+              padding:"10px 18px", borderRadius:10, cursor:"pointer", transition:"all 0.15s",
+              background:lang===l.code?`${C.accent}22`:"#0f172a",
+              border:`2px solid ${lang===l.code?C.accent:C.border}`,
+              color:lang===l.code?C.accent:C.textDim, fontWeight:700, fontSize:14,
+            }}>{l.flag} {l.label}</button>
           ))}
-          <Btn size="sm" style={{marginTop:4}}>💾 Save</Btn>
         </div>
-      ))}
+      </div>
+
+      <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill, minmax(400px, 1fr))", gap:16 }}>
+        {[
+          { title:"PayPal Configuration", icon:"🅿️", fields:["Client ID","Secret Key","Mode (sandbox/live)","Webhook URL"] },
+          { title:"Email Settings", icon:"📧", fields:["SMTP Host","SMTP Port","From Email","From Name"] },
+          { title:"WhatsApp Alerts", icon:"💬", fields:["Twilio SID","Auth Token","From Number","Alert Template"] },
+          { title:"System Settings", icon:"⚙️", fields:["Company Name","Support Email","Default Currency","Tax Rate (%)"] },
+        ].map((section,i) => (
+          <div key={i} style={{ background:C.card, border:`1px solid ${C.border}`, borderRadius:12, padding:20 }}>
+            <div style={{ color:C.text, fontWeight:700, fontSize:15, marginBottom:16 }}>{section.icon} {section.title}</div>
+            {section.fields.map((f,j) => (
+              <div key={j} style={{ marginBottom:12 }}>
+                <label style={{ color:C.textDim, fontSize:11, display:"block", marginBottom:4 }}>{f}</label>
+                <Input value="" onChange={()=>{}} placeholder={f} type={f.toLowerCase().includes("secret")||f.toLowerCase().includes("token")?"password":"text"} />
+              </div>
+            ))}
+            <Btn size="sm" style={{marginTop:4}}>💾 {t('save')}</Btn>
+          </div>
+        ))}
+      </div>
     </div>
-  </div>
-);
+  );
+};
 
 // ═══ MAIN APP ═══
 
-const NAV = [
-  { key:"overview", label:"Overview", icon:"📊" },
-  { key:"users", label:"Users", icon:"👥" },
-  { key:"dealers", label:"Dealers", icon:"🤝" },
-  { key:"payments", label:"Payments", icon:"💰" },
-  { key:"subscriptions", label:"Subscriptions", icon:"📋" },
-  { key:"invoices", label:"Invoices", icon:"📄" },
-  { key:"detections", label:"Detections", icon:"🔬" },
-  { key:"library", label:"Library", icon:"📚" },
-  { key:"diseases", label:"Diseases", icon:"🧬" },
-  { key:"search", label:"Search", icon:"🔍" },
-  { key:"reports", label:"Reports", icon:"📊" },
-  { key:"settings", label:"Settings", icon:"⚙️" },
+const NAV_KEYS = [
+  { key:"overview", icon:"📊" },
+  { key:"disease_analysis", icon:"🗺️" },
+  { key:"farmer_mgmt", icon:"👨‍🌾" },
+  { key:"users", icon:"👥" },
+  { key:"dealers", icon:"🤝" },
+  { key:"payments", icon:"💰" },
+  { key:"subscriptions", icon:"📋" },
+  { key:"invoices", icon:"📄" },
+  { key:"detections", icon:"🔬" },
+  { key:"library", icon:"📚" },
+  { key:"diseases", icon:"🧬" },
+  { key:"search", icon:"🔍" },
+  { key:"reports", icon:"📊" },
+  { key:"settings", icon:"⚙️" },
 ];
 
 const SECTIONS = {
-  overview: Overview, users: UsersSection, dealers: DealersSection,
+  overview: Overview, disease_analysis: DiseaseAnalysisSection, farmer_mgmt: FarmerManagementSection,
+  users: UsersSection, dealers: DealersSection,
   payments: PaymentsSection, subscriptions: SubscriptionsSection,
   invoices: InvoicesSection, detections: DetectionsSection,
   library: LibrarySection, diseases: DiseasesSection,
@@ -810,17 +1240,26 @@ const SECTIONS = {
 export default function AdminDashboard() {
   const [section, setSection] = useState("overview");
   const [collapsed, setCollapsed] = useState(false);
+  const [lang, setLang] = useState(() => {
+    if (typeof window !== 'undefined') return localStorage.getItem('agri_lang') || 'en';
+    return 'en';
+  });
+  const t = (key) => TRANSLATIONS[lang]?.[key] || TRANSLATIONS.en[key] || key;
+  const changeLang = (l) => { setLang(l); if (typeof window !== 'undefined') localStorage.setItem('agri_lang', l); };
+  const isRTL = lang === 'ar';
   const Section = SECTIONS[section];
+  const NAV = NAV_KEYS.map(n => ({...n, label: t(n.key)}));
   
   return (
-    <div style={{ display:"flex", height:"100vh", background:C.bg, fontFamily:"'Segoe UI',system-ui,sans-serif", color:C.text, overflow:"hidden" }}>
+    <LangContext.Provider value={{ lang, setLang: changeLang, t }}>
+    <div dir={isRTL?"rtl":"ltr"} style={{ display:"flex", height:"100vh", background:C.bg, fontFamily:"'Segoe UI',system-ui,sans-serif", color:C.text, overflow:"hidden" }}>
       {/* Sidebar */}
       <nav style={{ width:collapsed?60:220, background:"#080c14", borderRight:`1px solid ${C.border}`,
         display:"flex", flexDirection:"column", transition:"width 0.2s", flexShrink:0, overflow:"hidden" }}>
         <div style={{ padding:collapsed?"12px 8px":"16px 20px", borderBottom:`1px solid ${C.border}`, display:"flex", alignItems:"center", gap:10 }}>
           <span style={{ fontSize:24, flexShrink:0 }}>🌱</span>
           {!collapsed && <div><div style={{ fontWeight:800, fontSize:14, color:C.accent, letterSpacing:0.5 }}>AgriVision</div>
-          <div style={{ fontSize:10, color:C.textMuted }}>Admin Dashboard</div></div>}
+          <div style={{ fontSize:10, color:C.textMuted }}>{t('admin_dashboard')}</div></div>}
         </div>
         <div style={{ flex:1, overflowY:"auto", padding:"8px 6px" }}>
           {NAV.map(n => (
@@ -834,6 +1273,15 @@ export default function AdminDashboard() {
               {!collapsed && <span style={{ fontSize:13, fontWeight:section===n.key?600:400,
                 color:section===n.key?C.accent:C.textDim }}>{n.label}</span>}
             </button>
+          ))}
+        </div>
+        {/* Language Quick Switch */}
+        <div style={{ padding:"6px", borderTop:`1px solid ${C.border}`, display:"flex", justifyContent:"center", gap:2 }}>
+          {[{c:"en",f:"EN"},{c:"ar",f:"ع"},{c:"tr",f:"TR"}].map(l => (
+            <button key={l.c} onClick={()=>changeLang(l.c)} style={{
+              padding:"4px 8px", borderRadius:6, border:"none", cursor:"pointer", fontSize:10, fontWeight:700,
+              background:lang===l.c?C.accent:"transparent", color:lang===l.c?"#000":C.textMuted,
+            }}>{l.f}</button>
           ))}
         </div>
         <button onClick={()=>setCollapsed(!collapsed)} style={{
@@ -853,7 +1301,7 @@ export default function AdminDashboard() {
             </h1>
           </div>
           <div style={{ display:"flex", alignItems:"center", gap:12 }}>
-            <span style={{ color:C.textMuted, fontSize:12 }}>{new Date().toLocaleDateString('en-US', { weekday:'long', year:'numeric', month:'long', day:'numeric' })}</span>
+            <span style={{ color:C.textMuted, fontSize:12 }}>{new Date().toLocaleDateString(lang==='ar'?'ar-SA':lang==='tr'?'tr-TR':'en-US', { weekday:'long', year:'numeric', month:'long', day:'numeric' })}</span>
             <div style={{ width:32, height:32, borderRadius:"50%", background:C.accentDim, display:"flex",
               alignItems:"center", justifyContent:"center", color:C.accent, fontWeight:700, fontSize:13 }}>H</div>
           </div>
@@ -865,5 +1313,6 @@ export default function AdminDashboard() {
         </div>
       </main>
     </div>
+    </LangContext.Provider>
   );
 }
