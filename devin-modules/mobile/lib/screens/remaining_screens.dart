@@ -33,11 +33,11 @@ class SensorsScreen extends ConsumerWidget {
               child: ListTile(
                 leading: Text(s['icon']!, style: const TextStyle(fontSize: 28)),
                 title: Text(s['label']!, style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 13)),
-                trailing: Text('${s['value']}${s['unit']}', style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w800, color: AgriVisionTheme.primary)),
+                trailing: Text('${s['value']}${s['unit']}', style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w800, color: AgriTheme.primary)),
               ),
             )),
             const SizedBox(height: 16),
-            Text('Last ${readings.length} readings', style: const TextStyle(color: AgriVisionTheme.muted, fontSize: 12)),
+            Text('Last ${readings.length} readings', style: const TextStyle(color: AgriTheme.muted, fontSize: 12)),
           ]);
         },
       ),
@@ -57,11 +57,11 @@ class FarmMapScreen extends StatelessWidget {
       body: const Center(child: Column(mainAxisSize: MainAxisSize.min, children: [
         Text('🗺️', style: TextStyle(fontSize: 64)),
         SizedBox(height: 12),
-        Text('Interactive Farm Map', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: AgriVisionTheme.primary)),
+        Text('Interactive Farm Map', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: AgriTheme.primary)),
         SizedBox(height: 8),
         Padding(padding: EdgeInsets.symmetric(horizontal: 40),
           child: Text('Google Maps integration showing camera positions, coverage zones, and detection hotspots.',
-              textAlign: TextAlign.center, style: TextStyle(color: AgriVisionTheme.muted, fontSize: 13))),
+              textAlign: TextAlign.center, style: TextStyle(color: AgriTheme.muted, fontSize: 13))),
       ])),
     );
   }
@@ -86,7 +86,7 @@ class NotificationsScreen extends ConsumerWidget {
           if (notifs.isEmpty) return const Center(child: Column(mainAxisSize: MainAxisSize.min, children: [
             Text('🔔', style: TextStyle(fontSize: 48)),
             SizedBox(height: 12),
-            Text('No notifications', style: TextStyle(color: AgriVisionTheme.muted)),
+            Text('No notifications', style: TextStyle(color: AgriTheme.muted)),
           ]));
           return ListView.separated(
             padding: const EdgeInsets.all(16),
@@ -100,15 +100,15 @@ class NotificationsScreen extends ConsumerWidget {
                 leading: Container(
                   width: 40, height: 40,
                   decoration: BoxDecoration(
-                    color: unread ? AgriVisionTheme.accentLight : const Color(0xFFF3F4F6),
+                    color: unread ? AgriTheme.accentLight : const Color(0xFFF3F4F6),
                     borderRadius: BorderRadius.circular(10),
                   ),
                   child: Center(child: Text(n['type'] == 'alert' ? '🚨' : '📢', style: const TextStyle(fontSize: 18))),
                 ),
                 title: Text(n['title'] ?? '', style: TextStyle(fontWeight: unread ? FontWeight.w700 : FontWeight.w400, fontSize: 13)),
                 subtitle: Text(n['message'] ?? '', maxLines: 2, overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(fontSize: 11, color: AgriVisionTheme.muted)),
-                trailing: unread ? Container(width: 8, height: 8, decoration: const BoxDecoration(color: AgriVisionTheme.accent, shape: BoxShape.circle)) : null,
+                    style: const TextStyle(fontSize: 11, color: AgriTheme.muted)),
+                trailing: unread ? Container(width: 8, height: 8, decoration: const BoxDecoration(color: AgriTheme.accent, shape: BoxShape.circle)) : null,
                 onTap: () => ApiService().markNotificationRead(n['id']),
               );
             },
@@ -132,14 +132,14 @@ class SettingsScreen extends ConsumerWidget {
       body: ListView(padding: const EdgeInsets.all(16), children: [
         // Profile card
         Card(child: Padding(padding: const EdgeInsets.all(16), child: Row(children: [
-          CircleAvatar(radius: 28, backgroundColor: AgriVisionTheme.accentLight,
-              child: Text((user?['name'] ?? 'U')[0], style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w800, color: AgriVisionTheme.primary))),
+          CircleAvatar(radius: 28, backgroundColor: AgriTheme.accentLight,
+              child: Text((user?['name'] ?? 'U')[0], style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w800, color: AgriTheme.primary))),
           const SizedBox(width: 14),
           Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
             Text(user?['name'] ?? 'Farmer', style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 15)),
-            Text(user?['email'] ?? '', style: const TextStyle(color: AgriVisionTheme.muted, fontSize: 12)),
+            Text(user?['email'] ?? '', style: const TextStyle(color: AgriTheme.muted, fontSize: 12)),
           ])),
-          const Icon(Icons.edit_outlined, color: AgriVisionTheme.muted, size: 20),
+          const Icon(Icons.edit_outlined, color: AgriTheme.muted, size: 20),
         ]))),
         const SizedBox(height: 16),
 
@@ -154,10 +154,10 @@ class SettingsScreen extends ConsumerWidget {
         ].map((item) => Card(
           margin: const EdgeInsets.only(bottom: 6),
           child: ListTile(
-            leading: Icon(item['icon'] as IconData, color: AgriVisionTheme.primary),
+            leading: Icon(item['icon'] as IconData, color: AgriTheme.primary),
             title: Text(item['title'] as String, style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 13)),
-            subtitle: Text(item['subtitle'] as String, style: const TextStyle(fontSize: 11, color: AgriVisionTheme.muted)),
-            trailing: const Icon(Icons.chevron_right, color: AgriVisionTheme.muted),
+            subtitle: Text(item['subtitle'] as String, style: const TextStyle(fontSize: 11, color: AgriTheme.muted)),
+            trailing: const Icon(Icons.chevron_right, color: AgriTheme.muted),
           ),
         )),
 
@@ -166,9 +166,9 @@ class SettingsScreen extends ConsumerWidget {
           onPressed: () {
             ref.read(authProvider.notifier).logout();
           },
-          icon: const Icon(Icons.logout, color: AgriVisionTheme.danger),
-          label: const Text('Logout', style: TextStyle(color: AgriVisionTheme.danger)),
-          style: OutlinedButton.styleFrom(side: const BorderSide(color: AgriVisionTheme.danger)),
+          icon: const Icon(Icons.logout, color: AgriTheme.danger),
+          label: const Text('Logout', style: TextStyle(color: AgriTheme.danger)),
+          style: OutlinedButton.styleFrom(side: const BorderSide(color: AgriTheme.danger)),
         ),
       ]),
     );
@@ -187,16 +187,16 @@ class CameraScannerScreen extends StatelessWidget {
       body: Center(child: Column(mainAxisSize: MainAxisSize.min, children: [
         Container(
           width: 250, height: 250,
-          decoration: BoxDecoration(border: Border.all(color: AgriVisionTheme.accent, width: 3), borderRadius: BorderRadius.circular(20)),
+          decoration: BoxDecoration(border: Border.all(color: AgriTheme.accent, width: 3), borderRadius: BorderRadius.circular(20)),
           child: const Center(child: Column(mainAxisSize: MainAxisSize.min, children: [
-            Icon(Icons.qr_code_scanner, size: 80, color: AgriVisionTheme.accent),
+            Icon(Icons.qr_code_scanner, size: 80, color: AgriTheme.accent),
             SizedBox(height: 12),
-            Text('Point at camera QR code', style: TextStyle(color: AgriVisionTheme.muted, fontSize: 13)),
+            Text('Point at camera QR code', style: TextStyle(color: AgriTheme.muted, fontSize: 13)),
           ])),
         ),
         const SizedBox(height: 24),
         const Text('Scan the QR label on your\ncamera node to register it',
-            textAlign: TextAlign.center, style: TextStyle(color: AgriVisionTheme.muted, fontSize: 13)),
+            textAlign: TextAlign.center, style: TextStyle(color: AgriTheme.muted, fontSize: 13)),
         const SizedBox(height: 24),
         OutlinedButton.icon(
           onPressed: () {},

@@ -45,7 +45,7 @@ class _LoginState extends ConsumerState<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AgriVisionTheme.bg,
+      backgroundColor: AgriTheme.bg,
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
@@ -53,10 +53,10 @@ class _LoginState extends ConsumerState<LoginScreen> {
             child: Column(mainAxisSize: MainAxisSize.min, children: [
               const Text('🌱', style: TextStyle(fontSize: 48)),
               const SizedBox(height: 8),
-              const Text('AgriVision', style: TextStyle(fontSize: 24, fontWeight: FontWeight.w900, color: AgriVisionTheme.primary)),
+              const Text('AgriVision', style: TextStyle(fontSize: 24, fontWeight: FontWeight.w900, color: AgriTheme.primary)),
               const SizedBox(height: 4),
               Text(_isLogin ? 'Welcome back' : 'Create your farm account',
-                  style: const TextStyle(color: AgriVisionTheme.muted, fontSize: 13)),
+                  style: const TextStyle(color: AgriTheme.muted, fontSize: 13)),
               const SizedBox(height: 24),
 
               // Toggle
@@ -76,7 +76,7 @@ class _LoginState extends ConsumerState<LoginScreen> {
                       ),
                       child: Text(t, textAlign: TextAlign.center, style: TextStyle(
                         fontSize: 13, fontWeight: FontWeight.w700,
-                        color: selected ? AgriVisionTheme.primary : AgriVisionTheme.muted,
+                        color: selected ? AgriTheme.primary : AgriTheme.muted,
                       )),
                     ),
                   ));
@@ -88,7 +88,7 @@ class _LoginState extends ConsumerState<LoginScreen> {
                 padding: const EdgeInsets.all(12),
                 margin: const EdgeInsets.only(bottom: 12),
                 decoration: BoxDecoration(color: const Color(0xFFFEE2E2), borderRadius: BorderRadius.circular(8)),
-                child: Text(_error!, style: const TextStyle(color: AgriVisionTheme.danger, fontSize: 12)),
+                child: Text(_error!, style: const TextStyle(color: AgriTheme.danger, fontSize: 12)),
               ),
 
               if (!_isLogin) ...[
@@ -123,7 +123,7 @@ class _LoginState extends ConsumerState<LoginScreen> {
 
               if (_isLogin) TextButton(
                 onPressed: () {},
-                child: const Text('Forgot password?', style: TextStyle(fontSize: 12, color: AgriVisionTheme.accent)),
+                child: const Text('Forgot password?', style: TextStyle(fontSize: 12, color: AgriTheme.accent)),
               ),
             ]),
           ),

@@ -30,7 +30,7 @@ class _SplashState extends ConsumerState<SplashScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AgriVisionTheme.primary,
+      backgroundColor: AgriTheme.primary,
       body: Center(
         child: Column(mainAxisSize: MainAxisSize.min, children: [
           const Text('🌱', style: TextStyle(fontSize: 64)),
