@@ -1,0 +1,35 @@
+[Unit]
+Description=AgriVision Central Hub — AI Agricultural Monitoring
+After=network-online.target hostapd.service dnsmasq.service
+Wants=network-online.target
+Requires=hostapd.service dnsmasq.service
+
+[Service]
+Type=simple
+User=agrivision
+Group=agrivision
+WorkingDirectory=/home/agrivision
+EnvironmentFile=/home/agrivision/config/agrivision.conf
+Environment=PATH=/home/agrivision/venv/bin:/usr/bin:/usr/local/bin
+Environment=PYTHONUNBUFFERED=1
+ExecStart=/home/agrivision/venv/bin/python3 main.py
+Restart=always
+RestartSec=10
+WatchdogSec=120
+
+# Resource limits
+MemoryMax=1G
+CPUQuota=80%
+
+# Logging
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=agrivision-hub
+
+# Security
+NoNewPrivileges=true
+ProtectSystem=strict
+ReadWritePaths=/home/agrivision/data /home/agrivision/logs
+
+[Install]
+WantedBy=multi-user.target

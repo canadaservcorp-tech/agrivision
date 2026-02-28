@@ -1,0 +1,10 @@
+[Unit]
+Description=AgriVision Watchdog Timer — Every 5 Minutes
+
+[Timer]
+OnBootSec=60
+OnUnitActiveSec=300
+Unit=agrivision-watchdog.service
+
+[Install]
+WantedBy=timers.target

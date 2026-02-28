@@ -1,0 +1,13 @@
+# /etc/systemd/system/agrivision-watchdog.service
+[Unit]
+Description=AgriVision Hub Watchdog — Health Monitor
+After=agrivision-hub.service
+
+[Service]
+Type=oneshot
+User=agrivision
+ExecStart=/home/agrivision/scripts/watchdog.sh
+StandardOutput=journal
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,18 @@
+[Unit]
+Description=AgriVision Hardware Monitor — Weather Station & Sensors
+After=agrivision-hub.service
+ConditionPathExists=/home/agrivision/config/agrivision.conf
+
+[Service]
+Type=simple
+User=agrivision
+Group=agrivision
+WorkingDirectory=/home/agrivision
+EnvironmentFile=/home/agrivision/config/agrivision.conf
+Environment=PATH=/home/agrivision/venv/bin:/usr/bin
+ExecStart=/home/agrivision/venv/bin/python3 hardware/weather_station.py
+Restart=on-failure
+RestartSec=30
+
+[Install]
+WantedBy=multi-user.target

@@ -156,7 +156,7 @@ bool sd_save_image(camera_fb_t* fb, const char* node_serial, uint16_t battery_mv
   // Write metadata JSON
   File metaFile = SD_MMC.open(metafile, FILE_WRITE);
   if (metaFile) {
-    StaticJsonDocument<256> doc;
+    JsonDocument doc;
     doc["serial"] = node_serial;
     doc["timestamp"] = (uint32_t)now;
     doc["battery"] = battery_mv;
@@ -218,7 +218,7 @@ uint32_t sd_sync_to_hub(const char* hub_url) {
     if (SD_MMC.exists(metaPath.c_str())) {
       File metaFile = SD_MMC.open(metaPath.c_str());
       if (metaFile) {
-        StaticJsonDocument<256> doc;
+        JsonDocument doc;
         deserializeJson(doc, metaFile);
         serial = doc["serial"].as<String>();
         battery = doc["battery"] | 0;

@@ -1,0 +1,22 @@
+# ============================================================
+# AgriVision Hub — Cron Jobs
+# Install: sudo crontab -u agrivision /home/agrivision/scripts/crontab
+# ============================================================
+
+# Daily backup at 2:00 AM
+0 2 * * * /home/agrivision/scripts/backup.sh >> /home/agrivision/logs/backup.log 2>&1
+
+# Weekly self-update check (Sunday 3:00 AM)
+0 3 * * 0 /home/agrivision/scripts/update.sh >> /home/agrivision/logs/update.log 2>&1
+
+# Daily image cleanup (4:00 AM) — remove images older than 30 days
+0 4 * * * find /home/agrivision/data/images -name "*.jpg" -mtime +30 -delete 2>/dev/null
+
+# Daily synced-image cleanup — remove synced copies older than 7 days
+0 4 * * * find /home/agrivision/data/images/synced -name "*.jpg" -mtime +7 -delete 2>/dev/null
+
+# Hourly DNS cache flush (prevents stale camera lookups)
+0 * * * * systemctl restart dnsmasq 2>/dev/null
+
+# Weekly reboot (Sunday 4:00 AM) — optional, uncomment if desired
+# 0 4 * * 0 sudo reboot

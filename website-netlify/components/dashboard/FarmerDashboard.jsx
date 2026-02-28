@@ -19,14 +19,14 @@ const MOCK_SYSTEM = {
   id: 1, hub_serial: "HUB-A3F7C1D2", is_online: true, battery: 78, temperature: 42,
   signal: -65, storage: 12.4, firmware: "3.0.1", plan: "Professional",
   cameras: [
-    { id: 1, serial: "CAM-001", online: true, battery: 92, lastImage: "2h ago", images_today: 48 },
-    { id: 2, serial: "CAM-002", online: true, battery: 85, lastImage: "2h ago", images_today: 47 },
-    { id: 3, serial: "CAM-003", online: true, battery: 71, lastImage: "2h ago", images_today: 46 },
-    { id: 4, serial: "CAM-004", online: false, battery: 12, lastImage: "6h ago", images_today: 24 },
-    { id: 5, serial: "CAM-005", online: true, battery: 88, lastImage: "2h ago", images_today: 48 },
-    { id: 6, serial: "CAM-006", online: true, battery: 95, lastImage: "2h ago", images_today: 47 },
-    { id: 7, serial: "CAM-007", online: true, battery: 67, lastImage: "2h ago", images_today: 45 },
-    { id: 8, serial: "CAM-008", online: true, battery: 80, lastImage: "3h ago", images_today: 44 },
+    { id: 1, serial: "CAM-001", online: true, battery: 92, lastImage: "2h ago", images_today: 48, sd_buffered: 0, firmware: "1.2.0", power_profile: "balanced" },
+    { id: 2, serial: "CAM-002", online: true, battery: 85, lastImage: "2h ago", images_today: 47, sd_buffered: 0, firmware: "1.2.0", power_profile: "balanced" },
+    { id: 3, serial: "CAM-003", online: true, battery: 71, lastImage: "2h ago", images_today: 46, sd_buffered: 3, firmware: "1.2.0", power_profile: "balanced" },
+    { id: 4, serial: "CAM-004", online: false, battery: 12, lastImage: "6h ago", images_today: 24, sd_buffered: 18, firmware: "1.2.0", power_profile: "low_power" },
+    { id: 5, serial: "CAM-005", online: true, battery: 88, lastImage: "2h ago", images_today: 48, sd_buffered: 0, firmware: "1.2.0", power_profile: "performance" },
+    { id: 6, serial: "CAM-006", online: true, battery: 95, lastImage: "2h ago", images_today: 47, sd_buffered: 0, firmware: "1.2.0", power_profile: "balanced" },
+    { id: 7, serial: "CAM-007", online: true, battery: 67, lastImage: "2h ago", images_today: 45, sd_buffered: 2, firmware: "1.1.0", power_profile: "low_power" },
+    { id: 8, serial: "CAM-008", online: true, battery: 80, lastImage: "3h ago", images_today: 44, sd_buffered: 0, firmware: "1.2.0", power_profile: "balanced" },
   ]
 };
 
@@ -436,7 +436,7 @@ export default function FarmerDashboard() {
                         <span style={{ fontSize: 13, fontWeight: 700, color: COLORS.primary }}>{cam.serial}</span>
                         <span style={{ fontSize: 11, color: COLORS.textMuted }}>{cam.images_today} shots today</span>
                       </div>
-                      <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                      <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 6 }}>
                         <span style={{ fontSize: 11, color: COLORS.textMuted }}>🔋</span>
                         <div style={{ flex: 1, height: 6, background: COLORS.borderLight, borderRadius: 3, overflow: "hidden" }}>
                           <div style={{
@@ -446,6 +446,12 @@ export default function FarmerDashboard() {
                           }} />
                         </div>
                         <span style={{ fontSize: 11, fontWeight: 600, color: cam.battery > 30 ? COLORS.accent : COLORS.danger }}>{cam.battery}%</span>
+                      </div>
+                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                        <span style={{ fontSize: 10, color: COLORS.textMuted }}>v{cam.firmware} • {cam.power_profile}</span>
+                        {cam.sd_buffered > 0 && (
+                          <span style={{ fontSize: 10, fontWeight: 700, color: COLORS.warning, background: COLORS.warningLight, padding: "2px 6px", borderRadius: 4 }}>SD: {cam.sd_buffered} queued</span>
+                        )}
                       </div>
                     </div>
                   </div>

@@ -184,6 +184,47 @@ export default function LandingPage() {
         </div>
       </section>
 
+      {/* TECHNOLOGY */}
+      <section id="technology" style={{ padding: "80px 40px", background: "#fff" }}>
+        <div style={{ maxWidth: 1000, margin: "0 auto" }}>
+          <h2 style={{ textAlign: "center", fontSize: 36, fontWeight: 800, color: COLORS.primary, fontFamily: "'Playfair Display', serif", marginBottom: 12 }}>
+            Production-Grade Technology
+          </h2>
+          <p style={{ textAlign: "center", color: COLORS.muted, marginBottom: 48, fontSize: 15 }}>
+            Enterprise reliability built into every component
+          </p>
+
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 20 }}>
+            {[
+              { icon: "🔧", title: "ESP32-S3 Camera Nodes", specs: ["5MP OV5640 autofocus", "MicroSD offline buffer", "Solar + LiFePO4 battery", "Auto-provisioning via AP", "Production self-test on boot", "Deep sleep power profiles"] },
+              { icon: "🖥️", title: "Raspberry Pi Hub", specs: ["On-device AI detection", "Fleet management for 50+ nodes", "Heartbeat health monitoring", "Local storage with cloud sync", "OTA firmware updates", "WhatsApp & push alerts"] },
+              { icon: "📱", title: "Mobile & Web Apps", specs: ["Real-time camera dashboard", "Disease detection feed", "Interactive farm mapping", "Environmental sensor charts", "Dark mode support", "Multi-language (EN/AR/FR)"] },
+            ].map((tech, i) => (
+              <div key={i} style={{
+                background: COLORS.bg, borderRadius: 16, padding: 28,
+                border: `1px solid ${COLORS.border}`,
+              }}>
+                <div style={{
+                  width: 56, height: 56, borderRadius: 14, background: COLORS.accentLight,
+                  display: "flex", alignItems: "center", justifyContent: "center",
+                  fontSize: 26, marginBottom: 16,
+                }}>
+                  {tech.icon}
+                </div>
+                <h3 style={{ fontSize: 17, fontWeight: 800, color: COLORS.primary, marginBottom: 14 }}>{tech.title}</h3>
+                <div>
+                  {tech.specs.map((spec, j) => (
+                    <div key={j} style={{ fontSize: 12, color: COLORS.muted, padding: "5px 0", display: "flex", gap: 8, lineHeight: 1.5 }}>
+                      <span style={{ color: COLORS.accent, fontWeight: 700 }}>+</span> {spec}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* PRICING */}
       <section id="pricing" style={{ padding: "80px 40px", background: "#fff" }}>
         <div style={{ maxWidth: 900, margin: "0 auto", textAlign: "center" }}>

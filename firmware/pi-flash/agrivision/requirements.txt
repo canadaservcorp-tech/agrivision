@@ -1,0 +1,54 @@
+# ============================================================
+# AgriVision Central Hub — All Dependencies
+# Install: pip install -r requirements.txt
+# ============================================================
+
+# === Core Hub Services ===
+aiohttp==3.9.5                    # Camera receiver HTTP server
+aiomqtt==2.3.0                    # MQTT cloud communication
+httpx==0.28.1                     # HTTP client (cloud sync, OTA)
+
+# === AI Inference ===
+tflite-runtime==2.14.0            # TFLite model inference
+Pillow==11.0.0                    # Image processing
+numpy==1.26.4                     # Numeric operations
+
+# === Sensors (Raspberry Pi GPIO) ===
+adafruit-circuitpython-dht==4.0.4       # DHT22 temp/humidity
+adafruit-circuitpython-mcp3xxx==1.4.17  # MCP3008 ADC (soil, light, battery)
+RPi.GPIO==0.7.1                         # GPIO access
+
+# === Weather Station (Devin hardware) ===
+adafruit-circuitpython-bme280==2.6.24   # BME280 temp/humid/pressure
+adafruit-circuitpython-bh1750==1.1.5    # BH1750 lux sensor
+adafruit-circuitpython-ads1x15==2.2.26  # ADS1115 ADC (wind, rain, UV)
+
+# === Multispectral Imaging (Devin hardware) ===
+opencv-python-headless==4.10.0    # Image processing (no GUI)
+scikit-image==0.24.0              # NDVI/vegetation index calculations
+
+# === LoRaWAN (Devin hardware — optional) ===
+pyserial==3.5                     # Serial communication to LoRa module
+pycryptodome==3.21.0              # AES encryption for LoRa payloads
+
+# === WhatsApp Alerts ===
+twilio==9.3.0                     # Twilio WhatsApp Business API
+
+# === PDF Reports ===
+reportlab==4.2.5                  # PDF generation
+
+# === Fleet Management ===
+zeroconf==0.132.2                 # mDNS camera auto-discovery
+
+# === Database ===
+aiosqlite==0.20.0                 # Async SQLite for local storage
+
+# === Utilities ===
+python-dotenv==1.0.1              # .env file loading
+psutil==6.1.0                     # System monitoring (CPU, RAM, temp)
+schedule==1.2.2                   # Task scheduling
+watchdog==5.0.3                   # File system monitoring
+
+# === AI Training (optional — run manually) ===
+# tensorflow==2.16.1              # Full TF for training (uncomment if needed)
+# albumentations==1.4.0           # Image augmentation

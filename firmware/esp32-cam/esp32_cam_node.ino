@@ -475,7 +475,7 @@ void loadConfig() {
   EEPROM.begin(128);
   
   uint8_t magic = EEPROM.read(0);
-  if (magic == 0xAG) {  // Config exists
+  if (magic == 0xA6) {  // Config exists
     EEPROM.get(1, config);
     Serial.println("Config loaded from EEPROM");
   } else {
@@ -494,7 +494,7 @@ void loadConfig() {
 
 void saveConfig() {
   EEPROM.begin(128);
-  EEPROM.write(0, 0xAG);
+  EEPROM.write(0, 0xA6);
   EEPROM.put(1, config);
   EEPROM.commit();
 }

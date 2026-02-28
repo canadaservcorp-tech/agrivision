@@ -23,6 +23,8 @@ class CameraReceiver:
 
     def _setup_routes(self):
         self.app.router.add_post("/api/image", self.receive_image)
+        self.app.router.add_post("/api/upload", self.receive_image)  # Alias for production firmware
+        self.app.router.add_post("/api/heartbeat", self.receive_heartbeat)
         self.app.router.add_get("/api/node-config", self.get_node_config)
         self.app.router.add_get("/api/status", self.get_status)
         self.app.router.add_get("/health", self.health_check)
@@ -114,6 +116,58 @@ class CameraReceiver:
 
         except Exception as e:
             logger.error(f"Image receive error: {e}")
+            return web.json_response({"error": str(e)}, status=500)
+
+    async def receive_heartbeat(self, request):
+        """
+        POST /api/heartbeat
+        Receives periodic health status from production ESP32 camera nodes.
+        Returns pending commands (if any).
+        """
+        try:
+            import json as _json
+            body = await request.read()
+            data = _json.loads(body) if body else {}
+
+            serial = data.get("serial", request.headers.get("X-Node-Serial", "unknown"))
+            battery_pct = data.get("battery_pct", 0)
+            rssi = data.get("rssi", 0)
+            firmware = data.get("firmware", "unknown")
+            power_profile = data.get("power_profile", "unknown")
+            sd_available = data.get("sd_available", False)
+            sd_buffered = data.get("sd_buffered", 0)
+            images_today = data.get("images_today", 0)
+            uptime_sec = data.get("uptime_sec", 0)
+
+            # Update fleet manager with heartbeat data
+            self.storage.update_camera_status(serial, {
+                "online": True,
+                "battery_pct": battery_pct,
+                "rssi": rssi,
+                "firmware": firmware,
+                "power_profile": power_profile,
+                "sd_available": sd_available,
+                "sd_buffered": sd_buffered,
+                "images_today": images_today,
+                "uptime_sec": uptime_sec,
+                "last_contact": datetime.utcnow().isoformat(),
+            })
+
+            logger.info(
+                f"💓 {serial}: 🔋{battery_pct}% | 📶{rssi}dBm | "
+                f"📸{images_today} | SD:{sd_buffered} | {power_profile}"
+            )
+
+            # Build response with any pending commands
+            response = {"status": "ok", "server_time": datetime.utcnow().isoformat()}
+            commands = self.storage.get_pending_node_commands(serial)
+            if commands:
+                response.update(commands)
+
+            return web.json_response(response)
+
+        except Exception as e:
+            logger.error(f"Heartbeat error: {e}")
             return web.json_response({"error": str(e)}, status=500)
 
     async def get_node_config(self, request):
