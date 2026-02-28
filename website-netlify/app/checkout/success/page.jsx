@@ -1,9 +1,9 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 
-export default function CheckoutSuccess() {
+function CheckoutSuccessContent() {
   const searchParams = useSearchParams();
   const orderId = searchParams.get("order");
 
@@ -43,5 +43,13 @@ export default function CheckoutSuccess() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function CheckoutSuccess() {
+  return (
+    <Suspense fallback={<div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center" }}>Loading...</div>}>
+      <CheckoutSuccessContent />
+    </Suspense>
   );
 }
