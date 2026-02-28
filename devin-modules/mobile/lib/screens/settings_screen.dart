@@ -49,6 +49,29 @@ class SettingsScreen extends ConsumerWidget {
           ),
         ),
 
+        // System mode (A/B)
+        Card(
+          margin: const EdgeInsets.only(bottom: 12),
+          child: ListTile(
+            leading: Container(
+              width: 36,
+              height: 36,
+              decoration: BoxDecoration(
+                color: AgriTheme.accent.withOpacity(0.12),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: const Icon(Icons.tune_rounded, color: AgriTheme.accent, size: 20),
+            ),
+            title: const Text('System Mode (A/B)', style: TextStyle(fontWeight: FontWeight.w600, fontSize: 13)),
+            subtitle: Text(
+              'CCTV vs Monitoring • Time-lapse • Schedule',
+              style: TextStyle(fontSize: 11, color: Theme.of(context).textTheme.bodySmall?.color?.withOpacity(0.6)),
+            ),
+            trailing: Icon(Icons.chevron_right, size: 18, color: Theme.of(context).iconTheme.color?.withOpacity(0.4)),
+            onTap: () => context.push('/mode'),
+          ),
+        ),
+
         // Farm selector
         Text('Your Farms', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w800, color: Theme.of(context).textTheme.bodyLarge?.color)),
         const SizedBox(height: 6),

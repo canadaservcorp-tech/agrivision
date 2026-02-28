@@ -758,6 +758,192 @@ const ReportsSection = () => {
   );
 };
 
+// ═══ MODE CONTROL SECTION (Mode A: CCTV / Mode B: Monitoring) ═══
+const ModeControlSection = () => {
+  const [farmMode, setFarmMode] = useState("monitoring"); // 'cctv' or 'monitoring'
+  const [hddConnected, setHddConnected] = useState(false);
+  const [cameraOverrides, setCameraOverrides] = useState({});
+  const [motionDetection, setMotionDetection] = useState(true);
+  const [continuousRecord, setContinuousRecord] = useState(false);
+  const [nightVision, setNightVision] = useState(true);
+  const [aiEnabled, setAiEnabled] = useState(true);
+  const [timelapse, setTimelapse] = useState(true);
+  const [scheduleEnabled, setScheduleEnabled] = useState(true);
+  const [autoSwitch, setAutoSwitch] = useState(false);
+  const [sensitivity, setSensitivity] = useState(70);
+  const [captureInterval, setCaptureInterval] = useState(10);
+  const [confidenceThreshold, setConfidenceThreshold] = useState(65);
+
+  const modeColor = farmMode === 'cctv' ? C.red : C.accent;
+  const cameras = MOCK.detections.slice(0,8).map((d,i) => ({
+    serial: d.camera_serial, zone: d.zone, online: i%5!==0, battery: 20+Math.floor(Math.random()*80)
+  }));
+
+  const handleModeSwitch = (mode) => {
+    if (mode === 'cctv' && !hddConnected) { alert('CCTV Mode requires a hard drive connected to the central unit.'); return; }
+    setFarmMode(mode);
+  };
+
+  const effectiveMode = (serial) => cameraOverrides[serial] || farmMode;
+
+  const Toggle = ({value, onChange, label, sub}) => (
+    <div style={{display:"flex",alignItems:"center",gap:12,padding:"8px 0"}}>
+      <div style={{flex:1}}><div style={{fontSize:13,fontWeight:600,color:C.text}}>{label}</div><div style={{fontSize:11,color:C.textMuted}}>{sub}</div></div>
+      <div onClick={()=>onChange(!value)} style={{width:44,height:24,borderRadius:12,background:value?C.accent:"#374151",cursor:"pointer",position:"relative",transition:"all 0.2s"}}>
+        <div style={{width:20,height:20,borderRadius:"50%",background:"#fff",position:"absolute",top:2,left:value?22:2,transition:"all 0.2s"}} />
+      </div>
+    </div>
+  );
+
+  return (
+    <div>
+      {/* Mode Selector */}
+      <div style={{background:C.card,border:`1px solid ${C.border}`,borderRadius:12,padding:20,marginBottom:16}}>
+        <div style={{padding:16,background:`${modeColor}0a`,borderRadius:12,marginBottom:16,display:"flex",alignItems:"center",gap:12}}>
+          <span style={{fontSize:28}}>{farmMode==='cctv'?'\uD83D\uDCF9':'\uD83C\uDF31'}</span>
+          <div style={{flex:1}}>
+            <div style={{fontSize:16,fontWeight:800,color:modeColor}}>{farmMode==='cctv'?'Mode A \u2014 CCTV Surveillance':'Mode B \u2014 AI Crop Monitoring'}</div>
+            <div style={{fontSize:11,color:`${modeColor}99`}}>{farmMode==='cctv'?'Live streaming \u2022 Motion detection \u2022 Security recording':'Disease detection \u2022 Time-lapse \u2022 Scheduled capture'}</div>
+          </div>
+        </div>
+        <div style={{display:"flex",gap:12,marginBottom:16}}>
+          {[{mode:"cctv",label:"MODE A",title:"CCTV",desc:"Live surveillance\nMotion alerts\nContinuous recording",color:C.red,icon:'\uD83D\uDCF9'},
+            {mode:"monitoring",label:"MODE B",title:"MONITOR",desc:"AI disease detection\nTime-lapse capture\nScheduled intervals",color:C.accent,icon:'\uD83C\uDF31'}].map(m => (
+            <div key={m.mode} onClick={()=>handleModeSwitch(m.mode)} style={{flex:1,padding:16,borderRadius:14,cursor:"pointer",background:farmMode===m.mode?`${m.color}12`:C.card,border:`2px solid ${farmMode===m.mode?m.color:C.border}`,transition:"all 0.2s"}}>
+              <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:10}}>
+                <div style={{width:36,height:36,background:farmMode===m.mode?`${m.color}20`:C.border,borderRadius:10,display:"flex",alignItems:"center",justifyContent:"center",fontSize:18}}>{m.icon}</div>
+                <div><div style={{fontSize:9,fontWeight:800,letterSpacing:1,color:farmMode===m.mode?m.color:C.textMuted}}>{m.label}</div><div style={{fontSize:15,fontWeight:800,color:farmMode===m.mode?m.color:C.text}}>{m.title}</div></div>
+              </div>
+              <div style={{fontSize:11,color:farmMode===m.mode?`${m.color}cc`:C.textMuted,lineHeight:1.5,whiteSpace:"pre-line"}}>{m.desc}</div>
+            </div>
+          ))}
+        </div>
+        <Btn onClick={()=>{if(farmMode==='cctv'&&!hddConnected){alert('HDD required');return;}setCameraOverrides({});}} style={{width:"100%",background:modeColor}}>Apply {farmMode==='cctv'?'CCTV':'Monitoring'} to All Cameras</Btn>
+      </div>
+
+      {/* HDD / CCTV Requirement */}
+      <div style={{background:C.card,border:`1px solid ${C.border}`,borderRadius:12,padding:20,marginBottom:16}}>
+        <div style={{fontSize:16,fontWeight:700,marginBottom:12,color:C.text}}>\uD83D\uDCBE Storage & CCTV Requirements</div>
+        <Btn variant={hddConnected?"primary":"danger"} onClick={()=>{setHddConnected(!hddConnected);if(hddConnected&&farmMode==='cctv')setFarmMode('monitoring');}} style={{width:"100%",marginBottom:12}}>
+          {hddConnected?'\uD83D\uDFE2 HDD Connected \u2014 Click to Simulate Disconnect':'\uD83D\uDD34 HDD Disconnected \u2014 Click to Simulate Connect'}
+        </Btn>
+        {!hddConnected ? (
+          <div style={{background:"#ef444415",border:"1px solid #ef444444",borderRadius:12,padding:16,display:"flex",alignItems:"flex-start",gap:12}}>
+            <span style={{fontSize:24}}>\u26A0\uFE0F</span>
+            <div>
+              <div style={{fontWeight:700,color:C.red,marginBottom:4}}>Hard Drive Required for CCTV Mode</div>
+              <div style={{fontSize:12,color:C.textDim}}>CCTV Mode (Mode A) requires a hard drive connected to the central unit for local recording. Without HDD, only Mode B (Monitoring) is available.</div>
+              <div style={{fontSize:11,color:C.textMuted,marginTop:6}}>\u2022 Connect external HDD to Pi Hub USB port<br/>\u2022 Minimum: 1TB for 7-day retention<br/>\u2022 Supported: ext4, NTFS, exFAT</div>
+            </div>
+          </div>
+        ) : (
+          <div style={{background:"#10b98115",border:"1px solid #10b98144",borderRadius:12,padding:16,display:"flex",alignItems:"flex-start",gap:12}}>
+            <span style={{fontSize:24}}>\u2705</span>
+            <div>
+              <div style={{fontWeight:700,color:C.accent,marginBottom:4}}>Hard Drive Connected \u2014 CCTV Ready</div>
+              <div style={{fontSize:12,color:C.textDim}}>Local storage available. CCTV recordings stored on HDD. No server load \u2014 both systems run locally.</div>
+              <div style={{fontSize:11,color:C.textMuted,marginTop:6}}>\uD83D\uDCBE 931 GB available of 1 TB \u2022 ext4 \u2022 /dev/sda1</div>
+            </div>
+          </div>
+        )}
+        <div style={{background:"#0f172a",border:`1px solid ${C.border}`,borderRadius:12,padding:16,marginTop:12}}>
+          <div style={{fontSize:14,fontWeight:700,marginBottom:8,color:C.text}}>\uD83D\uDD0D Dual-System Architecture</div>
+          <div style={{fontSize:12,color:C.textDim,lineHeight:1.8}}>
+            <div><span style={{color:C.red,fontWeight:700}}>CCTV (Mode A):</span> Runs entirely on local central unit. Video stored on HDD. <strong style={{color:C.accent}}>Zero server load.</strong></div>
+            <div><span style={{color:C.accent,fontWeight:700}}>Monitor (Mode B):</span> AI snapshots processed on-device. Only results uploaded. <strong style={{color:C.accent}}>Minimal bandwidth.</strong></div>
+            <div><span style={{color:C.blue,fontWeight:700}}>Both Active:</span> CCTV records locally while Monitoring captures at intervals. Only necessary data syncs to cloud.</div>
+            <div style={{borderTop:`1px solid ${C.border}`,paddingTop:8,marginTop:8,color:C.orange}}>\uD83D\uDD12 Storage Policy: Only confirmed detections, alerts, and thumbnails uploaded. Raw CCTV footage stays on local HDD. Auto-cleanup after retention period.</div>
+          </div>
+        </div>
+      </div>
+
+      {/* Mode Settings */}
+      <div style={{background:C.card,border:`1px solid ${C.border}`,borderRadius:12,padding:20,marginBottom:16}}>
+        <div style={{fontSize:16,fontWeight:700,marginBottom:12,color:farmMode==='cctv'?C.red:C.accent}}>{farmMode==='cctv'?'\uD83D\uDD34 CCTV Settings':'\uD83C\uDF31 Monitoring Settings'}</div>
+        {farmMode==='cctv' && !hddConnected ? (
+          <div style={{color:C.textDim,fontSize:13}}>Connect a hard drive to enable CCTV settings.</div>
+        ) : farmMode==='cctv' ? (
+          <div>
+            <Toggle label="Motion Detection" sub="Alert on movement" value={motionDetection} onChange={setMotionDetection} />
+            {motionDetection && <div style={{marginBottom:8}}><div style={{display:"flex",justifyContent:"space-between",fontSize:12}}><span style={{fontWeight:600}}>Sensitivity</span><span style={{color:C.accent,fontWeight:700}}>{sensitivity}%</span></div><input type="range" min="10" max="100" value={sensitivity} onChange={e=>setSensitivity(+e.target.value)} style={{width:"100%",accentColor:C.accent}} /></div>}
+            <Toggle label="Continuous Recording" sub="24/7 to HDD" value={continuousRecord} onChange={setContinuousRecord} />
+            <Toggle label="Night Vision (IR LED)" sub="Auto in low light" value={nightVision} onChange={setNightVision} />
+          </div>
+        ) : (
+          <div>
+            <Toggle label="AI Disease Detection" sub="Analyze every image" value={aiEnabled} onChange={setAiEnabled} />
+            {aiEnabled && <div style={{marginBottom:8}}><div style={{display:"flex",justifyContent:"space-between",fontSize:12}}><span style={{fontWeight:600}}>Confidence Threshold</span><span style={{color:C.accent,fontWeight:700}}>{confidenceThreshold}%</span></div><input type="range" min="30" max="99" value={confidenceThreshold} onChange={e=>setConfidenceThreshold(+e.target.value)} style={{width:"100%",accentColor:C.accent}} /></div>}
+            <div style={{marginBottom:8}}><div style={{display:"flex",justifyContent:"space-between",fontSize:12}}><span style={{fontWeight:600}}>Capture Interval</span><span style={{color:C.accent,fontWeight:700}}>{captureInterval} min</span></div><input type="range" min="1" max="60" value={captureInterval} onChange={e=>setCaptureInterval(+e.target.value)} style={{width:"100%",accentColor:C.accent}} /></div>
+            <Toggle label="Time-Lapse Mode" sub="Daily time-lapse video" value={timelapse} onChange={setTimelapse} />
+          </div>
+        )}
+      </div>
+
+      {/* Per Camera */}
+      <div style={{background:C.card,border:`1px solid ${C.border}`,borderRadius:12,padding:20,marginBottom:16}}>
+        <div style={{fontSize:16,fontWeight:700,marginBottom:8,color:C.text}}>Per-Camera Mode Override</div>
+        <div style={{fontSize:12,color:C.textDim,marginBottom:12}}>Default: {farmMode==='cctv'?'Mode A (CCTV)':'Mode B (Monitoring)'}. Override individual cameras below.</div>
+        <div style={{display:"flex",gap:12,marginBottom:12}}>
+          {[{c:C.red,l:"A = CCTV"},{c:C.accent,l:"B = Monitor"},{c:C.textMuted,l:"Auto = Farm default"}].map((d,i) => (
+            <div key={i} style={{display:"flex",alignItems:"center",gap:4}}><div style={{width:8,height:8,borderRadius:"50%",background:d.c}} /><span style={{fontSize:11,color:C.textDim}}>{d.l}</span></div>
+          ))}
+        </div>
+        {cameras.map(cam => {
+          const eff = effectiveMode(cam.serial);
+          const eColor = eff==='cctv'?C.red:C.accent;
+          return (
+            <div key={cam.serial} style={{display:"flex",alignItems:"center",gap:12,padding:"10px 14px",background:C.card,border:`1px solid ${C.border}`,borderRadius:10,marginBottom:6}}>
+              <div style={{width:10,height:10,borderRadius:"50%",background:cam.online?C.accent:C.textMuted}} />
+              <div style={{flex:1}}>
+                <div style={{fontSize:12,fontWeight:700,fontFamily:"monospace"}}>{cam.serial}</div>
+                <div style={{fontSize:11,color:C.textDim}}>{cam.zone} \u2022 \uD83D\uDD0B{cam.battery}% \u2022 <span style={{background:`${eColor}15`,color:eColor,padding:"1px 6px",borderRadius:4,fontSize:9,fontWeight:800}}>{eff==='cctv'?'CCTV':'MON'}</span></div>
+              </div>
+              <div style={{display:"flex",gap:2,background:"#0f172a",borderRadius:8,padding:2}}>
+                {[{m:null,l:"Auto",c:C.textMuted},{m:"cctv",l:"A",c:C.red},{m:"monitoring",l:"B",c:C.accent}].map(opt => {
+                  const active = opt.m===null ? !cameraOverrides[cam.serial] : cameraOverrides[cam.serial]===opt.m;
+                  return <button key={opt.l} onClick={()=>{
+                    if(opt.m==='cctv'&&!hddConnected){alert('HDD required');return;}
+                    const next={...cameraOverrides};
+                    if(opt.m===null)delete next[cam.serial]; else next[cam.serial]=opt.m;
+                    setCameraOverrides(next);
+                  }} style={{padding:"5px 10px",borderRadius:6,fontSize:11,fontWeight:700,cursor:"pointer",border:active?`1px solid ${opt.c}`:'none',background:active?`${opt.c}20`:'transparent',color:active?opt.c:C.textMuted}}>{opt.l}</button>;
+                })}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
+      {/* Schedule */}
+      <div style={{background:C.card,border:`1px solid ${C.border}`,borderRadius:12,padding:20,marginBottom:16}}>
+        <div style={{fontSize:16,fontWeight:700,marginBottom:12,color:C.text}}>Capture Schedule</div>
+        <Toggle label="Enable Schedule" sub="Only capture during set hours" value={scheduleEnabled} onChange={setScheduleEnabled} />
+        {scheduleEnabled && (
+          <div style={{background:`${C.blue}0a`,border:`1px solid ${C.blue}25`,borderRadius:10,padding:12,marginTop:8,fontSize:11,color:`${C.blue}bb`}}>
+            Active 06:00 to 20:00. Outside this window cameras enter deep sleep to save battery.
+          </div>
+        )}
+        <div style={{height:28,background:C.border,borderRadius:6,position:"relative",overflow:"hidden",margin:"12px 0"}}>
+          <div style={{position:"absolute",top:0,height:"100%",left:scheduleEnabled?"25%":"0%",width:scheduleEnabled?"58.3%":"100%",background:`${modeColor}80`,borderRadius:6}} />
+        </div>
+        <div style={{display:"flex",justifyContent:"space-between",fontSize:10,color:C.textMuted}}><span>00:00</span><span>06:00</span><span>12:00</span><span>18:00</span><span>24:00</span></div>
+      </div>
+
+      {/* Day/Night Auto Switch */}
+      <div style={{background:C.card,border:`1px solid ${C.border}`,borderRadius:12,padding:20}}>
+        <div style={{fontSize:16,fontWeight:700,marginBottom:4,color:C.orange}}>Day/Night Auto Switch</div>
+        <div style={{fontSize:11,color:C.textDim,marginBottom:12}}>Automatically switch between modes based on time of day</div>
+        <div style={{background:`${C.orange}0a`,borderRadius:12,padding:14,marginBottom:12}}>
+          <div style={{display:"flex",alignItems:"center",gap:12,marginBottom:8}}><span style={{fontSize:22}}>\u2600\uFE0F</span><div><div style={{fontWeight:700,fontSize:13}}>Daytime \u2192 Mode B (Monitoring)</div><div style={{fontSize:11,color:C.textDim}}>AI crop detection during daylight</div></div></div>
+          <hr style={{borderColor:C.border,margin:"8px 0"}} />
+          <div style={{display:"flex",alignItems:"center",gap:12}}><span style={{fontSize:22}}>\uD83C\uDF19</span><div><div style={{fontWeight:700,fontSize:13}}>Nighttime \u2192 Mode A (CCTV)</div><div style={{fontSize:11,color:C.textDim}}>Security surveillance with IR night vision</div></div></div>
+        </div>
+        <Toggle label="Auto Day/Night Switch" sub="Monitor by day, CCTV by night" value={autoSwitch} onChange={setAutoSwitch} />
+      </div>
+    </div>
+  );
+};
+
 const SettingsSection = () => (
   <div>
     <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill, minmax(400px, 1fr))", gap:16 }}>
@@ -786,6 +972,7 @@ const SettingsSection = () => (
 
 const NAV = [
   { key:"overview", label:"Overview", icon:"📊" },
+  { key:"mode_control", label:"Mode Control", icon:"⚡" },
   { key:"users", label:"Users", icon:"👥" },
   { key:"dealers", label:"Dealers", icon:"🤝" },
   { key:"payments", label:"Payments", icon:"💰" },
@@ -800,7 +987,7 @@ const NAV = [
 ];
 
 const SECTIONS = {
-  overview: Overview, users: UsersSection, dealers: DealersSection,
+  overview: Overview, mode_control: ModeControlSection, users: UsersSection, dealers: DealersSection,
   payments: PaymentsSection, subscriptions: SubscriptionsSection,
   invoices: InvoicesSection, detections: DetectionsSection,
   library: LibrarySection, diseases: DiseasesSection,

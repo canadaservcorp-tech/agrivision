@@ -13,6 +13,7 @@ import '../screens/farm_map_screen.dart';
 import '../screens/notifications_screen.dart';
 import '../screens/settings_screen.dart';
 import '../screens/camera_scanner_screen.dart';
+import '../screens/mode_control_screen.dart';
 
 final routerProvider = Provider<GoRouter>((ref) {
   final auth = ref.watch(authProvider);
@@ -45,6 +46,7 @@ final routerProvider = Provider<GoRouter>((ref) {
       ),
       GoRoute(path: '/notifications', builder: (_, __) => const NotificationsScreen()),
       GoRoute(path: '/settings', builder: (_, __) => const SettingsScreen()),
+      GoRoute(path: '/mode', builder: (_, __) => const ModeControlScreen()),
       GoRoute(path: '/scan-camera', builder: (_, __) => const CameraScannerScreen()),
     ],
   );

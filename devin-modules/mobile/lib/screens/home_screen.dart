@@ -54,6 +54,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           _FarmHealthCard(score: 91),
           const SizedBox(height: 14),
 
+          // Mode A/B Quick Toggle
+          const ModeQuickToggle(),
+          const SizedBox(height: 14),
+
           // Stats grid
           _buildStatsGrid(d),
           const SizedBox(height: 18),
@@ -102,6 +106,117 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           ]),
         ])),
       )).toList(),
+    );
+  }
+}
+
+class ModeQuickToggle extends StatefulWidget {
+  const ModeQuickToggle({super.key});
+
+  @override
+  State<ModeQuickToggle> createState() => _ModeQuickToggleState();
+}
+
+class _ModeQuickToggleState extends State<ModeQuickToggle> {
+  bool _isCCTV = false; // false = Mode B (Monitoring), true = Mode A (CCTV)
+
+  @override
+  Widget build(BuildContext context) {
+    final color = _isCCTV ? AgriTheme.danger : AgriTheme.accent;
+    final icon = _isCCTV ? Icons.videocam_rounded : Icons.eco_rounded;
+    final modeLabel = _isCCTV ? 'MODE A — CCTV' : 'MODE B — MONITORING';
+    final modeDesc = _isCCTV
+        ? 'Live surveillance • Motion alerts • Local recording (HDD)'
+        : 'AI Detection • Time-lapse • Scheduled capture';
+
+    return GestureDetector(
+      onTap: () => context.push('/mode'),
+      child: Container(
+        padding: const EdgeInsets.all(14),
+        decoration: BoxDecoration(
+          color: color.withOpacity(0.08),
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(color: color.withOpacity(0.25)),
+        ),
+        child: Row(children: [
+          // Mode icon
+          Container(
+            width: 44,
+            height: 44,
+            decoration: BoxDecoration(
+              color: color.withOpacity(0.12),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Icon(icon, color: color, size: 24),
+          ),
+          const SizedBox(width: 12),
+          // Mode info
+          Expanded(
+            child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              Text(modeLabel,
+                  style: TextStyle(fontSize: 13, fontWeight: FontWeight.w800, color: color, letterSpacing: 0.3)),
+              const SizedBox(height: 2),
+              Text(modeDesc, style: TextStyle(fontSize: 11, color: color.withOpacity(0.7))),
+            ]),
+          ),
+          // Toggle + settings icon
+          Column(children: [
+            GestureDetector(
+              onTap: () => setState(() => _isCCTV = !_isCCTV),
+              child: Container(
+                width: 56,
+                height: 28,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(14),
+                  color: color.withOpacity(0.15),
+                  border: Border.all(color: color.withOpacity(0.3)),
+                ),
+                child: Stack(children: [
+                  Row(children: [
+                    Expanded(
+                      child: Center(
+                        child: Text('A',
+                            style: TextStyle(
+                                fontSize: 10,
+                                fontWeight: FontWeight.w800,
+                                color: _isCCTV ? Colors.white : color.withOpacity(0.4))),
+                      ),
+                    ),
+                    Expanded(
+                      child: Center(
+                        child: Text('B',
+                            style: TextStyle(
+                                fontSize: 10,
+                                fontWeight: FontWeight.w800,
+                                color: !_isCCTV ? Colors.white : color.withOpacity(0.4))),
+                      ),
+                    ),
+                  ]),
+                  AnimatedAlign(
+                    duration: const Duration(milliseconds: 200),
+                    alignment: _isCCTV ? Alignment.centerLeft : Alignment.centerRight,
+                    child: Container(
+                      width: 28,
+                      height: 28,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: color,
+                        boxShadow: [BoxShadow(color: color.withOpacity(0.3), blurRadius: 4)],
+                      ),
+                      child: Center(
+                        child: Text(_isCCTV ? 'A' : 'B',
+                            style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w900, color: Colors.white)),
+                      ),
+                    ),
+                  ),
+                ]),
+              ),
+            ),
+            const SizedBox(height: 4),
+            Icon(Icons.tune_rounded, size: 14, color: color.withOpacity(0.5)),
+          ]),
+        ]),
+      ),
     );
   }
 }
