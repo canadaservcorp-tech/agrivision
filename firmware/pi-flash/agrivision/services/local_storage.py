@@ -27,6 +27,12 @@ class LocalStorage:
         self.conn = sqlite3.connect(str(self.db_path))
         self.conn.row_factory = sqlite3.Row
         self._create_tables()
+
+        # Default system mode
+        if self.get_state("system_mode") is None:
+            default_mode = getattr(self.settings, "DEFAULT_MODE", "monitoring")
+            self.set_state("system_mode", default_mode)
+
         logger.info(f"📁 Database: {self.db_path}")
 
     def _create_tables(self):
@@ -86,6 +92,12 @@ class LocalStorage:
                 command TEXT NOT NULL,
                 executed INTEGER DEFAULT 0,
                 created_at TEXT DEFAULT CURRENT_TIMESTAMP
+            );
+
+            CREATE TABLE IF NOT EXISTS system_state (
+                key TEXT PRIMARY KEY,
+                value TEXT NOT NULL,
+                updated_at TEXT DEFAULT CURRENT_TIMESTAMP
             );
 
             CREATE INDEX IF NOT EXISTS idx_images_processed ON images(processed);
@@ -207,12 +219,40 @@ class LocalStorage:
         return {}
 
     # ============================================================
+    # SYSTEM STATE (MODE, CONFIG)
+    # ============================================================
+
+    def get_state(self, key: str, default=None):
+        """Get a persisted hub state value (JSON if possible)."""
+        cursor = self.conn.execute("SELECT value FROM system_state WHERE key = ?", (key,))
+        row = cursor.fetchone()
+        if not row:
+            return default
+
+        value = row["value"]
+        try:
+            import json
+            return json.loads(value)
+        except Exception:
+            return value
+
+    def set_state(self, key: str, value) -> None:
+        """Persist a hub state value as JSON."""
+        import json
+        self.conn.execute(
+            "INSERT OR REPLACE INTO system_state (key, value, updated_at) VALUES (?, ?, ?)",
+            (key, json.dumps(value), datetime.utcnow().isoformat()),
+        )
+        self.conn.commit()
+
+    # ============================================================
     # STORAGE MANAGEMENT
     # ============================================================
 
     def get_used_gb(self) -> float:
         """Get storage usage in GB"""
-        total, used, free = shutil.disk_usage(self.settings.DATA_DIR)
+        root = Path(self.settings.get_storage_paths()["root"]) if hasattr(self.settings, "get_storage_paths") else self.settings.DATA_DIR
+        total, used, free = shutil.disk_usage(root)
         return round(used / (1024 ** 3), 1)
 
     def cleanup_old_images(self):

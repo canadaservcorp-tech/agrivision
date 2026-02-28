@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../config/theme.dart';
 import '../services/mock_data.dart';
+import '../services/hub_service.dart';
 
 /// ═══════════════════════════════════════════════════════════
 /// MODE CONTROL SCREEN
@@ -18,9 +19,13 @@ class ModeControlScreen extends StatefulWidget {
 
 class _ModeControlState extends State<ModeControlScreen> with SingleTickerProviderStateMixin {
   late TabController _tabCtrl;
+  final HubService _hub = HubService();
 
   // Global farm mode
   SystemMode _farmMode = SystemMode.monitoring;
+  bool _hddConnected = false;
+  bool _hubOnline = false;
+  Map<String, dynamic> _hubDisk = {};
 
   // Per-camera mode overrides (null = follow farm mode)
   final Map<String, SystemMode?> _cameraOverrides = {};
@@ -55,10 +60,28 @@ class _ModeControlState extends State<ModeControlScreen> with SingleTickerProvid
   void initState() {
     super.initState();
     _tabCtrl = TabController(length: 3, vsync: this);
+    _hub.addListener(_onHubUpdate);
+    _hub.init();
+  }
+
+  void _onHubUpdate() {
+    if (!mounted) return;
+    setState(() {
+      _hubOnline = _hub.online;
+      _hddConnected = _hub.hddMounted;
+      _hubDisk = _hub.disk;
+      if (_hub.online) {
+        _farmMode = _hub.mode == 'cctv' ? SystemMode.cctv : SystemMode.monitoring;
+      }
+    });
   }
 
   @override
-  void dispose() { _tabCtrl.dispose(); super.dispose(); }
+  void dispose() {
+    _hub.removeListener(_onHubUpdate);
+    _tabCtrl.dispose();
+    super.dispose();
+  }
 
   SystemMode _effectiveMode(String serial) => _cameraOverrides[serial] ?? _farmMode;
 
@@ -220,7 +243,29 @@ class _ModeControlState extends State<ModeControlScreen> with SingleTickerProvid
   }) {
     final selected = _farmMode == mode;
     return GestureDetector(
-      onTap: () => setState(() => _farmMode = mode),
+      onTap: () async {
+        if (mode == SystemMode.cctv && !_hddConnected) {
+          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+            content: Text('CCTV Mode requires HDD connected to central unit'),
+            backgroundColor: Color(0xFFEF4444),
+            behavior: SnackBarBehavior.floating,
+          ));
+          return;
+        }
+        final modeStr = mode == SystemMode.cctv ? 'cctv' : 'monitoring';
+        if (_hubOnline) {
+          final err = await _hub.setMode(modeStr);
+          if (err != null && mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+              content: Text('Hub error: $err'),
+              backgroundColor: const Color(0xFFEF4444),
+              behavior: SnackBarBehavior.floating,
+            ));
+            return;
+          }
+        }
+        setState(() => _farmMode = mode);
+      },
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
         padding: const EdgeInsets.all(14),

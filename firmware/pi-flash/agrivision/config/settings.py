@@ -31,6 +31,19 @@ class HubSettings:
     DB_PATH = DATA_DIR / "hub.db"
     LOG_DIR = BASE_DIR / "logs"
 
+    # External HDD (required for CCTV mode)
+    HDD_MOUNT_PATH = Path(os.getenv("HDD_MOUNT_PATH", "/mnt/hdd"))
+    HDD_CCTV_DIR = HDD_MOUNT_PATH / "cctv"
+    HDD_CAPTURES_DIR = HDD_MOUNT_PATH / "captures"
+    HDD_LOGS_DIR = HDD_MOUNT_PATH / "logs"
+
+    # Fallback (eMMC) paths when HDD missing
+    FALLBACK_CCTV_DIR = DATA_DIR / "cctv"
+    FALLBACK_CAPTURES_DIR = DATA_DIR / "captures"
+    FALLBACK_LOGS_DIR = DATA_DIR / "logs"
+
+    DEFAULT_MODE = os.getenv("DEFAULT_MODE", "monitoring")  # 'monitoring' or 'cctv'
+
     # Camera Receiver (HTTP server for ESP32 nodes)
     RECEIVER_HOST = "0.0.0.0"
     RECEIVER_PORT = int(os.getenv("RECEIVER_PORT", "8080"))
@@ -86,6 +99,44 @@ class HubSettings:
     ALERT_BATTERY_MIN = 15.0
 
     def __init__(self):
-        # Create directories
-        for d in [self.DATA_DIR, self.IMAGES_DIR, self.MODELS_DIR, self.LOG_DIR]:
+        # Create internal fallback directories (always on eMMC)
+        for d in [
+            self.DATA_DIR,
+            self.IMAGES_DIR,
+            self.MODELS_DIR,
+            self.LOG_DIR,
+            self.FALLBACK_CCTV_DIR,
+            self.FALLBACK_CAPTURES_DIR,
+            self.FALLBACK_LOGS_DIR,
+        ]:
             d.mkdir(parents=True, exist_ok=True)
+
+    def is_hdd_mounted(self) -> bool:
+        """Return True if external HDD is mounted at HDD_MOUNT_PATH."""
+        try:
+            return self.HDD_MOUNT_PATH.exists() and os.path.ismount(self.HDD_MOUNT_PATH)
+        except Exception:
+            return self.HDD_MOUNT_PATH.exists()
+
+    def get_storage_paths(self) -> dict:
+        """Return active storage directories based on HDD presence."""
+        if self.is_hdd_mounted():
+            for d in [self.HDD_CCTV_DIR, self.HDD_CAPTURES_DIR, self.HDD_LOGS_DIR]:
+                d.mkdir(parents=True, exist_ok=True)
+            return {
+                "root": str(self.HDD_MOUNT_PATH),
+                "cctv_dir": str(self.HDD_CCTV_DIR),
+                "captures_dir": str(self.HDD_CAPTURES_DIR),
+                "logs_dir": str(self.HDD_LOGS_DIR),
+                "using_hdd": True,
+            }
+
+        for d in [self.FALLBACK_CCTV_DIR, self.FALLBACK_CAPTURES_DIR, self.FALLBACK_LOGS_DIR]:
+            d.mkdir(parents=True, exist_ok=True)
+        return {
+            "root": str(self.DATA_DIR),
+            "cctv_dir": str(self.FALLBACK_CCTV_DIR),
+            "captures_dir": str(self.FALLBACK_CAPTURES_DIR),
+            "logs_dir": str(self.FALLBACK_LOGS_DIR),
+            "using_hdd": False,
+        }

@@ -5,6 +5,7 @@ Each image is saved locally and queued for AI processing.
 """
 
 import logging
+import shutil
 from pathlib import Path
 from datetime import datetime
 from aiohttp import web
@@ -26,6 +27,12 @@ class CameraReceiver:
         self.app.router.add_post("/api/upload", self.receive_image)  # Alias for production firmware
         self.app.router.add_post("/api/heartbeat", self.receive_heartbeat)
         self.app.router.add_get("/api/node-config", self.get_node_config)
+
+        # Central unit management API (for desktop/web/mobile dashboards)
+        self.app.router.add_get("/api/storage/status", self.get_storage_status)
+        self.app.router.add_get("/api/mode", self.get_mode)
+        self.app.router.add_post("/api/mode", self.set_mode)
+
         self.app.router.add_get("/api/status", self.get_status)
         self.app.router.add_get("/health", self.health_check)
 
@@ -197,11 +204,78 @@ class CameraReceiver:
         logger.info(f"📋 Config requested by {serial}")
         return web.json_response(config)
 
+    async def get_storage_status(self, request):
+        """GET /api/storage/status — external HDD + storage paths"""
+        paths = self.settings.get_storage_paths()
+        hdd_mounted = self.settings.is_hdd_mounted()
+
+        try:
+            total, used, free = shutil.disk_usage(Path(paths["root"]))
+            disk = {
+                "total_gb": round(total / (1024 ** 3), 1),
+                "used_gb": round(used / (1024 ** 3), 1),
+                "free_gb": round(free / (1024 ** 3), 1),
+                "used_pct": round((used / total) * 100, 1) if total else 0,
+            }
+        except Exception:
+            disk = {}
+
+        return web.json_response({
+            "hdd_mounted": hdd_mounted,
+            "hdd_mount_path": str(self.settings.HDD_MOUNT_PATH),
+            "active_root": paths["root"],
+            "paths": paths,
+            "disk": disk,
+        })
+
+    async def get_mode(self, request):
+        """GET /api/mode — current system mode + constraints"""
+        hdd_mounted = self.settings.is_hdd_mounted()
+        mode = self.storage.get_state("system_mode", self.settings.DEFAULT_MODE)
+        if mode not in ("monitoring", "cctv"):
+            mode = self.settings.DEFAULT_MODE
+
+        # Enforce: CCTV requires HDD
+        if mode == "cctv" and not hdd_mounted:
+            mode = "monitoring"
+            self.storage.set_state("system_mode", mode)
+
+        return web.json_response({
+            "mode": mode,
+            "allowed_modes": ["monitoring", "cctv"],
+            "cctv_allowed": hdd_mounted,
+            "hdd_required_for_cctv": True,
+        })
+
+    async def set_mode(self, request):
+        """POST /api/mode — set system mode"""
+        try:
+            import json as _json
+            body = await request.read()
+            data = _json.loads(body) if body else {}
+            mode = data.get("mode")
+
+            if mode not in ("monitoring", "cctv"):
+                return web.json_response({"error": "mode must be 'monitoring' or 'cctv'"}, status=400)
+
+            if mode == "cctv" and not self.settings.is_hdd_mounted():
+                return web.json_response({"error": "CCTV mode requires HDD mounted at /mnt/hdd"}, status=400)
+
+            self.storage.set_state("system_mode", mode)
+            return web.json_response({"status": "ok", "mode": mode})
+
+        except Exception as e:
+            logger.error(f"Set mode error: {e}")
+            return web.json_response({"error": str(e)}, status=500)
+
     async def get_status(self, request):
         """GET /api/status — Hub status overview"""
+        mode = self.storage.get_state("system_mode", self.settings.DEFAULT_MODE)
         return web.json_response({
             "hub_serial": self.settings.HUB_SERIAL,
             "firmware": self.settings.FIRMWARE_VERSION,
+            "mode": mode,
+            "hdd_mounted": self.settings.is_hdd_mounted(),
             "uptime": "TODO",
             "storage_used_gb": self.storage.get_used_gb(),
             "images_today": self.storage.get_today_image_count(),

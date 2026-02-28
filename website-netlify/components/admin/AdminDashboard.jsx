@@ -762,6 +762,10 @@ const ReportsSection = () => {
 const ModeControlSection = () => {
   const [farmMode, setFarmMode] = useState("monitoring"); // 'cctv' or 'monitoring'
   const [hddConnected, setHddConnected] = useState(false);
+  const [hubOnline, setHubOnline] = useState(false);
+  const [hubDisk, setHubDisk] = useState({});
+  const [hubPaths, setHubPaths] = useState({});
+  const [hubUrl, setHubUrl] = useState("");
   const [cameraOverrides, setCameraOverrides] = useState({});
   const [motionDetection, setMotionDetection] = useState(true);
   const [continuousRecord, setContinuousRecord] = useState(false);
@@ -774,13 +778,48 @@ const ModeControlSection = () => {
   const [captureInterval, setCaptureInterval] = useState(10);
   const [confidenceThreshold, setConfidenceThreshold] = useState(65);
 
+  // Hub API URL (stored in localStorage)
+  useEffect(() => {
+    const saved = typeof window !== 'undefined' ? localStorage.getItem('hub_url') : null;
+    setHubUrl(saved || 'http://agrivision.local:8080');
+  }, []);
+
+  const hubFetch = useCallback(async (path, opts) => {
+    if (!hubUrl) return null;
+    try {
+      const r = await fetch(hubUrl + path, { signal: AbortSignal.timeout(4000), ...opts });
+      if (!r.ok) { const e = await r.json().catch(()=>({})); throw new Error(e.error || r.statusText); }
+      return await r.json();
+    } catch (e) {
+      if (e.name === 'AbortError' || e.message === 'Failed to fetch') setHubOnline(false);
+      throw e;
+    }
+  }, [hubUrl]);
+
+  const refreshHub = useCallback(async () => {
+    if (!hubUrl) return;
+    try {
+      const [stor, mode] = await Promise.all([hubFetch('/api/storage/status'), hubFetch('/api/mode')]);
+      setHddConnected(stor.hdd_mounted);
+      setHubDisk(stor.disk || {});
+      setHubPaths(stor.paths || {});
+      setFarmMode(mode.mode);
+      setHubOnline(true);
+    } catch { setHubOnline(false); }
+  }, [hubUrl, hubFetch]);
+
+  useEffect(() => { refreshHub(); const t = setInterval(refreshHub, 10000); return () => clearInterval(t); }, [refreshHub]);
+
   const modeColor = farmMode === 'cctv' ? C.red : C.accent;
   const cameras = MOCK.detections.slice(0,8).map((d,i) => ({
     serial: d.camera_serial, zone: d.zone, online: i%5!==0, battery: 20+Math.floor(Math.random()*80)
   }));
 
-  const handleModeSwitch = (mode) => {
+  const handleModeSwitch = async (mode) => {
     if (mode === 'cctv' && !hddConnected) { alert('CCTV Mode requires a hard drive connected to the central unit.'); return; }
+    if (hubOnline) {
+      try { await hubFetch('/api/mode', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({mode}) }); } catch (e) { alert('Hub error: ' + e.message); return; }
+    }
     setFarmMode(mode);
   };
 
@@ -823,26 +862,30 @@ const ModeControlSection = () => {
 
       {/* HDD / CCTV Requirement */}
       <div style={{background:C.card,border:`1px solid ${C.border}`,borderRadius:12,padding:20,marginBottom:16}}>
-        <div style={{fontSize:16,fontWeight:700,marginBottom:12,color:C.text}}>\uD83D\uDCBE Storage & CCTV Requirements</div>
-        <Btn variant={hddConnected?"primary":"danger"} onClick={()=>{setHddConnected(!hddConnected);if(hddConnected&&farmMode==='cctv')setFarmMode('monitoring');}} style={{width:"100%",marginBottom:12}}>
-          {hddConnected?'\uD83D\uDFE2 HDD Connected \u2014 Click to Simulate Disconnect':'\uD83D\uDD34 HDD Disconnected \u2014 Click to Simulate Connect'}
-        </Btn>
+        <div style={{fontSize:16,fontWeight:700,marginBottom:12,color:C.text}}>{'\uD83D\uDCBE'} Storage & CCTV Requirements</div>
+        <div style={{display:"flex",alignItems:"center",gap:12,marginBottom:12}}>
+          <div style={{flex:1,display:"flex",alignItems:"center",gap:8}}>
+            <div style={{width:10,height:10,borderRadius:"50%",background:hubOnline?C.accent:"#64748b"}} />
+            <span style={{fontSize:12,color:hubOnline?C.accent:"#64748b"}}>{hubOnline?'Hub Online':'Hub Offline'}</span>
+          </div>
+          <Btn size="sm" onClick={refreshHub}>{'\uD83D\uDD04'} Refresh</Btn>
+        </div>
         {!hddConnected ? (
           <div style={{background:"#ef444415",border:"1px solid #ef444444",borderRadius:12,padding:16,display:"flex",alignItems:"flex-start",gap:12}}>
-            <span style={{fontSize:24}}>\u26A0\uFE0F</span>
+            <span style={{fontSize:24}}>{'\u26A0\uFE0F'}</span>
             <div>
               <div style={{fontWeight:700,color:C.red,marginBottom:4}}>Hard Drive Required for CCTV Mode</div>
               <div style={{fontSize:12,color:C.textDim}}>CCTV Mode (Mode A) requires a hard drive connected to the central unit for local recording. Without HDD, only Mode B (Monitoring) is available.</div>
-              <div style={{fontSize:11,color:C.textMuted,marginTop:6}}>\u2022 Connect external HDD to Pi Hub USB port<br/>\u2022 Minimum: 1TB for 7-day retention<br/>\u2022 Supported: ext4, NTFS, exFAT</div>
+              <div style={{fontSize:11,color:C.textMuted,marginTop:6}}>{'\u2022'} Connect external HDD to Pi Hub USB port<br/>{'\u2022'} Minimum: 1TB for 7-day retention<br/>{'\u2022'} Supported: ext4, NTFS, exFAT</div>
             </div>
           </div>
         ) : (
           <div style={{background:"#10b98115",border:"1px solid #10b98144",borderRadius:12,padding:16,display:"flex",alignItems:"flex-start",gap:12}}>
-            <span style={{fontSize:24}}>\u2705</span>
+            <span style={{fontSize:24}}>{'\u2705'}</span>
             <div>
-              <div style={{fontWeight:700,color:C.accent,marginBottom:4}}>Hard Drive Connected \u2014 CCTV Ready</div>
-              <div style={{fontSize:12,color:C.textDim}}>Local storage available. CCTV recordings stored on HDD. No server load \u2014 both systems run locally.</div>
-              <div style={{fontSize:11,color:C.textMuted,marginTop:6}}>\uD83D\uDCBE 931 GB available of 1 TB \u2022 ext4 \u2022 /dev/sda1</div>
+              <div style={{fontWeight:700,color:C.accent,marginBottom:4}}>Hard Drive Connected {'\u2014'} CCTV Ready</div>
+              <div style={{fontSize:12,color:C.textDim}}>Local storage available. CCTV recordings stored on HDD. No server load {'\u2014'} both systems run locally.</div>
+              <div style={{fontSize:11,color:C.textMuted,marginTop:6}}>{'\uD83D\uDCBE'} {hubDisk.free_gb != null ? `${hubDisk.free_gb} GB free of ${hubDisk.total_gb} GB (${hubDisk.used_pct}% used)` : 'Querying hub...'} {'\u2022'} {hubPaths.root || '/mnt/hdd'}</div>
             </div>
           </div>
         )}
