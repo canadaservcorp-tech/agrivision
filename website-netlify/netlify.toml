@@ -1,23 +1,21 @@
 [build]
   command = "npm run build"
-  publish = ".next"
+  publish = "out"
 
 [build.environment]
   NODE_VERSION = "20"
   NEXT_TELEMETRY_DISABLED = "1"
-
-[[plugins]]
-  package = "@netlify/plugin-nextjs"
+  NETLIFY_NEXT_PLUGIN_SKIP = "true"
 
 [[redirects]]
   from = "/sitemap.xml"
   to = "/api/sitemap"
   status = 200
 
-# Proxy API calls to Railway backend
+# Proxy API calls to Fly.io backend
 [[redirects]]
-  from = "/api/v1/*"
-  to = "https://api.theagrivision.com/api/:splat"
+  from = "/api/*"
+  to = "https://agrivision-api-vosizxwe.fly.dev/api/:splat"
   status = 200
   force = true
 
