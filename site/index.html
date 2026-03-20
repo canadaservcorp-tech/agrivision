@@ -1,605 +1,631 @@
 <!DOCTYPE html>
-<html lang="en" dir="ltr">
+<html lang="en" dir="ltr" id="html-root">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Agrivision — AI-Powered Agricultural Monitoring</title>
-  <meta name="description" content="World's largest agricultural disease library with AI-powered crop monitoring. 348+ diseases, IoT sensors, real-time alerts.">
-  <link rel="stylesheet" href="css/main.css">
+  <title id="page-title">AgriVision — AI-Powered Agricultural Monitoring</title>
+  <meta name="description" content="Transform your existing cameras into an intelligent disease detection network. Catch crop diseases before they spread.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
-  <!-- Firebase -->
-  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
-  <!-- PayPal -->
-  <script src="https://www.paypal.com/sdk/js?client-id=YOUR_PAYPAL_CLIENT_ID&currency=USD&intent=subscription&vault=true"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Noto+Sans+Arabic:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --green: #1a6b3a;
+      --green-light: #45c474;
+      --green-pale: #7edd9f;
+      --dark: #0d1f13;
+      --dark2: #111c17;
+      --card: #162019;
+      --text: #e8f5ed;
+      --text-muted: rgba(232,245,237,.6);
+      --border: rgba(69,196,116,.12);
+      --radius: 12px;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Inter', 'Noto Sans Arabic', sans-serif;
+      background: var(--dark);
+      color: var(--text);
+      line-height: 1.6;
+    }
+    body[dir="rtl"] { font-family: 'Noto Sans Arabic', 'Inter', sans-serif; }
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 5%; height: 64px;
+      background: rgba(13,31,19,.95); backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-logo { display: flex; align-items: center; gap: 10px; text-decoration: none; font-weight: 700; font-size: 1.2rem; color: var(--text); }
+    .nav-logo svg { width: 32px; height: 32px; }
+    .nav-links { display: flex; gap: 2rem; list-style: none; }
+    .nav-links a { color: var(--text-muted); text-decoration: none; font-size: .9rem; transition: color .2s; }
+    .nav-links a:hover { color: var(--green-light); }
+    .nav-right { display: flex; align-items: center; gap: 1rem; }
+    .lang-switcher { display: flex; gap: 4px; }
+    .lang-btn {
+      background: transparent; border: 1px solid var(--border);
+      color: var(--text-muted); padding: 4px 10px; border-radius: 6px;
+      cursor: pointer; font-size: .78rem; font-weight: 600; transition: all .2s;
+    }
+    .lang-btn.active, .lang-btn:hover { background: var(--green); color: #fff; border-color: var(--green); }
+    .btn-login { background: transparent; border: 1px solid var(--border); color: var(--text); padding: 8px 16px; border-radius: 8px; text-decoration: none; font-size: .85rem; transition: all .2s; }
+    .btn-login:hover { border-color: var(--green-light); color: var(--green-light); }
+    .btn-start { background: var(--green); color: #fff; padding: 8px 20px; border-radius: 8px; text-decoration: none; font-size: .85rem; font-weight: 600; transition: background .2s; }
+    .btn-start:hover { background: #1f8248; }
+    .hero {
+      min-height: 100vh; display: flex; align-items: center; justify-content: center; text-align: center;
+      padding: 100px 5% 80px; position: relative; overflow: hidden;
+    }
+    .hero::before {
+      content: ''; position: absolute; inset: 0;
+      background: radial-gradient(ellipse 80% 60% at 50% 30%, rgba(26,107,58,.35) 0%, transparent 70%);
+    }
+    .badge {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: rgba(69,196,116,.12); border: 1px solid rgba(69,196,116,.3);
+      color: var(--green-pale); padding: 6px 16px; border-radius: 100px;
+      font-size: .82rem; font-weight: 600; margin-bottom: 1.5rem;
+    }
+    .hero h1 { font-size: clamp(2.2rem, 5vw, 3.8rem); font-weight: 800; line-height: 1.15; margin-bottom: 1.2rem; }
+    .hero h1 span { color: var(--green-light); }
+    .hero p { font-size: 1.1rem; color: var(--text-muted); max-width: 600px; margin: 0 auto 2.5rem; }
+    .hero-cta { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; margin-bottom: 3rem; }
+    .btn-primary { background: var(--green); color: #fff; padding: 14px 32px; border-radius: 10px; text-decoration: none; font-weight: 700; font-size: 1rem; transition: background .2s; }
+    .btn-primary:hover { background: #1f8248; }
+    .btn-secondary { background: rgba(255,255,255,.05); border: 1px solid var(--border); color: var(--text); padding: 14px 28px; border-radius: 10px; text-decoration: none; font-weight: 600; transition: all .2s; }
+    .btn-secondary:hover { border-color: var(--green-light); }
+    .stats { display: flex; gap: 2.5rem; justify-content: center; flex-wrap: wrap; }
+    .stat { text-align: center; }
+    .stat-val { font-size: 2rem; font-weight: 800; color: var(--green-light); }
+    .stat-label { font-size: .78rem; color: var(--text-muted); margin-top: 2px; }
+    section { padding: 90px 5%; }
+    .s-label { font-size: .75rem; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--green-light); margin-bottom: .75rem; }
+    .s-title { font-size: clamp(1.8rem, 3.5vw, 2.8rem); font-weight: 800; margin-bottom: 1rem; }
+    .s-desc { color: var(--text-muted); max-width: 580px; font-size: 1.05rem; }
+    .text-center { text-align: center; }
+    [dir="rtl"] .s-desc { margin: 0 auto; }
+    #how { background: var(--dark2); }
+    .steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 2rem; margin-top: 3rem; }
+    .step { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 2rem; }
+    .step-num { font-size: .7rem; font-weight: 800; letter-spacing: 2px; color: var(--green-light); margin-bottom: 1rem; }
+    .step-icon { font-size: 2rem; margin-bottom: 1rem; }
+    .step h3 { font-size: 1.1rem; font-weight: 700; margin-bottom: .5rem; }
+    .step p { color: var(--text-muted); font-size: .9rem; }
+    .features { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1.5rem; margin-top: 3rem; }
+    .feature { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.75rem; transition: border-color .2s; }
+    .feature:hover { border-color: rgba(69,196,116,.35); }
+    .feat-icon { font-size: 1.6rem; margin-bottom: 1rem; }
+    .feature h3 { font-size: 1rem; font-weight: 700; margin-bottom: .5rem; }
+    .feature p { color: var(--text-muted); font-size: .88rem; }
+    #tech { background: var(--dark2); }
+    .tech-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 2rem; margin-top: 3rem; }
+    .tech-card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 2rem; }
+    .tech-card h3 { font-size: 1rem; font-weight: 700; margin-bottom: 1rem; color: var(--green-light); }
+    .tech-card ul { list-style: none; display: flex; flex-direction: column; gap: .5rem; }
+    .tech-card li { font-size: .88rem; color: var(--text-muted); display: flex; align-items: center; gap: 8px; }
+    .tech-card li::before { content: '+'; color: var(--green-light); font-weight: 700; }
+    [dir="rtl"] .tech-card li { flex-direction: row-reverse; }
+    #pricing { background: var(--green); }
+    #pricing .s-title { color: #fff; }
+    .pricing-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1.5rem; margin-top: 3rem; }
+    .plan { background: rgba(0,0,0,.25); border: 1px solid rgba(255,255,255,.15); border-radius: var(--radius); padding: 2rem; position: relative; }
+    .plan.popular { background: rgba(0,0,0,.4); border-color: rgba(255,255,255,.4); }
+    .popular-badge { position: absolute; top: -12px; left: 50%; transform: translateX(-50%); background: #fff; color: var(--green); font-size: .72rem; font-weight: 800; padding: 4px 14px; border-radius: 100px; white-space: nowrap; }
+    .plan-name { font-size: .8rem; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: rgba(255,255,255,.6); margin-bottom: .5rem; }
+    .plan-range { font-size: .85rem; color: rgba(255,255,255,.5); margin-bottom: 1rem; }
+    .plan-price { font-size: 2.4rem; font-weight: 800; color: #fff; margin-bottom: 1.5rem; }
+    .plan-price span { font-size: .9rem; font-weight: 400; color: rgba(255,255,255,.6); }
+    .plan ul { list-style: none; display: flex; flex-direction: column; gap: .6rem; margin-bottom: 1.75rem; }
+    .plan li { font-size: .88rem; color: rgba(255,255,255,.8); display: flex; gap: 8px; }
+    .plan li::before { content: '✓'; color: #fff; font-weight: 700; flex-shrink: 0; }
+    [dir="rtl"] .plan li { flex-direction: row-reverse; }
+    .btn-plan { display: block; text-align: center; background: rgba(255,255,255,.15); border: 1px solid rgba(255,255,255,.3); color: #fff; padding: 12px; border-radius: 8px; text-decoration: none; font-weight: 600; font-size: .9rem; transition: background .2s; }
+    .btn-plan:hover { background: rgba(255,255,255,.25); }
+    #contact { background: var(--dark2); }
+    .contact-wrap { display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; margin-top: 3rem; }
+    @media(max-width: 768px) { .contact-wrap { grid-template-columns: 1fr; } }
+    .team-cards { display: flex; flex-direction: column; gap: 1.25rem; }
+    .team-card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.5rem; display: flex; align-items: flex-start; gap: 1rem; }
+    .team-avatar { width: 52px; height: 52px; border-radius: 50%; background: var(--green); display: flex; align-items: center; justify-content: center; font-size: 1.2rem; flex-shrink: 0; font-weight: 700; color: #fff; }
+    .team-info h4 { font-size: 1rem; font-weight: 700; margin-bottom: 2px; }
+    .team-role { font-size: .78rem; color: var(--green-light); font-weight: 600; margin-bottom: .6rem; }
+    .team-contact { display: flex; flex-direction: column; gap: 3px; }
+    .team-contact a { font-size: .82rem; color: var(--text-muted); text-decoration: none; transition: color .2s; }
+    .team-contact a:hover { color: var(--green-light); }
+    .team-location { font-size: .8rem; color: var(--text-muted); margin-top: 3px; }
+    .contact-form { display: flex; flex-direction: column; gap: 1rem; }
+    .form-group { display: flex; flex-direction: column; gap: 6px; }
+    .form-group label { font-size: .82rem; font-weight: 600; color: var(--text-muted); }
+    .form-group input, .form-group textarea, .form-group select { background: var(--card); border: 1px solid var(--border); border-radius: 8px; color: var(--text); padding: 10px 14px; font-size: .9rem; font-family: inherit; transition: border-color .2s; }
+    .form-group input:focus, .form-group textarea:focus, .form-group select:focus { outline: none; border-color: var(--green-light); }
+    .form-group select option { background: var(--dark); }
+    .btn-send { background: var(--green); color: #fff; border: none; padding: 12px 28px; border-radius: 8px; font-size: .95rem; font-weight: 700; cursor: pointer; transition: background .2s; }
+    .btn-send:hover { background: #1f8248; }
+    footer { background: var(--dark); border-top: 1px solid var(--border); padding: 3rem 5% 2rem; }
+    .footer-inner { display: grid; grid-template-columns: 1.5fr 1fr 1fr 1fr; gap: 2rem; margin-bottom: 2.5rem; }
+    @media(max-width: 900px) { .footer-inner { grid-template-columns: 1fr 1fr; } }
+    @media(max-width: 500px) { .footer-inner { grid-template-columns: 1fr; } }
+    .footer-brand p { font-size: .85rem; color: var(--text-muted); margin-top: .75rem; max-width: 240px; line-height: 1.6; }
+    .footer-offices { display: flex; flex-direction: column; gap: 1rem; }
+    .footer-office h5 { font-size: .75rem; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--green-light); margin-bottom: .4rem; }
+    .footer-office p { font-size: .82rem; color: var(--text-muted); line-height: 1.7; }
+    .footer-office a { color: var(--text-muted); text-decoration: none; }
+    .footer-office a:hover { color: var(--green-light); }
+    .footer-col h5 { font-size: .75rem; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--green-light); margin-bottom: .9rem; }
+    .footer-col ul { list-style: none; display: flex; flex-direction: column; gap: .5rem; }
+    .footer-col li a { font-size: .85rem; color: var(--text-muted); text-decoration: none; transition: color .2s; }
+    .footer-col li a:hover { color: var(--green-light); }
+    .footer-bottom { border-top: 1px solid var(--border); padding-top: 1.5rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; }
+    .footer-bottom p { font-size: .8rem; color: var(--text-muted); }
+    @media(max-width: 768px) { .nav-links { display: none; } .stats { gap: 1.5rem; } }
+  </style>
 </head>
 <body>
 
-<!-- ═══ NAV ═══ -->
-<nav id="navbar">
-  <div class="nav-inner">
-    <a href="#" class="nav-logo">Agrivision</a>
-    <div class="nav-links" id="navLinks">
-      <a href="#features" data-i18n="nav.features">Features</a>
-      <a href="#diseases" data-i18n="nav.diseases">Disease Library</a>
-      <a href="#languages" data-i18n="nav.languages">Languages</a>
-      <a href="#how" data-i18n="nav.how">How It Works</a>
-      <a href="#pricing" data-i18n="nav.pricing">Pricing</a>
-      <a href="#b2b" data-i18n="nav.b2b">For Companies</a>
-      <a href="#contact" data-i18n="nav.contact">Contact</a>
-      <!-- Language Switcher -->
-      <div class="lang-switcher" id="langSwitcher">
-        <button class="lang-btn active" data-lang="en">EN</button>
-        <button class="lang-btn" data-lang="fr">FR</button>
-        <button class="lang-btn" data-lang="ar">AR</button>
-        <button class="lang-btn" data-lang="tr">TR</button>
-      </div>
-      <!-- Auth Buttons -->
-      <div id="authButtons">
-        <button class="btn-outline-sm" onclick="showModal('login')" data-i18n="nav.login">Sign In</button>
-        <button class="btn-demo-sm" onclick="showModal('signup')" data-i18n="nav.signup">Sign Up Free</button>
-      </div>
-      <div id="userMenu" style="display:none;">
-        <span id="userDisplayName"></span>
-        <button class="btn-outline-sm" onclick="handleLogout()" data-i18n="nav.logout">Logout</button>
-      </div>
+<nav>
+  <a href="#" class="nav-logo">
+    <svg viewBox="0 0 40 40" fill="none"><circle cx="20" cy="20" r="20" fill="#1a6b3a"/><path d="M20 8c-1 4-4 8-8 10 4 2 7 6 8 10 1-4 4-8 8-10-4-2-7-6-8-10z" fill="#45c474"/><circle cx="20" cy="20" r="4" fill="#7edd9f"/></svg>
+    AgriVision
+  </a>
+  <ul class="nav-links">
+    <li><a href="#how" data-i18n="nav_how">How It Works</a></li>
+    <li><a href="#features" data-i18n="nav_features">Features</a></li>
+    <li><a href="#pricing" data-i18n="nav_pricing">Pricing</a></li>
+    <li><a href="#contact" data-i18n="nav_contact">Contact</a></li>
+  </ul>
+  <div class="nav-right">
+    <div class="lang-switcher">
+      <button class="lang-btn active" onclick="setLang('en')">EN</button>
+      <button class="lang-btn" onclick="setLang('fr')">FR</button>
+      <button class="lang-btn" onclick="setLang('ar')">AR</button>
+      <button class="lang-btn" onclick="setLang('tr')">TR</button>
     </div>
-    <button class="mobile-toggle" id="mobileToggle" aria-label="Menu">
-      <span></span><span></span><span></span>
-    </button>
+    <a href="/auth/login" class="btn-login" data-i18n="nav_login">Login</a>
+    <a href="/configurator" class="btn-start" data-i18n="nav_start">Get Started</a>
   </div>
 </nav>
 
-<!-- ═══ AD ZONE: TOP BANNER ═══ -->
-<div class="ad-zone" id="adZoneTop" data-slot="top-banner" style="display:none;">
-  <div class="ad-inner" id="adContentTop"></div>
-</div>
-
-<!-- ═══ HERO ═══ -->
-<header class="hero" id="hero">
-  <div class="hero-content">
-    <div class="hero-tag" data-i18n="hero.tag">Precision Agriculture for Modern Farms</div>
-    <h1 data-i18n="hero.title">Grow more with data you can trust</h1>
-    <p data-i18n="hero.desc">AI-powered crop monitoring with the world's largest agricultural disease library. 348+ diseases detected. Real-time IoT sensors. Multilingual support.</p>
-    <div class="hero-buttons">
-      <a href="#pricing" class="btn-demo" data-i18n="hero.pricing">View Pricing</a>
-      <a href="#features" class="btn-outline" data-i18n="hero.features">Explore Features</a>
-      <a href="#diseases" class="btn-outline" data-i18n="hero.library">Disease Library</a>
+<section class="hero">
+  <div style="position:relative;z-index:1;width:100%">
+    <div class="badge">🚀 <span data-i18n="hero_badge">Now Available in UAE, Saudi Arabia & Turkey</span></div>
+    <h1 data-i18n="hero_h1">AI That Watches Your Farm <span>24/7</span></h1>
+    <p data-i18n="hero_p">Transform your existing cameras into an intelligent disease detection network. Catch crop diseases before they spread — save up to 40% on crop losses.</p>
+    <div class="hero-cta">
+      <a href="/configurator" class="btn-primary" data-i18n="hero_cta1">Configure Your System →</a>
+      <a href="#how" class="btn-secondary" data-i18n="hero_cta2">▶ Watch Demo</a>
     </div>
-    <div class="hero-stats">
-      <div class="stat-card"><div class="num">348+</div><div class="label" data-i18n="hero.stat1">Diseases detected</div></div>
-      <div class="stat-card"><div class="num">18%</div><div class="label" data-i18n="hero.stat2">Average yield uplift</div></div>
-      <div class="stat-card"><div class="num">25%</div><div class="label" data-i18n="hero.stat3">Lower water usage</div></div>
-      <div class="stat-card"><div class="num">6</div><div class="label" data-i18n="hero.stat4">Languages supported</div></div>
-    </div>
-  </div>
-  <div class="hero-visual fade-up">
-    <h3 data-i18n="hero.delivers">What Agrivision delivers</h3>
-    <ul class="deliver-list">
-      <li><span class="dot"></span> <span data-i18n="hero.d1">Live field health monitoring via IoT sensors</span></li>
-      <li><span class="dot"></span> <span data-i18n="hero.d2">AI disease detection — 348+ patterns</span></li>
-      <li><span class="dot"></span> <span data-i18n="hero.d3">Satellite and weather intelligence</span></li>
-      <li><span class="dot"></span> <span data-i18n="hero.d4">Mobile app (iOS & Android)</span></li>
-      <li><span class="dot"></span> <span data-i18n="hero.d5">Real-time soil & environment tracking</span></li>
-      <li><span class="dot"></span> <span data-i18n="hero.d6">Risk alerts before losses happen</span></li>
-    </ul>
-  </div>
-</header>
-
-<!-- ═══ FEATURES ═══ -->
-<section id="features" class="section-white">
-  <div class="section-inner">
-    <div class="section-tag" data-i18n="features.tag">Platform Capabilities</div>
-    <h2 class="section-title" data-i18n="features.title">Everything your farm needs in one system</h2>
-    <p class="section-desc" data-i18n="features.desc">From field sensors to AI diagnostics, Agrivision covers the full crop monitoring lifecycle.</p>
-    <div class="features-grid">
-      <div class="feature-card fade-up">
-        <div class="feature-icon fi-green">🌱</div>
-        <h4 data-i18n="features.f1.title">AI Disease Detection</h4>
-        <p data-i18n="features.f1.desc">Camera modules powered by TensorFlow Lite scan crops for 348+ disease patterns. Identifies issues before they spread.</p>
-      </div>
-      <div class="feature-card fade-up">
-        <div class="feature-icon fi-sand">📡</div>
-        <h4 data-i18n="features.f2.title">IoT Sensor Network</h4>
-        <p data-i18n="features.f2.desc">Raspberry Pi CM4 hardware with DHT22, soil moisture, and ADS1115 sensors. Real-time environmental data from every zone.</p>
-      </div>
-      <div class="feature-card fade-up">
-        <div class="feature-icon fi-accent">🛰️</div>
-        <h4 data-i18n="features.f3.title">Satellite & Weather</h4>
-        <p data-i18n="features.f3.desc">Integrated NDVI satellite imagery and local weather forecasts. Plan irrigation, spraying, and harvesting with precision.</p>
-      </div>
-      <div class="feature-card fade-up">
-        <div class="feature-icon fi-green">📊</div>
-        <h4 data-i18n="features.f4.title">Analytics Dashboard</h4>
-        <p data-i18n="features.f4.desc">Visual charts showing yield trends, sensor history, and crop health scores. Export reports for stakeholders.</p>
-      </div>
-      <div class="feature-card fade-up">
-        <div class="feature-icon fi-sand">🔔</div>
-        <h4 data-i18n="features.f5.title">Smart Alerts</h4>
-        <p data-i18n="features.f5.desc">Push notifications when thresholds are breached — drought stress, pest detection, temperature spikes, equipment issues.</p>
-      </div>
-      <div class="feature-card fade-up">
-        <div class="feature-icon fi-accent">📱</div>
-        <h4 data-i18n="features.f6.title">Mobile App (iOS & Android)</h4>
-        <p data-i18n="features.f6.desc">Full control from your phone. Live sensor data, manual capture trigger, multi-device management across fields.</p>
-      </div>
-      <div class="feature-card fade-up">
-        <div class="feature-icon fi-green">🔄</div>
-        <h4 data-i18n="features.f7.title">OTA Updates</h4>
-        <p data-i18n="features.f7.desc">Remote firmware updates push new AI models to field devices without physical access. Zero downtime.</p>
-      </div>
-      <div class="feature-card fade-up">
-        <div class="feature-icon fi-sand">🌐</div>
-        <h4 data-i18n="features.f8.title">4G LTE Connectivity</h4>
-        <p data-i18n="features.f8.desc">Quectel EC25 modules ensure reliable upload from remote locations. Offline caching, auto-sync when restored.</p>
-      </div>
-      <div class="feature-card fade-up">
-        <div class="feature-icon fi-accent">🗂️</div>
-        <h4 data-i18n="features.f9.title">Multi-Farm Management</h4>
-        <p data-i18n="features.f9.desc">Manage multiple sites from one account. Assign teams, set per-zone alerts, compare performance across regions.</p>
-      </div>
-      <div class="feature-card fade-up">
-        <div class="feature-icon fi-green">💊</div>
-        <h4 data-i18n="features.f10.title">Treatment Recommendations</h4>
-        <p data-i18n="features.f10.desc">AI-generated treatment plans based on disease type, severity, and crop stage. Organic and IPM options with dosage calculations.</p>
-      </div>
-      <div class="feature-card fade-up">
-        <div class="feature-icon fi-sand">💧</div>
-        <h4 data-i18n="features.f11.title">Smart Irrigation</h4>
-        <p data-i18n="features.f11.desc">AI combines soil moisture, weather forecast, and crop type to calculate exact irrigation timing. Never over or under-water again.</p>
-      </div>
-      <div class="feature-card fade-up">
-        <div class="feature-icon fi-accent">🍎</div>
-        <h4 data-i18n="features.f12.title">Production Monitoring</h4>
-        <p data-i18n="features.f12.desc">Track fruit diameter, length, and weight. Daily production reports with available quantities — harvest at peak quality.</p>
-      </div>
-      <div class="feature-card fade-up">
-        <div class="feature-icon fi-green">📄</div>
-        <h4 data-i18n="features.f13.title">Export &amp; Insurance Reports</h4>
-        <p data-i18n="features.f13.desc">Generate PDF/CSV reports for stakeholders and insurance claims. Timestamped detection logs as verifiable evidence. ROI tracking.</p>
-      </div>
-      <div class="feature-card fade-up">
-        <div class="feature-icon fi-sand">☀️</div>
-        <h4 data-i18n="features.f14.title">Solar Power Ready</h4>
-        <p data-i18n="features.f14.desc">Hardware supports 12V to 5V buck converter with XT60 connectors. Designed for solar panel and battery field deployment.</p>
-      </div>
-      <div class="feature-card fade-up">
-        <div class="feature-icon fi-accent">💾</div>
-        <h4 data-i18n="features.f15.title">Offline Data Caching</h4>
-        <p data-i18n="features.f15.desc">Local SQLite database stores sensor readings and captured images when connectivity drops. Auto-uploads when 4G restores.</p>
-      </div>
-      <div class="feature-card fade-up">
-        <div class="feature-icon fi-green">🔋</div>
-        <h4 data-i18n="features.f16.title">Device Health Monitoring</h4>
-        <p data-i18n="features.f16.desc">Tracks battery level, device temperature, 4G signal strength, and storage usage. Alerts when maintenance is needed.</p>
-      </div>
-      <div class="feature-card fade-up">
-        <div class="feature-icon fi-sand">🔒</div>
-        <h4 data-i18n="features.f17.title">Farmer Privacy Controls</h4>
-        <p data-i18n="features.f17.desc">Opt-in by default for company contact. Farmers can disable all company contact, block companies, and control data visibility.</p>
-      </div>
-      <div class="feature-card fade-up">
-        <div class="feature-icon fi-accent">🌍</div>
-        <h4 data-i18n="features.f18.title">Global Farmer Community</h4>
-        <p data-i18n="features.f18.desc">Connect with farmers worldwide. Share experiences, solutions, and real-world treatment results. Research API for institutions.</p>
-      </div>
-    </div>
-    <div class="platform-stats">
-      <div class="ps-item"><span class="ps-num">77</span><span class="ps-label" data-i18n="features.stat1">Total Features</span></div>
-      <div class="ps-item"><span class="ps-num">3</span><span class="ps-label" data-i18n="features.stat2">Deployment Phases</span></div>
-      <div class="ps-item"><span class="ps-num">106+</span><span class="ps-label" data-i18n="features.stat3">Project Files</span></div>
-      <div class="ps-item"><span class="ps-num">19</span><span class="ps-label" data-i18n="features.stat4">Feature Categories</span></div>
+    <div class="stats">
+      <div class="stat"><div class="stat-val">$31</div><div class="stat-label" data-i18n="stat1">Per Camera Node</div></div>
+      <div class="stat"><div class="stat-val">87%</div><div class="stat-label" data-i18n="stat2">Cost Savings</div></div>
+      <div class="stat"><div class="stat-val">5MP</div><div class="stat-label" data-i18n="stat3">AI Detection</div></div>
+      <div class="stat"><div class="stat-val">15min</div><div class="stat-label" data-i18n="stat4">Scan Interval</div></div>
     </div>
   </div>
 </section>
 
-<!-- ═══ DISEASE LIBRARY ═══ -->
-<section id="diseases" class="section-sand">
-  <div class="section-inner">
-    <div class="section-tag" data-i18n="diseases.tag">World's Largest Database</div>
-    <h2 class="section-title" data-i18n="diseases.title">Agricultural Disease Library</h2>
-    <p class="section-desc" data-i18n="diseases.desc">2,147 diseases cataloged across 156 crop species. 12,400+ reference images covering 85 countries. Searchable by name, crop, category, or region. Updated weekly with peer-reviewed entries.</p>
-    <!-- Search & Filters -->
-    <div class="disease-controls">
-      <input type="text" id="diseaseSearch" placeholder="Search diseases..." data-i18n-placeholder="diseases.search" class="disease-search-input">
-      <div class="disease-filters">
-        <select id="filterCategory" class="filter-select">
-          <option value="" data-i18n="diseases.allCat">All Categories</option>
-          <option value="fungal">Fungal</option>
-          <option value="bacterial">Bacterial</option>
-          <option value="viral">Viral</option>
-          <option value="oomycete">Oomycete</option>
-          <option value="nematode">Nematode</option>
-          <option value="deficiency">Deficiency</option>
-        </select>
-        <select id="filterRegion" class="filter-select">
-          <option value="" data-i18n="diseases.allReg">All Regions</option>
-          <option value="global">Global</option>
-          <option value="tropical">Tropical</option>
-          <option value="temperate">Temperate</option>
-          <option value="mediterranean">Mediterranean</option>
-          <option value="arid">Arid / MENA</option>
-        </select>
-        <select id="filterCrop" class="filter-select">
-          <option value="" data-i18n="diseases.allCrop">All Crops</option>
-          <option value="tomato">Tomato</option>
-          <option value="wheat">Wheat</option>
-          <option value="rice">Rice</option>
-          <option value="corn">Corn/Maize</option>
-          <option value="potato">Potato</option>
-          <option value="grape">Grape</option>
-          <option value="citrus">Citrus</option>
-          <option value="banana">Banana</option>
-          <option value="cotton">Cotton</option>
-          <option value="soybean">Soybean</option>
-          <option value="coffee">Coffee</option>
-          <option value="apple">Apple</option>
-          <option value="olive">Olive</option>
-          <option value="date-palm">Date Palm</option>
-        </select>
-      </div>
-    </div>
-    <div class="disease-count"><span id="diseaseCountNum">0</span> <span data-i18n="diseases.found">diseases found</span></div>
-    <div class="disease-grid" id="diseaseGrid"></div>
-    <button class="btn-demo" id="loadMoreDiseases" style="display:none;" data-i18n="diseases.loadMore">Load More</button>
+<section id="how">
+  <div class="text-center">
+    <div class="s-label" data-i18n="how_label">How It Works</div>
+    <h2 class="s-title" data-i18n="how_h2">Three Simple Steps to Protect Your Farm</h2>
+    <p class="s-desc" style="margin:0 auto" data-i18n="how_p">No technical expertise required. AgriVision is built for farmers, not engineers.</p>
+  </div>
+  <div class="steps">
+    <div class="step"><div class="step-num" data-i18n="step1_num">STEP 01</div><div class="step-icon">📐</div><h3 data-i18n="step1_h">Configure</h3><p data-i18n="step1_p">Enter your farm size and terrain. Our AI calculates the exact cameras and hub you need.</p></div>
+    <div class="step"><div class="step-num" data-i18n="step2_num">STEP 02</div><div class="step-icon">📦</div><h3 data-i18n="step2_h">Deploy</h3><p data-i18n="step2_p">Receive your pre-configured system. Mount cameras, power up the hub. Takes 30 minutes.</p></div>
+    <div class="step"><div class="step-num" data-i18n="step3_num">STEP 03</div><div class="step-icon">🔬</div><h3 data-i18n="step3_h">Protect</h3><p data-i18n="step3_p">AI monitors every plant 24/7. Get instant alerts with treatment recommendations.</p></div>
   </div>
 </section>
 
-<!-- ═══ LANGUAGES ═══ -->
-<section id="languages" class="section-white">
-  <div class="section-inner">
-    <div class="languages-wrap">
-      <div class="lang-info fade-up">
-        <div class="section-tag" data-i18n="lang.tag">Global Reach</div>
-        <h3 class="section-title" data-i18n="lang.title">Built for farmers worldwide</h3>
-        <p data-i18n="lang.desc">Our platform, mobile app, alerts, and reports are fully localized — not just translated, but culturally adapted for each market.</p>
-        <ul class="check-list">
-          <li data-i18n="lang.l1">Full UI translation across app, dashboard, alerts</li>
-          <li data-i18n="lang.l2">Localized disease libraries per region</li>
-          <li data-i18n="lang.l3">Regional weather data integration</li>
-          <li data-i18n="lang.l4">Local currency pricing and invoicing</li>
-          <li data-i18n="lang.l5">RTL support for Arabic interface</li>
-          <li data-i18n="lang.l6">Regional sales representatives</li>
-        </ul>
+<section id="features">
+  <div class="text-center">
+    <div class="s-label" data-i18n="feat_label">Features</div>
+    <h2 class="s-title" data-i18n="feat_h2">Why Farmers Choose AgriVision</h2>
+  </div>
+  <div class="features">
+    <div class="feature"><div class="feat-icon">🧠</div><h3 data-i18n="f1_h">AI Disease Detection</h3><p data-i18n="f1_p">Trained on 348+ plant diseases. Identifies infections before they're visible to the naked eye.</p></div>
+    <div class="feature"><div class="feat-icon">☀️</div><h3 data-i18n="f2_h">Solar Powered</h3><p data-i18n="f2_p">Camera nodes run on solar + LiFePO4 battery. Zero running costs, works off-grid.</p></div>
+    <div class="feature"><div class="feat-icon">📱</div><h3 data-i18n="f3_h">Real-Time Alerts</h3><p data-i18n="f3_p">Instant WhatsApp and push notifications with photos, severity level, and treatment steps.</p></div>
+    <div class="feature"><div class="feat-icon">🗺️</div><h3 data-i18n="f4_h">Interactive Farm Map</h3><p data-i18n="f4_p">Draw your farm, see camera coverage, and pinpoint exactly where problems are occurring.</p></div>
+    <div class="feature"><div class="feat-icon">📊</div><h3 data-i18n="f5_h">Smart Reports</h3><p data-i18n="f5_p">Weekly farm health reports, disease trends, sensor analytics. PDF export for insurance claims.</p></div>
+    <div class="feature"><div class="feat-icon">💰</div><h3 data-i18n="f6_h">87% Cost Savings</h3><p data-i18n="f6_p">Hub & spoke architecture: $31/camera vs $577 standalone. Same AI, fraction of the cost.</p></div>
+    <div class="feature"><div class="feat-icon">🌡️</div><h3 data-i18n="f7_h">Environmental Sensors</h3><p data-i18n="f7_p">Temperature, humidity, soil moisture, and light monitoring with automatic alerts.</p></div>
+    <div class="feature"><div class="feat-icon">🔒</div><h3 data-i18n="f8_h">Your Data, Your Choice</h3><p data-i18n="f8_p">Full GDPR compliance. Choose to share anonymized data for discounts, or keep it private.</p></div>
+  </div>
+</section>
+
+<section id="tech">
+  <div class="text-center">
+    <div class="s-label" data-i18n="tech_label">Technology</div>
+    <h2 class="s-title" data-i18n="tech_h2">Production-Grade Technology</h2>
+    <p class="s-desc" style="margin:0 auto" data-i18n="tech_p">Enterprise reliability built into every component.</p>
+  </div>
+  <div class="tech-grid">
+    <div class="tech-card">
+      <h3 data-i18n="tech1_h">🔧 ESP32-S3 Camera Nodes</h3>
+      <ul>
+        <li data-i18n="tech1_1">5MP OV5640 autofocus</li>
+        <li data-i18n="tech1_2">MicroSD offline buffer</li>
+        <li data-i18n="tech1_3">Solar + LiFePO4 battery</li>
+        <li data-i18n="tech1_4">Auto-provisioning via AP</li>
+        <li data-i18n="tech1_5">Production self-test on boot</li>
+        <li data-i18n="tech1_6">Deep sleep power profiles</li>
+      </ul>
+    </div>
+    <div class="tech-card">
+      <h3 data-i18n="tech2_h">🖥️ Raspberry Pi Hub</h3>
+      <ul>
+        <li data-i18n="tech2_1">On-device AI detection</li>
+        <li data-i18n="tech2_2">Fleet management for 50+ nodes</li>
+        <li data-i18n="tech2_3">Heartbeat health monitoring</li>
+        <li data-i18n="tech2_4">Local storage with cloud sync</li>
+        <li data-i18n="tech2_5">OTA firmware updates</li>
+        <li data-i18n="tech2_6">WhatsApp & push alerts</li>
+      </ul>
+    </div>
+    <div class="tech-card">
+      <h3 data-i18n="tech3_h">📱 Mobile & Web Apps</h3>
+      <ul>
+        <li data-i18n="tech3_1">Real-time camera dashboard</li>
+        <li data-i18n="tech3_2">Disease detection feed</li>
+        <li data-i18n="tech3_3">Interactive farm mapping</li>
+        <li data-i18n="tech3_4">Environmental sensor charts</li>
+        <li data-i18n="tech3_5">Dark mode support</li>
+        <li data-i18n="tech3_6">Multi-language (EN/FR/AR/TR)</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section id="pricing">
+  <div class="text-center">
+    <div class="s-label" style="color:rgba(255,255,255,.6)" data-i18n="price_label">Pricing</div>
+    <h2 class="s-title" data-i18n="price_h2">Simple, Transparent Pricing</h2>
+    <p class="s-desc" style="color:rgba(255,255,255,.65);margin:0 auto" data-i18n="price_p">No monthly fees. No hidden costs. Pay once, monitor forever.</p>
+  </div>
+  <div class="pricing-grid">
+    <div class="plan">
+      <div class="plan-name" data-i18n="plan1_name">Starter</div>
+      <div class="plan-range" data-i18n="plan1_range">1-3 ha • 2-4 cameras</div>
+      <div class="plan-price">$499 <span>USD</span></div>
+      <ul>
+        <li data-i18n="p1_1">1 Central Hub</li>
+        <li data-i18n="p1_2">Up to 4 cameras</li>
+        <li data-i18n="p1_3">AI disease detection</li>
+        <li data-i18n="p1_4">Mobile dashboard</li>
+        <li data-i18n="p1_5">Email alerts</li>
+      </ul>
+      <a href="/configurator" class="btn-plan" data-i18n="plan_cta">Configure Now →</a>
+    </div>
+    <div class="plan popular">
+      <div class="popular-badge" data-i18n="popular_badge">MOST POPULAR</div>
+      <div class="plan-name" data-i18n="plan2_name">Professional</div>
+      <div class="plan-range" data-i18n="plan2_range">3-15 ha • 5-15 cameras</div>
+      <div class="plan-price">$747 <span>USD</span></div>
+      <ul>
+        <li data-i18n="p2_1">1 Central Hub</li>
+        <li data-i18n="p2_2">Up to 15 cameras</li>
+        <li data-i18n="p2_3">Full sensor suite</li>
+        <li data-i18n="p2_4">WhatsApp alerts</li>
+        <li data-i18n="p2_5">PDF reports</li>
+        <li data-i18n="p2_6">Priority support</li>
+      </ul>
+      <a href="/configurator" class="btn-plan" data-i18n="plan_cta">Configure Now →</a>
+    </div>
+    <div class="plan">
+      <div class="plan-name" data-i18n="plan3_name">Enterprise</div>
+      <div class="plan-range" data-i18n="plan3_range">15+ ha • 15+ cameras</div>
+      <div class="plan-price" data-i18n="plan3_price">Custom</div>
+      <ul>
+        <li data-i18n="p3_1">Multi-hub setup</li>
+        <li data-i18n="p3_2">Unlimited cameras</li>
+        <li data-i18n="p3_3">WiFi repeaters</li>
+        <li data-i18n="p3_4">Custom AI training</li>
+        <li data-i18n="p3_5">API access</li>
+        <li data-i18n="p3_6">Dedicated support</li>
+      </ul>
+      <a href="/configurator" class="btn-plan" data-i18n="plan3_cta">Contact Sales</a>
+    </div>
+  </div>
+</section>
+
+<section id="contact">
+  <div class="s-label" data-i18n="contact_label">Contact</div>
+  <h2 class="s-title" data-i18n="contact_h2">Get In Touch</h2>
+  <p class="s-desc" data-i18n="contact_p">Talk to our team about your farm's needs. We respond within 24 hours.</p>
+  <div class="contact-wrap">
+    <div class="team-cards">
+      <div class="team-card">
+        <div class="team-avatar">HZ</div>
+        <div class="team-info">
+          <h4>Eng. Hicham Zein Eddine</h4>
+          <div class="team-role" data-i18n="role_hicham">International Business Developer</div>
+          <div class="team-contact">
+            <a href="mailto:contact@vision-core.ca">📧 contact@vision-core.ca</a>
+            <a href="tel:+14388313611">📞 +1 (438) 831-3611</a>
+          </div>
+          <div class="team-location">📍 <span data-i18n="loc_montreal">Montreal, Canada</span></div>
+        </div>
       </div>
-      <div class="lang-visual fade-up">
-        <div class="lang-flags">
-          <div class="lang-item"><span class="flag">🇬🇧</span><div><div class="lang-name">English</div><div class="lang-label">Global default</div></div></div>
-          <div class="lang-item"><span class="flag">🇫🇷</span><div><div class="lang-name">Français</div><div class="lang-label">Canada, West Africa</div></div></div>
-          <div class="lang-item"><span class="flag">🇸🇦</span><div><div class="lang-name">العربية</div><div class="lang-label">Middle East & North Africa</div></div></div>
-          <div class="lang-item"><span class="flag">🇹🇷</span><div><div class="lang-name">Türkçe</div><div class="lang-label">Turkey, Central Asia</div></div></div>
-          <div class="lang-item"><span class="flag">🇪🇸</span><div><div class="lang-name">Español</div><div class="lang-label">Latin America</div></div></div>
-          <div class="lang-item"><span class="flag">🇮🇳</span><div><div class="lang-name">हिन्दी</div><div class="lang-label">India</div></div></div>
+      <div class="team-card">
+        <div class="team-avatar">YS</div>
+        <div class="team-info">
+          <h4>Dr. Yousif Shihab</h4>
+          <div class="team-role" data-i18n="role_yousif">Regional Representative — Middle East &amp; Turkey</div>
+          <div class="team-contact">
+            <a href="mailto:ymsh50@yahoo.co.uk">📧 ymsh50@yahoo.co.uk</a>
+            <a href="tel:+905366268294">📞 +90 536 626 8294</a>
+          </div>
+          <div class="team-location">📍 <span data-i18n="loc_ankara">Ankara, Turkey</span></div>
         </div>
       </div>
     </div>
+    <form class="contact-form" name="contact" method="POST" data-netlify="true" netlify-honeypot="bot-field" onsubmit="handleSubmit(event)">
+      <input type="hidden" name="form-name" value="contact">
+      <p style="display:none"><input name="bot-field"></p>
+      <div class="form-group"><label data-i18n="form_name">Full Name</label><input type="text" name="name" required></div>
+      <div class="form-group"><label data-i18n="form_email">Email</label><input type="email" name="email" required></div>
+      <div class="form-group"><label data-i18n="form_type">I am a</label><select name="type"><option value="farmer" data-i18n="type_farmer">Farmer</option><option value="company" data-i18n="type_company">Agri-Company</option><option value="student" data-i18n="type_student">Student / Researcher</option><option value="investor" data-i18n="type_investor">Investor</option><option value="other" data-i18n="type_other">Other</option></select></div>
+      <div class="form-group"><label data-i18n="form_msg">Message</label><textarea name="message" rows="4"></textarea></div>
+      <button type="submit" class="btn-send" data-i18n="form_send">Send Message</button>
+    </form>
   </div>
 </section>
 
-<!-- ═══ HOW IT WORKS ═══ -->
-<section id="how" class="section-dark">
-  <div class="section-inner">
-    <div class="section-tag" data-i18n="how.tag">How It Works</div>
-    <h2 class="section-title" data-i18n="how.title">From field to phone in 3 steps</h2>
-    <p class="section-desc" data-i18n="how.desc">Set up once, monitor forever. No IT team required.</p>
-    <div class="steps-grid">
-      <div class="step-card fade-up">
-        <div class="step-num">01</div>
-        <h4 data-i18n="how.s1.title">Install the module</h4>
-        <p data-i18n="how.s1.desc">Mount the Agrivision unit in your field. Flash SD card, connect sensors, power on. Under 30 minutes.</p>
-      </div>
-      <div class="step-card fade-up">
-        <div class="step-num">02</div>
-        <h4 data-i18n="how.s2.title">Connect & configure</h4>
-        <p data-i18n="how.s2.desc">Auto-connects via 4G. Download mobile app, scan QR code, set crop type and alert thresholds.</p>
-      </div>
-      <div class="step-card fade-up">
-        <div class="step-num">03</div>
-        <h4 data-i18n="how.s3.title">Monitor & act</h4>
-        <p data-i18n="how.s3.desc">Real-time data, disease alerts, recommendations. Dashboards, reports, data-driven decisions daily.</p>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ═══ PRICING ═══ -->
-<section id="pricing" class="section-white">
-  <div class="section-inner">
-    <div class="section-tag" data-i18n="pricing.tag">Pricing Plans</div>
-    <h2 class="section-title" data-i18n="pricing.title">Choose the plan that fits your farm</h2>
-    <p class="section-desc" data-i18n="pricing.desc">All plans include hardware, software, and support. No hidden fees.</p>
-    <div class="pricing-grid">
-      <div class="price-card fade-up" data-plan="starter">
-        <h4 data-i18n="pricing.starter.name">Starter</h4>
-        <div class="desc" data-i18n="pricing.starter.desc">For small farms — 1-2 fields</div>
-        <div class="price-amount">$49<span>/mo</span></div>
-        <ul class="price-features">
-          <li data-i18n="pricing.starter.f1">1 monitoring device</li>
-          <li data-i18n="pricing.starter.f2">Mobile app access</li>
-          <li data-i18n="pricing.starter.f3">Basic disease detection</li>
-          <li data-i18n="pricing.starter.f4">Email alerts</li>
-          <li data-i18n="pricing.starter.f5">Monthly reports</li>
-        </ul>
-        <div class="paypal-btn-container" id="paypal-starter"></div>
-        <a href="#contact" class="btn-outline" data-i18n="pricing.getStarted">Get Started</a>
-      </div>
-      <div class="price-card popular fade-up" data-plan="professional">
-        <div class="price-badge" data-i18n="pricing.popular">Most Popular</div>
-        <h4 data-i18n="pricing.pro.name">Professional</h4>
-        <div class="desc" data-i18n="pricing.pro.desc">For medium farms scaling operations</div>
-        <div class="price-amount">$129<span>/mo</span></div>
-        <ul class="price-features">
-          <li data-i18n="pricing.pro.f1">Up to 5 devices</li>
-          <li data-i18n="pricing.pro.f2">Full AI library (348+ diseases)</li>
-          <li data-i18n="pricing.pro.f3">Push & SMS alerts</li>
-          <li data-i18n="pricing.pro.f4">Full analytics dashboard</li>
-          <li data-i18n="pricing.pro.f5">Satellite imagery (NDVI)</li>
-          <li data-i18n="pricing.pro.f6">Priority support</li>
-        </ul>
-        <div class="paypal-btn-container" id="paypal-professional"></div>
-        <a href="#contact" class="btn-demo" data-i18n="pricing.getStarted">Get Started</a>
-      </div>
-      <div class="price-card fade-up" data-plan="enterprise">
-        <h4 data-i18n="pricing.ent.name">Enterprise</h4>
-        <div class="desc" data-i18n="pricing.ent.desc">For large operations & franchises</div>
-        <div class="price-amount" data-i18n="pricing.ent.price">Custom</div>
-        <ul class="price-features">
-          <li data-i18n="pricing.ent.f1">Unlimited modules</li>
-          <li data-i18n="pricing.ent.f2">White-label option</li>
-          <li data-i18n="pricing.ent.f3">API access</li>
-          <li data-i18n="pricing.ent.f4">Dedicated account manager</li>
-          <li data-i18n="pricing.ent.f5">Custom integrations</li>
-          <li data-i18n="pricing.ent.f6">SLA guarantee</li>
-        </ul>
-        <a href="#contact" class="btn-outline" data-i18n="pricing.contactSales">Contact Sales</a>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ═══ B2B SECTION ═══ -->
-<section id="b2b" class="section-sand">
-  <div class="section-inner">
-    <div class="section-tag" data-i18n="b2b.tag">For Agri-Companies</div>
-    <h2 class="section-title" data-i18n="b2b.title">Partner with Agrivision</h2>
-    <p class="section-desc" data-i18n="b2b.desc">Agri-pharma companies, seed producers, and agricultural input providers — reach farmers directly through our platform.</p>
-    <div class="b2b-value">
-      <p class="b2b-pitch" data-i18n="b2b.pitch">Traditional agri-marketing reaches 1-2% of farmers. With Agrivision's targeted platform, companies achieve 15-25% conversion rates by reaching the right farmers at the right time with the right products.</p>
-    </div>
-    <div class="b2b-grid">
-      <div class="b2b-card fade-up">
-        <div class="b2b-icon">🏢</div>
-        <h4 data-i18n="b2b.c1.title">Company Dashboard</h4>
-        <p data-i18n="b2b.c1.desc">Dedicated portal to manage your farmer directory, products, campaigns, and analytics.</p>
-      </div>
-      <div class="b2b-card fade-up">
-        <div class="b2b-icon">📢</div>
-        <h4 data-i18n="b2b.c2.title">Targeted Advertising</h4>
-        <p data-i18n="b2b.c2.desc">Place ads on farmer dashboards, disease alerts, and the mobile app. Pay per impression or click.</p>
-      </div>
-      <div class="b2b-card fade-up">
-        <div class="b2b-icon">🤝</div>
-        <h4 data-i18n="b2b.c3.title">Direct Farmer Access</h4>
-        <p data-i18n="b2b.c3.desc">Chat directly with farmers, send product recommendations based on detected diseases.</p>
-      </div>
-      <div class="b2b-card fade-up">
-        <div class="b2b-icon">📊</div>
-        <h4 data-i18n="b2b.c4.title">Market Intelligence</h4>
-        <p data-i18n="b2b.c4.desc">Aggregated disease trends, regional data, and crop health analytics for your R&D team.</p>
-      </div>
-      <div class="b2b-card fade-up">
-        <div class="b2b-icon">🔍</div>
-        <h4 data-i18n="b2b.c5.title">Farmer Directory &amp; Search</h4>
-        <p data-i18n="b2b.c5.desc">Search and filter farmers by crop, disease, region, and season. Higher tiers unlock full profiles.</p>
-      </div>
-      <div class="b2b-card fade-up">
-        <div class="b2b-icon">📦</div>
-        <h4 data-i18n="b2b.c6.title">Product Catalog</h4>
-        <p data-i18n="b2b.c6.desc">Publish product catalogs with disease and crop targeting. Visible to all farmers on the platform.</p>
-      </div>
-      <div class="b2b-card fade-up">
-        <div class="b2b-icon">🎓</div>
-        <h4 data-i18n="b2b.c7.title">Webinars &amp; Training</h4>
-        <p data-i18n="b2b.c7.desc">Create webinars and training for farmers. Featured placement for paid tiers. Registration tracking.</p>
-      </div>
-      <div class="b2b-card fade-up">
-        <div class="b2b-icon">💬</div>
-        <h4 data-i18n="b2b.c8.title">Company-Farmer Chat</h4>
-        <p data-i18n="b2b.c8.desc">Real-time chat with read receipts and WebSocket notifications. Message limits per tier.</p>
-      </div>
-    </div>
-    <div class="b2b-pricing">
-      <h3 data-i18n="b2b.plans">Company Plans</h3>
-      <div class="b2b-plans-grid-4">
-        <div class="b2b-plan">
-          <h4 data-i18n="b2b.free.name">Free Trial</h4>
-          <div class="price-amount" data-i18n="b2b.free.price">Free</div>
-          <p class="b2b-plan-duration" data-i18n="b2b.free.duration">1 month trial</p>
-          <ul class="price-features">
-            <li data-i18n="b2b.free.f1">Read-only disease database access</li>
-            <li data-i18n="b2b.free.f2">News &amp; notifications</li>
-            <li data-i18n="b2b.free.f3">Site registration</li>
-            <li data-i18n="b2b.free.f4">No credit card required</li>
-          </ul>
-        </div>
-        <div class="b2b-plan">
-          <h4 data-i18n="b2b.decouverte.name">Découverte</h4>
-          <div class="price-amount">$299<span>/mo</span></div>
-          <ul class="price-features">
-            <li data-i18n="b2b.decouverte.f1">35 direct messages/month</li>
-            <li data-i18n="b2b.decouverte.f2">Farmer directory with filters</li>
-            <li data-i18n="b2b.decouverte.f3">Basic messaging</li>
-            <li data-i18n="b2b.decouverte.f4">Regional farmer access</li>
-          </ul>
-        </div>
-        <div class="b2b-plan featured">
-          <h4 data-i18n="b2b.professionnel.name">Professionnel</h4>
-          <div class="price-amount">$799<span>/mo</span></div>
-          <ul class="price-features">
-            <li data-i18n="b2b.professionnel.f1">100 direct messages/month</li>
-            <li data-i18n="b2b.professionnel.f2">Full farmer profiles</li>
-            <li data-i18n="b2b.professionnel.f3">Real-time sensor data access</li>
-            <li data-i18n="b2b.professionnel.f4">Featured webinars</li>
-            <li data-i18n="b2b.professionnel.f5">Advanced analytics</li>
-          </ul>
-        </div>
-        <div class="b2b-plan">
-          <h4 data-i18n="b2b.entreprise.name">Entreprise</h4>
-          <div class="price-amount">$1,999<span>/mo</span></div>
-          <ul class="price-features">
-            <li data-i18n="b2b.entreprise.f1">Unlimited direct messages</li>
-            <li data-i18n="b2b.entreprise.f2">Dedicated API &amp; CRM integration</li>
-            <li data-i18n="b2b.entreprise.f3">Dedicated account manager</li>
-            <li data-i18n="b2b.entreprise.f4">Crop &amp; disease targeting</li>
-            <li data-i18n="b2b.entreprise.f5">White-label options</li>
-          </ul>
-        </div>
-      </div>
-      <div class="b2b-cta">
-        <a href="company.html" class="btn-demo" data-i18n="b2b.portalLink">Visit Company Portal</a>
-        <a href="#contact" class="btn-outline" data-i18n="pricing.contactSales">Contact Sales</a>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ═══ AD ZONE: MID-PAGE ═══ -->
-<div class="ad-zone" id="adZoneMid" data-slot="mid-page" style="display:none;">
-  <div class="ad-inner" id="adContentMid"></div>
-</div>
-
-<!-- ═══ CONTACT ═══ -->
-<section id="contact" class="section-white">
-  <div class="section-inner">
-    <div class="section-tag" data-i18n="contact.tag">Get In Touch</div>
-    <h2 class="section-title" data-i18n="contact.title">Ready to transform your farm?</h2>
-    <div class="contact-wrap">
-      <div class="contact-info fade-up">
-        <h3 data-i18n="contact.subtitle">Let's talk agriculture</h3>
-        <p data-i18n="contact.desc">Whether 10 acres or 10,000 — Agrivision scales with you.</p>
-        <div class="contact-detail"><span class="ci">📧</span> info@theagrivision.com</div>
-        <div class="contact-detail"><span class="ci">📞</span> +1 (438) 831-3611</div>
-        <div class="contact-detail"><span class="ci">🌐</span> theagrivision.com</div>
-        <div class="contact-detail"><span class="ci">📍</span> Montreal, Quebec, Canada</div>
-        <div class="team-section">
-          <h4 data-i18n="contact.team">Our Team</h4>
-          <div class="team-member">
-            <strong>Hisham Zein</strong> — <span data-i18n="contact.role1">International Business Developer</span>
-          </div>
-          <div class="team-member">
-            <strong>Dr. Yousif Shihab</strong> — <span data-i18n="contact.role2">Business & Franchise Representative, Middle East • North Africa • Turkey</span>
-          </div>
-        </div>
-      </div>
-      <div class="contact-form fade-up">
-        <form id="contactForm" name="contact" method="POST" data-netlify="true" netlify-honeypot="bot-field">
-          <input type="hidden" name="form-name" value="contact">
-          <p style="display:none"><input name="bot-field"></p>
-          <div class="form-group">
-            <label data-i18n="contact.name">Full Name</label>
-            <input type="text" name="name" required>
-          </div>
-          <div class="form-group">
-            <label data-i18n="contact.email">Email</label>
-            <input type="email" name="email" required>
-          </div>
-          <div class="form-group">
-            <label data-i18n="contact.type">I am a</label>
-            <select name="type">
-              <option value="farmer" data-i18n="contact.farmer">Farmer</option>
-              <option value="company" data-i18n="contact.company">Agri-Company</option>
-              <option value="student" data-i18n="contact.student">Student / Researcher</option>
-              <option value="investor" data-i18n="contact.investor">Investor</option>
-              <option value="other" data-i18n="contact.other">Other</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label data-i18n="contact.message">Message</label>
-            <textarea name="message" rows="4"></textarea>
-          </div>
-          <button type="submit" class="btn-demo" data-i18n="contact.send">Send Message</button>
-        </form>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ═══ FOOTER ═══ -->
 <footer>
   <div class="footer-inner">
-    <div class="footer-brand">
-      <a href="#" class="nav-logo">Agrivision</a>
-      <p data-i18n="footer.desc">AI-powered precision agriculture. Helping farmers grow smarter, waste less, earn more.</p>
+    <div>
+      <a href="#" class="nav-logo" style="color:#fff">
+        <svg viewBox="0 0 40 40" fill="none"><circle cx="20" cy="20" r="20" fill="#1a6b3a"/><path d="M20 8c-1 4-4 8-8 10 4 2 7 6 8 10 1-4 4-8 8-10-4-2-7-6-8-10z" fill="#45c474"/><circle cx="20" cy="20" r="4" fill="#7edd9f"/></svg>
+        AgriVision
+      </a>
+      <div class="footer-brand">
+        <p data-i18n="footer_desc">AI-powered agricultural monitoring. Protecting farms across the Gulf region and beyond.</p>
+      </div>
+    </div>
+    <div>
+      <div class="footer-offices">
+        <div class="footer-office">
+          <h5 data-i18n="footer_hq">Headquarters</h5>
+          <p>
+            <strong>Eng. Hicham Zein Eddine</strong> — <span data-i18n="role_hicham_short">International Business Developer</span><br>
+            <a href="mailto:contact@vision-core.ca">contact@vision-core.ca</a><br>
+            <a href="tel:+14388313611">+1 (438) 831-3611</a><br>
+            <span data-i18n="loc_montreal">Montreal, Canada</span>
+          </p>
+        </div>
+        <div class="footer-office">
+          <h5 data-i18n="footer_me">Middle East &amp; Turkey Office</h5>
+          <p>
+            <strong>Dr. Yousif Shihab</strong> — <span data-i18n="role_yousif_short">Regional Representative</span><br>
+            <a href="mailto:ymsh50@yahoo.co.uk">ymsh50@yahoo.co.uk</a><br>
+            <a href="tel:+905366268294">+90 536 626 8294</a><br>
+            <span data-i18n="loc_ankara">Ankara, Turkey</span>
+          </p>
+        </div>
+      </div>
     </div>
     <div class="footer-col">
-      <h5 data-i18n="footer.product">Product</h5>
-      <a href="#features" data-i18n="nav.features">Features</a>
-      <a href="#diseases" data-i18n="nav.diseases">Disease Library</a>
-      <a href="#pricing" data-i18n="nav.pricing">Pricing</a>
-      <a href="#how" data-i18n="nav.how">How It Works</a>
+      <h5 data-i18n="footer_product">Product</h5>
+      <ul>
+        <li><a href="#features" data-i18n="nav_features">Features</a></li>
+        <li><a href="#pricing" data-i18n="nav_pricing">Pricing</a></li>
+        <li><a href="/configurator" data-i18n="footer_config">Configurator</a></li>
+      </ul>
     </div>
     <div class="footer-col">
-      <h5 data-i18n="footer.company">Company</h5>
-      <a href="#b2b" data-i18n="nav.b2b">For Companies</a>
-      <a href="company.html" data-i18n="footer.portal">Company Portal</a>
-      <a href="#contact" data-i18n="nav.contact">Contact</a>
-      <a href="news.html" data-i18n="footer.news">News</a>
-    </div>
-    <div class="footer-col">
-      <h5 data-i18n="footer.connect">Connect</h5>
-      <a href="https://instagram.com/agrivision__" target="_blank">Instagram</a>
-      <a href="mailto:info@theagrivision.com">Email</a>
+      <h5 data-i18n="footer_support">Support</h5>
+      <ul>
+        <li><a href="#" data-i18n="footer_docs">Documentation</a></li>
+        <li><a href="#" data-i18n="footer_install">Installation Guide</a></li>
+        <li><a href="#contact" data-i18n="nav_contact">Contact Us</a></li>
+      </ul>
     </div>
   </div>
   <div class="footer-bottom">
-    <span>&copy; 2026 Agrivision — Performance Cristal Technologies Avancées S.A.</span>
-    <span>Made in Canada 🇨🇦</span>
+    <p>© 2026 Performance Cristal Technologies Avancées S.A.</p>
+    <p>🌐 theagrivision.com</p>
   </div>
 </footer>
 
-<!-- ═══ AUTH MODAL ═══ -->
-<div class="modal-overlay" id="authModal" style="display:none;">
-  <div class="modal-box">
-    <button class="modal-close" onclick="closeModal()">&times;</button>
-    <!-- LOGIN -->
-    <div id="loginForm">
-      <h3 data-i18n="auth.loginTitle">Sign In</h3>
-      <div class="form-group"><label>Email</label><input type="email" id="loginEmail"></div>
-      <div class="form-group"><label data-i18n="auth.password">Password</label><input type="password" id="loginPassword"></div>
-      <button class="btn-demo" style="width:100%" onclick="handleLogin()" data-i18n="nav.login">Sign In</button>
-      <p class="modal-switch" data-i18n="auth.noAccount">Don't have an account? <a onclick="showModal('signup')">Sign Up</a></p>
-      <div id="loginError" class="form-error"></div>
-    </div>
-    <!-- SIGNUP -->
-    <div id="signupForm" style="display:none;">
-      <h3 data-i18n="auth.signupTitle">Create Account</h3>
-      <div class="form-group"><label data-i18n="auth.fullName">Full Name</label><input type="text" id="signupName"></div>
-      <div class="form-group"><label>Email</label><input type="email" id="signupEmail"></div>
-      <div class="form-group"><label data-i18n="auth.password">Password</label><input type="password" id="signupPassword"></div>
-      <div class="form-group">
-        <label data-i18n="auth.role">I am a</label>
-        <select id="signupRole">
-          <option value="farmer" data-i18n="contact.farmer">Farmer</option>
-          <option value="student" data-i18n="contact.student">Student / Researcher</option>
-          <option value="company" data-i18n="contact.company">Company</option>
-        </select>
-      </div>
-      <button class="btn-demo" style="width:100%" onclick="handleSignup()" data-i18n="nav.signup">Sign Up Free</button>
-      <p class="modal-switch" data-i18n="auth.hasAccount">Already have an account? <a onclick="showModal('login')">Sign In</a></p>
-      <div id="signupError" class="form-error"></div>
-    </div>
-  </div>
-</div>
+<script>
+const T = {
+  en: {
+    page_title:"AgriVision — AI-Powered Agricultural Monitoring",
+    nav_how:"How It Works",nav_features:"Features",nav_pricing:"Pricing",nav_contact:"Contact",nav_login:"Login",nav_start:"Get Started",
+    hero_badge:"Now Available in UAE, Saudi Arabia & Turkey",
+    hero_h1:"AI That Watches Your Farm <span>24/7</span>",
+    hero_p:"Transform your existing cameras into an intelligent disease detection network. Catch crop diseases before they spread — save up to 40% on crop losses.",
+    hero_cta1:"Configure Your System →",hero_cta2:"▶ Watch Demo",
+    stat1:"Per Camera Node",stat2:"Cost Savings",stat3:"AI Detection",stat4:"Scan Interval",
+    how_label:"How It Works",how_h2:"Three Simple Steps to Protect Your Farm",how_p:"No technical expertise required. AgriVision is built for farmers, not engineers.",
+    step1_num:"STEP 01",step1_h:"Configure",step1_p:"Enter your farm size and terrain. Our AI calculates the exact cameras and hub you need.",
+    step2_num:"STEP 02",step2_h:"Deploy",step2_p:"Receive your pre-configured system. Mount cameras, power up the hub. Takes 30 minutes.",
+    step3_num:"STEP 03",step3_h:"Protect",step3_p:"AI monitors every plant 24/7. Get instant alerts with treatment recommendations.",
+    feat_label:"Features",feat_h2:"Why Farmers Choose AgriVision",
+    f1_h:"AI Disease Detection",f1_p:"Trained on 348+ plant diseases. Identifies infections before they're visible to the naked eye.",
+    f2_h:"Solar Powered",f2_p:"Camera nodes run on solar + LiFePO4 battery. Zero running costs, works off-grid.",
+    f3_h:"Real-Time Alerts",f3_p:"Instant WhatsApp and push notifications with photos, severity level, and treatment steps.",
+    f4_h:"Interactive Farm Map",f4_p:"Draw your farm, see camera coverage, and pinpoint exactly where problems are occurring.",
+    f5_h:"Smart Reports",f5_p:"Weekly farm health reports, disease trends, sensor analytics. PDF export for insurance claims.",
+    f6_h:"87% Cost Savings",f6_p:"Hub & spoke architecture: $31/camera vs $577 standalone. Same AI, fraction of the cost.",
+    f7_h:"Environmental Sensors",f7_p:"Temperature, humidity, soil moisture, and light monitoring with automatic alerts.",
+    f8_h:"Your Data, Your Choice",f8_p:"Full GDPR compliance. Choose to share anonymized data for discounts, or keep it private.",
+    tech_label:"Technology",tech_h2:"Production-Grade Technology",tech_p:"Enterprise reliability built into every component.",
+    tech1_h:"🔧 ESP32-S3 Camera Nodes",tech1_1:"5MP OV5640 autofocus",tech1_2:"MicroSD offline buffer",tech1_3:"Solar + LiFePO4 battery",tech1_4:"Auto-provisioning via AP",tech1_5:"Production self-test on boot",tech1_6:"Deep sleep power profiles",
+    tech2_h:"🖥️ Raspberry Pi Hub",tech2_1:"On-device AI detection",tech2_2:"Fleet management for 50+ nodes",tech2_3:"Heartbeat health monitoring",tech2_4:"Local storage with cloud sync",tech2_5:"OTA firmware updates",tech2_6:"WhatsApp & push alerts",
+    tech3_h:"📱 Mobile & Web Apps",tech3_1:"Real-time camera dashboard",tech3_2:"Disease detection feed",tech3_3:"Interactive farm mapping",tech3_4:"Environmental sensor charts",tech3_5:"Dark mode support",tech3_6:"Multi-language (EN/FR/AR/TR)",
+    price_label:"Pricing",price_h2:"Simple, Transparent Pricing",price_p:"No monthly fees. No hidden costs. Pay once, monitor forever.",
+    plan1_name:"Starter",plan1_range:"1-3 ha • 2-4 cameras",p1_1:"1 Central Hub",p1_2:"Up to 4 cameras",p1_3:"AI disease detection",p1_4:"Mobile dashboard",p1_5:"Email alerts",
+    plan2_name:"Professional",plan2_range:"3-15 ha • 5-15 cameras",p2_1:"1 Central Hub",p2_2:"Up to 15 cameras",p2_3:"Full sensor suite",p2_4:"WhatsApp alerts",p2_5:"PDF reports",p2_6:"Priority support",
+    plan3_name:"Enterprise",plan3_range:"15+ ha • 15+ cameras",plan3_price:"Custom",p3_1:"Multi-hub setup",p3_2:"Unlimited cameras",p3_3:"WiFi repeaters",p3_4:"Custom AI training",p3_5:"API access",p3_6:"Dedicated support",
+    plan_cta:"Configure Now →",plan3_cta:"Contact Sales",popular_badge:"MOST POPULAR",
+    contact_label:"Contact",contact_h2:"Get In Touch",contact_p:"Talk to our team about your farm's needs. We respond within 24 hours.",
+    role_hicham:"International Business Developer",role_hicham_short:"International Business Developer",
+    role_yousif:"Regional Representative — Middle East & Turkey",role_yousif_short:"Regional Representative",
+    loc_montreal:"Montreal, Canada",loc_ankara:"Ankara, Turkey",
+    form_name:"Full Name",form_email:"Email",form_type:"I am a",form_msg:"Message",form_send:"Send Message",
+    type_farmer:"Farmer",type_company:"Agri-Company",type_student:"Student / Researcher",type_investor:"Investor",type_other:"Other",
+    footer_desc:"AI-powered agricultural monitoring. Protecting farms across the Gulf region and beyond.",
+    footer_hq:"Headquarters",footer_me:"Middle East & Turkey Office",
+    footer_product:"Product",footer_support:"Support",footer_config:"Configurator",footer_docs:"Documentation",footer_install:"Installation Guide",
+  },
+  fr: {
+    page_title:"AgriVision — Surveillance Agricole par Intelligence Artificielle",
+    nav_how:"Comment ça marche",nav_features:"Fonctionnalités",nav_pricing:"Tarifs",nav_contact:"Contact",nav_login:"Connexion",nav_start:"Commencer",
+    hero_badge:"Maintenant disponible aux Émirats, en Arabie Saoudite et en Turquie",
+    hero_h1:"L'IA qui surveille votre ferme <span>24h/24</span>",
+    hero_p:"Transformez vos caméras existantes en réseau intelligent de détection des maladies. Détectez les maladies avant qu'elles se propagent — économisez jusqu'à 40% sur les pertes de récoltes.",
+    hero_cta1:"Configurer votre système →",hero_cta2:"▶ Voir la démo",
+    stat1:"Par nœud caméra",stat2:"Économies réalisées",stat3:"Détection IA",stat4:"Intervalle de scan",
+    how_label:"Comment ça marche",how_h2:"Trois étapes simples pour protéger votre ferme",how_p:"Aucune expertise technique requise. AgriVision est conçu pour les agriculteurs, pas les ingénieurs.",
+    step1_num:"ÉTAPE 01",step1_h:"Configurer",step1_p:"Entrez la taille et le terrain de votre ferme. Notre IA calcule exactement les caméras et le hub dont vous avez besoin.",
+    step2_num:"ÉTAPE 02",step2_h:"Déployer",step2_p:"Recevez votre système préconfiguré. Montez les caméras, démarrez le hub. Prend 30 minutes.",
+    step3_num:"ÉTAPE 03",step3_h:"Protéger",step3_p:"L'IA surveille chaque plante 24h/24. Recevez des alertes instantanées avec recommandations de traitement.",
+    feat_label:"Fonctionnalités",feat_h2:"Pourquoi les agriculteurs choisissent AgriVision",
+    f1_h:"Détection des maladies par IA",f1_p:"Entraîné sur 348+ maladies végétales. Identifie les infections avant qu'elles soient visibles à l'œil nu.",
+    f2_h:"Alimenté à l'énergie solaire",f2_p:"Les nœuds caméra fonctionnent sur solaire + batterie LiFePO4. Zéro coût de fonctionnement, hors réseau.",
+    f3_h:"Alertes en temps réel",f3_p:"Notifications WhatsApp et push instantanées avec photos, niveau de gravité et étapes de traitement.",
+    f4_h:"Carte interactive de la ferme",f4_p:"Dessinez votre ferme, voyez la couverture des caméras et identifiez exactement où se produisent les problèmes.",
+    f5_h:"Rapports intelligents",f5_p:"Rapports hebdomadaires de santé des cultures, tendances des maladies, analyses des capteurs. Export PDF pour les assurances.",
+    f6_h:"87% d'économies",f6_p:"Architecture hub & spoke: 31$/caméra vs 577$ en autonome. Même IA, fraction du coût.",
+    f7_h:"Capteurs environnementaux",f7_p:"Surveillance de la température, l'humidité, l'humidité du sol et la lumière avec alertes automatiques.",
+    f8_h:"Vos données, votre choix",f8_p:"Conformité RGPD complète. Choisissez de partager des données anonymisées pour des remises, ou gardez-les privées.",
+    tech_label:"Technologie",tech_h2:"Technologie de qualité industrielle",tech_p:"Fiabilité entreprise intégrée dans chaque composant.",
+    tech1_h:"🔧 Nœuds caméra ESP32-S3",tech1_1:"Autofocus OV5640 5MP",tech1_2:"Buffer hors-ligne MicroSD",tech1_3:"Solaire + batterie LiFePO4",tech1_4:"Provisionnement automatique via AP",tech1_5:"Auto-test de production au démarrage",tech1_6:"Profils d'économie d'énergie",
+    tech2_h:"🖥️ Hub Raspberry Pi",tech2_1:"Détection IA embarquée",tech2_2:"Gestion de flotte 50+ nœuds",tech2_3:"Surveillance Heartbeat",tech2_4:"Stockage local + sync cloud",tech2_5:"Mises à jour firmware OTA",tech2_6:"Alertes WhatsApp & push",
+    tech3_h:"📱 Apps mobile & web",tech3_1:"Tableau de bord caméras temps réel",tech3_2:"Fil de détection des maladies",tech3_3:"Cartographie interactive",tech3_4:"Graphiques capteurs environnementaux",tech3_5:"Mode sombre",tech3_6:"Multilingue (EN/FR/AR/TR)",
+    price_label:"Tarifs",price_h2:"Tarification simple et transparente",price_p:"Pas d'abonnement mensuel. Pas de frais cachés. Payez une fois, surveillez pour toujours.",
+    plan1_name:"Starter",plan1_range:"1-3 ha • 2-4 caméras",p1_1:"1 hub central",p1_2:"Jusqu'à 4 caméras",p1_3:"Détection IA des maladies",p1_4:"Tableau de bord mobile",p1_5:"Alertes par email",
+    plan2_name:"Professionnel",plan2_range:"3-15 ha • 5-15 caméras",p2_1:"1 hub central",p2_2:"Jusqu'à 15 caméras",p2_3:"Suite complète de capteurs",p2_4:"Alertes WhatsApp",p2_5:"Rapports PDF",p2_6:"Support prioritaire",
+    plan3_name:"Entreprise",plan3_range:"15+ ha • 15+ caméras",plan3_price:"Sur devis",p3_1:"Configuration multi-hub",p3_2:"Caméras illimitées",p3_3:"Répéteurs WiFi",p3_4:"Entraînement IA personnalisé",p3_5:"Accès API",p3_6:"Support dédié",
+    plan_cta:"Configurer →",plan3_cta:"Contacter les ventes",popular_badge:"LE PLUS POPULAIRE",
+    contact_label:"Contact",contact_h2:"Contactez-nous",contact_p:"Parlez à notre équipe de vos besoins agricoles. Nous répondons sous 24 heures.",
+    role_hicham:"Développeur commercial international",role_hicham_short:"Développeur commercial international",
+    role_yousif:"Représentant régional — Moyen-Orient & Turquie",role_yousif_short:"Représentant régional",
+    loc_montreal:"Montréal, Canada",loc_ankara:"Ankara, Turquie",
+    form_name:"Nom complet",form_email:"Email",form_type:"Je suis",form_msg:"Message",form_send:"Envoyer le message",
+    type_farmer:"Agriculteur",type_company:"Agri-entreprise",type_student:"Étudiant / Chercheur",type_investor:"Investisseur",type_other:"Autre",
+    footer_desc:"Surveillance agricole par IA. Protection des fermes dans la région du Golfe et au-delà.",
+    footer_hq:"Siège social",footer_me:"Bureau Moyen-Orient & Turquie",
+    footer_product:"Produit",footer_support:"Support",footer_config:"Configurateur",footer_docs:"Documentation",footer_install:"Guide d'installation",
+  },
+  ar: {
+    page_title:"أغريفيجن — مراقبة زراعية بالذكاء الاصطناعي",
+    nav_how:"كيف يعمل",nav_features:"المميزات",nav_pricing:"الأسعار",nav_contact:"تواصل",nav_login:"تسجيل الدخول",nav_start:"ابدأ الآن",
+    hero_badge:"متوفر الآن في الإمارات والسعودية وتركيا",
+    hero_h1:"ذكاء اصطناعي يراقب مزرعتك <span>على مدار الساعة</span>",
+    hero_p:"حوّل كاميراتك الحالية إلى شبكة ذكية للكشف عن الأمراض. اكتشف أمراض المحاصيل قبل انتشارها — وفّر حتى 40% من خسائر المحاصيل.",
+    hero_cta1:"اضبط نظامك ←",hero_cta2:"▶ مشاهدة العرض",
+    stat1:"لكل كاميرا",stat2:"توفير في التكاليف",stat3:"دقة الكشف",stat4:"فترة الفحص",
+    how_label:"كيف يعمل",how_h2:"ثلاث خطوات بسيطة لحماية مزرعتك",how_p:"لا تحتاج لخبرة تقنية. أغريفيجن مصمم للمزارعين وليس للمهندسين.",
+    step1_num:"الخطوة ١",step1_h:"الإعداد",step1_p:"أدخل حجم مزرعتك وطبيعة أرضها. يحسب الذكاء الاصطناعي عدد الكاميرات والمحور الذي تحتاجه.",
+    step2_num:"الخطوة ٢",step2_h:"التركيب",step2_p:"استلم نظامك مُهيَّأً مسبقًا. ركّب الكاميرات وشغّل المحور. يستغرق 30 دقيقة.",
+    step3_num:"الخطوة ٣",step3_h:"الحماية",step3_p:"يراقب الذكاء الاصطناعي كل نبتة على مدار الساعة. احصل على تنبيهات فورية مع توصيات العلاج.",
+    feat_label:"المميزات",feat_h2:"لماذا يختار المزارعون أغريفيجن",
+    f1_h:"كشف الأمراض بالذكاء الاصطناعي",f1_p:"مدرَّب على 348+ مرض نباتي. يحدد الإصابات قبل أن تكون مرئية بالعين المجردة.",
+    f2_h:"طاقة شمسية",f2_p:"تعمل الكاميرات بالطاقة الشمسية + بطارية LiFePO4. بدون تكاليف تشغيل، تعمل خارج الشبكة.",
+    f3_h:"تنبيهات فورية",f3_p:"إشعارات واتساب وpush فورية مع صور ومستوى الخطورة وخطوات العلاج.",
+    f4_h:"خريطة تفاعلية للمزرعة",f4_p:"ارسم مزرعتك، شاهد تغطية الكاميرات، وحدد مواقع المشاكل بدقة.",
+    f5_h:"تقارير ذكية",f5_p:"تقارير أسبوعية لصحة المزرعة، اتجاهات الأمراض، تحليلات الحساسات. تصدير PDF للتأمين.",
+    f6_h:"وفّر 87% من التكاليف",f6_p:"هيكل موزع: 31$ للكاميرا مقابل 577$ منفردة. نفس الذكاء الاصطناعي بجزء من التكلفة.",
+    f7_h:"حساسات بيئية",f7_p:"مراقبة درجة الحرارة والرطوبة ورطوبة التربة والضوء مع تنبيهات تلقائية.",
+    f8_h:"بياناتك، خيارك",f8_p:"امتثال كامل للـ GDPR. اختر مشاركة البيانات المجهولة للحصول على خصومات، أو احتفظ بها خاصة.",
+    tech_label:"التقنية",tech_h2:"تقنية بمعايير الإنتاج",tech_p:"موثوقية مؤسسية مدمجة في كل مكوّن.",
+    tech1_h:"🔧 وحدات الكاميرا ESP32-S3",tech1_1:"عدسة تركيز تلقائي 5MP OV5640",tech1_2:"ذاكرة MicroSD احتياطية",tech1_3:"طاقة شمسية + بطارية LiFePO4",tech1_4:"إعداد تلقائي عبر AP",tech1_5:"اختبار ذاتي عند التشغيل",tech1_6:"أوضاع توفير الطاقة",
+    tech2_h:"🖥️ محور Raspberry Pi",tech2_1:"كشف ذكي على الجهاز",tech2_2:"إدارة أسطول 50+ وحدة",tech2_3:"مراقبة صحة المنظومة",tech2_4:"تخزين محلي مع مزامنة سحابية",tech2_5:"تحديثات برامج OTA",tech2_6:"تنبيهات واتساب وpush",
+    tech3_h:"📱 تطبيقات الجوال والويب",tech3_1:"لوحة تحكم الكاميرات الحية",tech3_2:"سجل كشف الأمراض",tech3_3:"رسم خرائط تفاعلية للمزرعة",tech3_4:"رسوم بيانية للحساسات البيئية",tech3_5:"الوضع الداكن",tech3_6:"متعدد اللغات (EN/FR/AR/TR)",
+    price_label:"الأسعار",price_h2:"أسعار بسيطة وشفافة",price_p:"بدون رسوم شهرية. بدون تكاليف خفية. ادفع مرة واحدة، راقب إلى الأبد.",
+    plan1_name:"المبتدئ",plan1_range:"1-3 هكتار • 2-4 كاميرات",p1_1:"محور مركزي واحد",p1_2:"حتى 4 كاميرات",p1_3:"كشف ذكاء اصطناعي للأمراض",p1_4:"لوحة تحكم على الجوال",p1_5:"تنبيهات بالبريد الإلكتروني",
+    plan2_name:"الاحترافي",plan2_range:"3-15 هكتار • 5-15 كاميرا",p2_1:"محور مركزي واحد",p2_2:"حتى 15 كاميرا",p2_3:"مجموعة حساسات كاملة",p2_4:"تنبيهات واتساب",p2_5:"تقارير PDF",p2_6:"دعم ذو أولوية",
+    plan3_name:"المؤسسي",plan3_range:"15+ هكتار • 15+ كاميرا",plan3_price:"حسب الطلب",p3_1:"إعداد متعدد المحاور",p3_2:"كاميرات غير محدودة",p3_3:"موسعات WiFi",p3_4:"تدريب ذكاء اصطناعي مخصص",p3_5:"وصول API",p3_6:"دعم مخصص",
+    plan_cta:"اضبط الآن ←",plan3_cta:"تواصل مع المبيعات",popular_badge:"الأكثر شيوعاً",
+    contact_label:"تواصل",contact_h2:"تواصل معنا",contact_p:"تحدث مع فريقنا حول احتياجات مزرعتك. نرد خلال 24 ساعة.",
+    role_hicham:"مطور أعمال دولي",role_hicham_short:"مطور أعمال دولي",
+    role_yousif:"ممثل إقليمي — الشرق الأوسط وتركيا",role_yousif_short:"ممثل إقليمي",
+    loc_montreal:"مونتريال، كندا",loc_ankara:"أنقرة، تركيا",
+    form_name:"الاسم الكامل",form_email:"البريد الإلكتروني",form_type:"أنا",form_msg:"الرسالة",form_send:"إرسال الرسالة",
+    type_farmer:"مزارع",type_company:"شركة زراعية",type_student:"طالب / باحث",type_investor:"مستثمر",type_other:"أخرى",
+    footer_desc:"مراقبة زراعية بالذكاء الاصطناعي. حماية المزارع في منطقة الخليج وما وراءها.",
+    footer_hq:"المقر الرئيسي",footer_me:"مكتب الشرق الأوسط وتركيا",
+    footer_product:"المنتج",footer_support:"الدعم",footer_config:"أداة الإعداد",footer_docs:"التوثيق",footer_install:"دليل التركيب",
+  },
+  tr: {
+    page_title:"AgriVision — Yapay Zeka Destekli Tarımsal İzleme",
+    nav_how:"Nasıl Çalışır",nav_features:"Özellikler",nav_pricing:"Fiyatlar",nav_contact:"İletişim",nav_login:"Giriş Yap",nav_start:"Başla",
+    hero_badge:"Artık BAE, Suudi Arabistan ve Türkiye'de Mevcut",
+    hero_h1:"Çiftliğinizi <span>7/24</span> İzleyen Yapay Zeka",
+    hero_p:"Mevcut kameralarınızı akıllı hastalık tespit ağına dönüştürün. Ürün hastalıklarını yayılmadan önce yakalayın — mahsul kayıplarında %40'a kadar tasarruf edin.",
+    hero_cta1:"Sisteminizi Yapılandırın →",hero_cta2:"▶ Demo İzle",
+    stat1:"Kamera Başına",stat2:"Maliyet Tasarrufu",stat3:"Yapay Zeka Tespiti",stat4:"Tarama Aralığı",
+    how_label:"Nasıl Çalışır",how_h2:"Çiftliğinizi Korumak İçin Üç Basit Adım",how_p:"Teknik uzmanlık gerekmez. AgriVision mühendisler için değil, çiftçiler için tasarlanmıştır.",
+    step1_num:"ADIM 01",step1_h:"Yapılandır",step1_p:"Çiftlik büyüklüğünü ve araziyi girin. Yapay zekamız tam olarak ihtiyacınız olan kamera ve hub'ı hesaplar.",
+    step2_num:"ADIM 02",step2_h:"Konuşlandır",step2_p:"Önceden yapılandırılmış sisteminizi alın. Kameraları takın, hub'ı çalıştırın. 30 dakika sürer.",
+    step3_num:"ADIM 03",step3_h:"Koru",step3_p:"Yapay zeka her bitkiyi 7/24 izler. Tedavi önerileriyle anında uyarılar alın.",
+    feat_label:"Özellikler",feat_h2:"Çiftçiler Neden AgriVision'ı Seçiyor",
+    f1_h:"Yapay Zeka Hastalık Tespiti",f1_p:"348+ bitki hastalığı üzerinde eğitilmiştir. Çıplak gözle görülmeden önce enfeksiyonları tespit eder.",
+    f2_h:"Güneş Enerjili",f2_p:"Kamera düğümleri güneş enerjisi + LiFePO4 pil ile çalışır. Sıfır işletme maliyeti, şebeke dışında çalışır.",
+    f3_h:"Gerçek Zamanlı Uyarılar",f3_p:"Fotoğraf, şiddet düzeyi ve tedavi adımlarıyla anında WhatsApp ve push bildirimleri.",
+    f4_h:"Etkileşimli Çiftlik Haritası",f4_p:"Çiftliğinizi çizin, kamera kapsamını görün ve sorunların tam olarak nerede olduğunu tespit edin.",
+    f5_h:"Akıllı Raporlar",f5_p:"Haftalık çiftlik sağlık raporları, hastalık eğilimleri, sensör analitiği. Sigorta talepleri için PDF dışa aktarma.",
+    f6_h:"%87 Maliyet Tasarrufu",f6_p:"Merkez & kol mimarisi: kamera başına 31$ vs 577$ bağımsız. Aynı yapay zeka, maliyetin bir kısmı.",
+    f7_h:"Çevre Sensörleri",f7_p:"Otomatik uyarılarla sıcaklık, nem, toprak nemi ve ışık izleme.",
+    f8_h:"Veriniz, Seçiminiz",f8_p:"Tam GDPR uyumluluğu. İndirim için anonimleştirilmiş veri paylaşmayı seçin ya da gizli tutun.",
+    tech_label:"Teknoloji",tech_h2:"Üretim Kalitesinde Teknoloji",tech_p:"Her bileşene entegre kurumsal güvenilirlik.",
+    tech1_h:"🔧 ESP32-S3 Kamera Düğümleri",tech1_1:"5MP OV5640 otofokus",tech1_2:"MicroSD çevrimdışı tampon",tech1_3:"Güneş + LiFePO4 pil",tech1_4:"AP üzerinden otomatik yapılandırma",tech1_5:"Başlangıçta üretim öz testi",tech1_6:"Derin uyku güç profilleri",
+    tech2_h:"🖥️ Raspberry Pi Hub",tech2_1:"Cihaz üzerinde yapay zeka tespiti",tech2_2:"50+ düğüm için filo yönetimi",tech2_3:"Kalp atışı sağlık izleme",tech2_4:"Bulut senkronizasyonlu yerel depolama",tech2_5:"OTA yazılım güncellemeleri",tech2_6:"WhatsApp ve push uyarıları",
+    tech3_h:"📱 Mobil & Web Uygulamaları",tech3_1:"Gerçek zamanlı kamera paneli",tech3_2:"Hastalık tespit akışı",tech3_3:"Etkileşimli çiftlik haritalama",tech3_4:"Çevre sensörü grafikleri",tech3_5:"Karanlık mod desteği",tech3_6:"Çok dilli (EN/FR/AR/TR)",
+    price_label:"Fiyatlar",price_h2:"Basit, Şeffaf Fiyatlandırma",price_p:"Aylık ücret yok. Gizli maliyet yok. Bir kez öde, sonsuza dek izle.",
+    plan1_name:"Başlangıç",plan1_range:"1-3 ha • 2-4 kamera",p1_1:"1 Merkezi Hub",p1_2:"4'e kadar kamera",p1_3:"Yapay zeka hastalık tespiti",p1_4:"Mobil panel",p1_5:"E-posta uyarıları",
+    plan2_name:"Profesyonel",plan2_range:"3-15 ha • 5-15 kamera",p2_1:"1 Merkezi Hub",p2_2:"15'e kadar kamera",p2_3:"Tam sensör paketi",p2_4:"WhatsApp uyarıları",p2_5:"PDF raporları",p2_6:"Öncelikli destek",
+    plan3_name:"Kurumsal",plan3_range:"15+ ha • 15+ kamera",plan3_price:"Özel Fiyat",p3_1:"Çok hub kurulumu",p3_2:"Sınırsız kamera",p3_3:"WiFi tekrarlayıcılar",p3_4:"Özel yapay zeka eğitimi",p3_5:"API erişimi",p3_6:"Özel destek",
+    plan_cta:"Şimdi Yapılandır →",plan3_cta:"Satış ile İletişim",popular_badge:"EN POPÜLER",
+    contact_label:"İletişim",contact_h2:"İletişime Geçin",contact_p:"Çiftliğinizin ihtiyaçları hakkında ekibimizle konuşun. 24 saat içinde yanıt veririz.",
+    role_hicham:"Uluslararası İş Geliştirici",role_hicham_short:"Uluslararası İş Geliştirici",
+    role_yousif:"Bölgesel Temsilci — Orta Doğu & Türkiye",role_yousif_short:"Bölgesel Temsilci",
+    loc_montreal:"Montreal, Kanada",loc_ankara:"Ankara, Türkiye",
+    form_name:"Ad Soyad",form_email:"E-posta",form_type:"Ben bir",form_msg:"Mesaj",form_send:"Mesaj Gönder",
+    type_farmer:"Çiftçi",type_company:"Tarım Şirketi",type_student:"Öğrenci / Araştırmacı",type_investor:"Yatırımcı",type_other:"Diğer",
+    footer_desc:"Yapay zeka destekli tarımsal izleme. Körfez bölgesi ve ötesinde çiftlikleri korumak.",
+    footer_hq:"Genel Merkez",footer_me:"Orta Doğu & Türkiye Ofisi",
+    footer_product:"Ürün",footer_support:"Destek",footer_config:"Yapılandırıcı",footer_docs:"Belgeler",footer_install:"Kurulum Kılavuzu",
+  }
+};
 
-<!-- Scripts -->
-<script src="js/i18n.js"></script>
-<script src="js/diseases.js"></script>
-<script src="js/firebase-config.js"></script>
-<script src="js/auth.js"></script>
-<script src="js/paypal.js"></script>
-<script src="js/ad-loader.js"></script>
-<script src="js/main.js"></script>
+let currentLang = localStorage.getItem('agv_lang') || 'en';
+
+function setLang(lang) {
+  currentLang = lang;
+  localStorage.setItem('agv_lang', lang);
+  const html = document.getElementById('html-root');
+  html.setAttribute('lang', lang);
+  html.setAttribute('dir', lang === 'ar' ? 'rtl' : 'ltr');
+  document.title = T[lang].page_title;
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const key = el.getAttribute('data-i18n');
+    if (T[lang][key]) {
+      if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') {
+        el.placeholder = T[lang][key];
+      } else {
+        el.innerHTML = T[lang][key];
+      }
+    }
+  });
+  document.querySelectorAll('.lang-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.textContent === lang.toUpperCase());
+  });
+}
+
+function handleSubmit(e) {
+  e.preventDefault();
+  const btn = e.target.querySelector('.btn-send');
+  const original = btn.innerHTML;
+  btn.innerHTML = '✓ ' + (currentLang === 'ar' ? 'تم الإرسال!' : currentLang === 'fr' ? 'Envoyé!' : currentLang === 'tr' ? 'Gönderildi!' : 'Sent!');
+  btn.style.background = '#45c474';
+  setTimeout(() => { btn.innerHTML = original; btn.style.background = ''; e.target.reset(); }, 3000);
+}
+
+setLang(currentLang);
+</script>
 </body>
 </html>
