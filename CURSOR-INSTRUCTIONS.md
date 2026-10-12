@@ -8,7 +8,7 @@ This project has 3 phases. Deploy them IN ORDER. Do NOT change the content, do N
 **Netlify site:** grand-cobbler-c22278.netlify.app
 **Backend target:** Railway
 **Contact:** info@theagrivision.com → forwards to canada.servcorp@gmail.com
-**Phone:** +1 (438) 831-3611
+**Phone:** not shown publicly (owner request)
 **PayPal:** canada.servcorp@gmail.com
 
 ---
@@ -48,8 +48,8 @@ website/
 
 - ❌ Do NOT replace index.html with a placeholder page
 - ❌ Do NOT remove any sections (features, diseases, languages, pricing, b2b, contact must ALL be present)
-- ❌ Do NOT change phone number (438-831-3611) or email (info@theagrivision.com)
-- ❌ Do NOT remove team members (Hicham, Dr. Yousif Shihab, Cynthia Zein Eddine)
+- ❌ Do NOT add a phone number or WhatsApp; do NOT change the email (info@theagrivision.com)
+- ❌ Do NOT remove team members (Dr. Yousif Shihab, Cynthia Zein Eddine); the Canada card shows "AgriVision Canada", never a personal name
 
 ### Verify after deploy
 
