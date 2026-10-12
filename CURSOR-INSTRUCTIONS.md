@@ -49,7 +49,7 @@ website/
 - ❌ Do NOT replace index.html with a placeholder page
 - ❌ Do NOT remove any sections (features, diseases, languages, pricing, b2b, contact must ALL be present)
 - ❌ Do NOT add a phone number or WhatsApp; do NOT change the email (info@theagrivision.com)
-- ❌ Do NOT remove team members (Hicham, Dr. Yousif Shihab, Cynthia Zein Eddine)
+- ❌ Do NOT remove team members (Dr. Yousif Shihab, Cynthia Zein Eddine); the Canada card shows "AgriVision Canada", never a personal name
 
 ### Verify after deploy
 
