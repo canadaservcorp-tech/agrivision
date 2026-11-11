@@ -85,5 +85,5 @@ python training/train_model.py
 | DevOps | Docker, Nginx, Let's Encrypt, GitHub Actions, PM2 |
 
 ## License
-Proprietary - Performance Cristal Technologies Avancées S.A.
+Proprietary - Entretien Laval
 © 2026 Agrivision | NEQ 2280629637
